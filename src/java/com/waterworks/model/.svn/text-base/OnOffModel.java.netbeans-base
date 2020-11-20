@@ -1,0 +1,225 @@
+/*
+ * To change this template, choose Tools | Templates
+ * and open the template in the editor.
+ */
+package com.waterworks.model;
+
+import com.mysql.jdbc.Connection;
+import com.mysql.jdbc.PreparedStatement;
+import com.waterworks.tableClasses.OnOff;
+import java.math.BigInteger;
+import java.sql.DriverManager;
+import java.sql.ResultSet;
+import java.text.DecimalFormat;
+import java.util.ArrayList;
+import javax.servlet.ServletContext;
+import javax.servlet.http.HttpSession;
+
+/**
+ *
+ * @author Administrator
+ */
+public class OnOffModel {
+
+    private Connection connection;
+    private String driver, url, user, password;
+    private String message, messageBGColor;
+    private String driverClass;
+    private String connectionString;
+    private String db_username;
+    private String db_password;
+    private String msgBgColor;
+    private final String COLOR_OK = "yellow";
+    private final String COLOR_ERROR = "red";
+    DecimalFormat df = new DecimalFormat("0.00");
+
+    public void setConnection() {
+        try {
+            Class.forName(driver);
+            // connection = DriverManager.getConnection(connectionString+"?useUnicode=true&characterEncoding=UTF-8&character_set_results=utf8", db_username, db_password);
+            connection = (Connection) DriverManager.getConnection(url, user, password);
+        } catch (Exception e) {
+            System.out.println("WattageTypeModel setConnection() Error: " + e);
+        }
+    }
+
+    public int getTotalRowsInTable(String searchDateFrom, String searchDateTo) {
+        if (searchDateFrom != null && !searchDateFrom.isEmpty()) {
+            String[] sdate_array = searchDateFrom.split("-");
+            searchDateFrom = sdate_array[2] + "-" + sdate_array[1] + "-" + sdate_array[0];
+        }
+        if (searchDateTo != null && !searchDateTo.isEmpty()) {
+            String[] sdate_array = searchDateTo.split("-");
+            searchDateTo = sdate_array[2] + "-" + sdate_array[1] + "-" + sdate_array[0];
+        }
+        String query = " select count(distribution_id) from watertreatmentplant AS wtp,overheadtank AS oht,"
+                + " ohlevel as ol,distribution as d"
+                + " where oht.watertreatmentplant_id = wtp.watertreatmentplant_id"
+                + " and ol.overheadtank_id = oht.overheadtank_id and ol.ohlevel_id=d.ohlevel_id "
+                + " And IF('" + searchDateFrom + "'='', ol.date_time LIKE '%%',ol.date_time >='" + searchDateFrom + "') "
+                + " And IF('" + searchDateTo + "'='', ol.date_time LIKE '%%',date_format(ol.date_time, '%Y-%m-%d') <='" + searchDateTo + "') ";
+        int noOfRows = 0;
+        try {
+            PreparedStatement presta = (PreparedStatement) connection.prepareStatement(query);
+
+            ResultSet rs = presta.executeQuery();
+            rs.next();
+            noOfRows = rs.getInt(1);
+        } catch (Exception e) {
+            System.out.println("Error inside getNoOfRows - onoffmodel : " + e);
+
+        }
+        System.out.println("No of Rows in Table for search is****....." + noOfRows);
+        return noOfRows;
+    }
+
+    public ArrayList<OnOff> getAllRecords(int lowerLimit, int noOfRowsToDisplay, String searchDateFrom, String searchDateTo) {
+        ArrayList<OnOff> list = new ArrayList<OnOff>();
+        if (searchDateFrom != null && !searchDateFrom.isEmpty()) {
+            String[] sdate_array = searchDateFrom.split("-");
+            searchDateFrom = sdate_array[2] + "-" + sdate_array[1] + "-" + sdate_array[0];
+        }
+        if (searchDateTo != null && !searchDateTo.isEmpty()) {
+            String[] sdate_array = searchDateTo.split("-");
+            searchDateTo = sdate_array[2] + "-" + sdate_array[1] + "-" + sdate_array[0];
+        }
+        byte[] twoByteData = new byte[2];
+        String addQuery = " LIMIT " + lowerLimit + ", " + noOfRowsToDisplay;
+        if (lowerLimit == -1) {
+            addQuery = "";
+        }
+        //  int overheadtank_id = getOverHeadTankid(Integer.parseInt(oh_level));
+        String query = " select wtp.name as name1,oht.name,ol.remark,ol.ohlevel_id,d.type,ol.date_time,level3,level4,capacity_height from watertreatmentplant AS wtp,overheadtank AS oht,"
+                + " ohlevel as ol,distribution as d"
+                + " where oht.watertreatmentplant_id = wtp.watertreatmentplant_id"
+                + " and ol.overheadtank_id = oht.overheadtank_id and ol.ohlevel_id=d.ohlevel_id "
+                + " And IF('" + searchDateFrom + "'='', ol.date_time LIKE '%%',ol.date_time >='" + searchDateFrom + "') "
+                + " And IF('" + searchDateTo + "'='', ol.date_time LIKE '%%',date_format(ol.date_time, '%Y-%m-%d') <='" + searchDateTo + "') order by ol.date_time desc "
+                + addQuery;
+        try {
+            PreparedStatement pstmt = (PreparedStatement) connection.prepareStatement(query);
+
+            ResultSet rset = pstmt.executeQuery();
+            while (rset.next()) {
+                OnOff ohLevelBean = new OnOff();
+                ohLevelBean.setWaterTreatmentPlantName(rset.getString(1));
+                ohLevelBean.setOverHeadTankName(rset.getString(2));
+                ohLevelBean.setOhLevelId(rset.getInt("ohlevel_id"));
+                ohLevelBean.setType(rset.getString("type"));
+                ohLevelBean.setDateTime(rset.getString("date_time"));
+                ohLevelBean.setLevel(rset.getString("remark"));
+                twoByteData[0] = rset.getByte("level3");
+                twoByteData[1] = rset.getByte("level4");
+                long voltage1 = (new BigInteger(twoByteData).longValue());
+                ohLevelBean.setValue_of_34(("" + voltage1).trim());
+                ohLevelBean.setLevel_of_34("" + df.format((voltage1 / (rset.getDouble("capacity_height") * 1000)) * 100));
+                list.add(ohLevelBean);
+            }
+        } catch (Exception e) {
+            System.out.println("Error in getAllRecrod -- OnOFF Model : " + e);
+
+        }
+        return list;
+    }
+
+    public void closeConnection() {
+        try {
+            connection.close();
+        } catch (Exception e) {
+            System.out.println("Error in closeConnection -- OHLevelModel : " + e);
+        }
+    }
+
+    public void setConnection(Connection con) {
+        try {
+
+            connection = con;
+        } catch (Exception e) {
+            System.out.println("PaymentStatusModel setConnection() Error: " + e);
+        }
+    }
+
+    public Connection getConnection() {
+        return connection;
+    }
+
+    public void setDriver(String driver) {
+        this.driver = driver;
+    }
+
+    public void setUrl(String url) {
+        this.url = url;
+    }
+
+    public void setUser(String user) {
+        this.user = user;
+    }
+
+    public void setPassword(String password) {
+        this.password = password;
+    }
+
+    public String getDriver() {
+        return driver;
+    }
+
+    public String getUrl() {
+        return url;
+    }
+
+    public String getUser() {
+        return user;
+    }
+
+    public String getPassword() {
+        return password;
+    }
+
+    public String getMessage() {
+        return message;
+    }
+
+    public String getMessageBGColor() {
+        return messageBGColor;
+    }
+
+    public String getConnectionString() {
+        return connectionString;
+    }
+
+    public void setConnectionString(String connectionString) {
+        this.connectionString = connectionString;
+    }
+
+    public String getDb_password() {
+        return db_password;
+    }
+
+    public void setDb_password(String db_password) {
+        this.db_password = db_password;
+    }
+
+    public String getDb_username() {
+        return db_username;
+    }
+
+    public void setDb_username(String db_username) {
+        this.db_username = db_username;
+    }
+
+    public String getDriverClass() {
+        return driverClass;
+    }
+
+    public void setDriverClass(String driverClass) {
+        this.driverClass = driverClass;
+    }
+
+    public String getMsgBgColor() {
+        return msgBgColor;
+    }
+
+    public void setMsgBgColor(String msgBgColor) {
+        this.msgBgColor = msgBgColor;
+    }
+}

@@ -1,0 +1,529 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="report name" pageWidth="595" pageHeight="842" columnWidth="535" leftMargin="20" rightMargin="20" topMargin="20" bottomMargin="20" uuid="5ee15b9f-211e-4cf3-8e50-a2dcd8ce9b11">
+	<property name="ireport.zoom" value="1.0"/>
+	<property name="ireport.x" value="0"/>
+	<property name="ireport.y" value="98"/>
+	<field name="waterTreatmentPlantName" class="java.lang.String"/>
+	<field name="overHeadTankName" class="java.lang.String"/>
+	<field name="dateTime" class="java.lang.String"/>
+	<field name="level" class="java.lang.String"/>
+	<field name="type" class="java.lang.String"/>
+	<field name="value_of_34" class="java.lang.String"/>
+	<field name="level_of_34" class="java.lang.String"/>
+	<field name="totallevel" class="java.lang.Long"/>
+	<field name="leveldifference" class="java.lang.Long"/>
+	<field name="colname" class="java.lang.String"/>
+	<field name="dtdifference" class="java.lang.String"/>
+	<field name="finaldatetime" class="java.lang.String"/>
+	<field name="totalTime" class="java.lang.String"/>
+	<field name="totalleakagevalue" class="java.lang.Long"/>
+	<field name="totalleakagetime" class="java.lang.String"/>
+	<field name="totalsupplyvalue" class="java.lang.Long"/>
+	<field name="totalsupplytime" class="java.lang.String"/>
+	<field name="totalstabletime" class="java.lang.String"/>
+	<field name="totalstablevalue" class="java.lang.Long"/>
+	<field name="totaldistributiontime" class="java.lang.String"/>
+	<field name="totaldistributionvalue" class="java.lang.Long"/>
+	<variable name="s_no" class="java.lang.Integer">
+		<variableExpression><![CDATA[$V{s_no}+1]]></variableExpression>
+		<initialValueExpression><![CDATA[0]]></initialValueExpression>
+	</variable>
+	<background>
+		<band splitType="Stretch"/>
+	</background>
+	<title>
+		<band height="79" splitType="Stretch">
+			<staticText>
+				<reportElement mode="Opaque" x="0" y="32" width="555" height="20" backcolor="#00FFFF" uuid="36bd46cd-bfa8-465c-abde-dad111bae6f5"/>
+				<box>
+					<pen lineWidth="0.5"/>
+					<topPen lineWidth="0.5"/>
+					<leftPen lineWidth="0.5"/>
+					<bottomPen lineWidth="0.5"/>
+					<rightPen lineWidth="0.5"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font size="12" isBold="true"/>
+				</textElement>
+				<text><![CDATA[On Off Level]]></text>
+			</staticText>
+		</band>
+	</title>
+	<pageHeader>
+		<band splitType="Stretch"/>
+	</pageHeader>
+	<columnHeader>
+		<band height="33">
+			<staticText>
+				<reportElement x="499" y="0" width="56" height="32" isRemoveLineWhenBlank="true" uuid="5a09cc4f-f9f2-48b8-8815-624b521d4778"/>
+				<box>
+					<pen lineWidth="1.0"/>
+					<topPen lineWidth="1.0"/>
+					<leftPen lineWidth="1.0"/>
+					<bottomPen lineWidth="1.0"/>
+					<rightPen lineWidth="1.0"/>
+				</box>
+				<textElement>
+					<font size="12" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Total Level Diff]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="0" y="0" width="37" height="32" uuid="8e664933-0beb-452b-bdce-da61beda3c38"/>
+				<box>
+					<pen lineWidth="0.5"/>
+					<topPen lineWidth="0.5"/>
+					<leftPen lineWidth="0.5"/>
+					<bottomPen lineWidth="0.5"/>
+					<rightPen lineWidth="0.5"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font size="12" isBold="true"/>
+				</textElement>
+				<text><![CDATA[S No.]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="106" y="0" width="51" height="32" uuid="a510bd62-966e-4842-87e7-625d63dabe71"/>
+				<box>
+					<pen lineWidth="0.5"/>
+					<topPen lineWidth="0.5"/>
+					<leftPen lineWidth="0.5"/>
+					<bottomPen lineWidth="0.5"/>
+					<rightPen lineWidth="0.5"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font size="12" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Overhead Tank]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="198" y="0" width="86" height="32" uuid="bf9e5e6d-5af4-4d58-b17e-6d8f190b6af1"/>
+				<box>
+					<pen lineWidth="0.5"/>
+					<topPen lineWidth="0.5"/>
+					<leftPen lineWidth="0.5"/>
+					<bottomPen lineWidth="0.5"/>
+					<rightPen lineWidth="0.5"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font size="12" isBold="true"/>
+				</textElement>
+				<text><![CDATA[ON Time]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="37" y="0" width="69" height="32" uuid="765fb64d-83fd-4e57-a517-3bd6179213a0"/>
+				<box>
+					<pen lineWidth="0.5"/>
+					<topPen lineWidth="0.5"/>
+					<leftPen lineWidth="0.5"/>
+					<bottomPen lineWidth="0.5"/>
+					<rightPen lineWidth="0.5"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font size="12" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Water Treat Plant]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="462" y="0" width="37" height="32" uuid="10425086-e538-4f66-a4cc-4aa3d9fa89a0"/>
+				<box>
+					<pen lineWidth="0.5"/>
+					<topPen lineWidth="0.5"/>
+					<leftPen lineWidth="0.5"/>
+					<bottomPen lineWidth="0.5"/>
+					<rightPen lineWidth="0.5"/>
+				</box>
+				<textElement>
+					<font size="12" isBold="true"/>
+				</textElement>
+				<text><![CDATA[End Level]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="427" y="0" width="35" height="32" uuid="fa82f82f-dca1-469f-accb-2a02941b01d2"/>
+				<box>
+					<pen lineWidth="0.5"/>
+					<topPen lineWidth="0.5"/>
+					<leftPen lineWidth="0.5"/>
+					<bottomPen lineWidth="0.5"/>
+					<rightPen lineWidth="0.5"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font size="12" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Start Level]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="284" y="0" width="90" height="32" uuid="bec4dadd-87d8-4240-92e0-02d5b2d9a5b2"/>
+				<box>
+					<pen lineWidth="0.5"/>
+					<topPen lineWidth="0.5"/>
+					<leftPen lineWidth="0.5"/>
+					<bottomPen lineWidth="0.5"/>
+					<rightPen lineWidth="0.5"/>
+				</box>
+				<textElement>
+					<font size="12" isBold="true"/>
+				</textElement>
+				<text><![CDATA[     OFF Time]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="157" y="0" width="41" height="32" uuid="0985b29e-9f59-4203-a08b-21acc3d6109e"/>
+				<box>
+					<pen lineWidth="0.5"/>
+					<topPen lineWidth="0.5"/>
+					<leftPen lineWidth="0.5"/>
+					<bottomPen lineWidth="0.5"/>
+					<rightPen lineWidth="0.5"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font size="12" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Type]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="374" y="0" width="53" height="32" uuid="d9f1d6fb-4176-4ddc-b7e9-5955556c4567"/>
+				<box>
+					<pen lineWidth="0.5"/>
+					<topPen lineWidth="0.5"/>
+					<leftPen lineWidth="0.5"/>
+					<bottomPen lineWidth="0.5"/>
+					<rightPen lineWidth="0.5"/>
+				</box>
+				<textElement>
+					<font size="12" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Total Time Diff]]></text>
+			</staticText>
+		</band>
+	</columnHeader>
+	<detail>
+		<band height="21" splitType="Stretch">
+			<textField>
+				<reportElement x="374" y="0" width="53" height="20" uuid="f6b24ee6-b9bf-49d4-ab4c-c03da53b72c3"/>
+				<box>
+					<pen lineWidth="0.5"/>
+					<topPen lineWidth="0.5"/>
+					<leftPen lineWidth="0.5"/>
+					<bottomPen lineWidth="0.5"/>
+					<rightPen lineWidth="0.5"/>
+				</box>
+				<textFieldExpression><![CDATA[$F{dtdifference}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="198" y="0" width="86" height="20" uuid="1ba7f234-4a73-490e-be0b-7fdd967fc202"/>
+				<box>
+					<pen lineWidth="0.5"/>
+					<topPen lineWidth="0.5"/>
+					<leftPen lineWidth="0.5"/>
+					<bottomPen lineWidth="0.5"/>
+					<rightPen lineWidth="0.5"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle"/>
+				<textFieldExpression><![CDATA[$F{dateTime}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="427" y="0" width="35" height="20" uuid="6451df45-e5c2-49fd-b830-6bb7893e7393"/>
+				<box>
+					<pen lineWidth="0.5"/>
+					<topPen lineWidth="0.5"/>
+					<leftPen lineWidth="0.5"/>
+					<bottomPen lineWidth="0.5"/>
+					<rightPen lineWidth="0.5"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle"/>
+				<textFieldExpression><![CDATA[$F{level}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="157" y="0" width="41" height="20" uuid="6ac6c26d-5e43-4470-b405-d0ebfd158715"/>
+				<box>
+					<pen lineWidth="0.5"/>
+					<topPen lineWidth="0.5"/>
+					<leftPen lineWidth="0.5"/>
+					<bottomPen lineWidth="0.5"/>
+					<rightPen lineWidth="0.5"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle"/>
+				<textFieldExpression><![CDATA[$F{type}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="106" y="0" width="51" height="20" uuid="558ebb32-6311-4c1c-beb3-c689be472e45"/>
+				<box>
+					<pen lineWidth="0.5"/>
+					<topPen lineWidth="0.5"/>
+					<leftPen lineWidth="0.5"/>
+					<bottomPen lineWidth="0.5"/>
+					<rightPen lineWidth="0.5"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle"/>
+				<textFieldExpression><![CDATA[$F{overHeadTankName}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="284" y="0" width="90" height="20" uuid="b4ade5aa-2e99-4c56-affa-0d56551ebc67"/>
+				<box>
+					<pen lineWidth="0.5"/>
+					<topPen lineWidth="0.5"/>
+					<leftPen lineWidth="0.5"/>
+					<bottomPen lineWidth="0.5"/>
+					<rightPen lineWidth="0.5"/>
+				</box>
+				<textFieldExpression><![CDATA[$F{finaldatetime}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="37" y="0" width="69" height="20" uuid="8c0d28cc-b2e1-4050-b8db-a89fe6d64f65"/>
+				<box>
+					<pen lineWidth="0.5"/>
+					<topPen lineWidth="0.5"/>
+					<leftPen lineWidth="0.5"/>
+					<bottomPen lineWidth="0.5"/>
+					<rightPen lineWidth="0.5"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle"/>
+				<textFieldExpression><![CDATA[$F{waterTreatmentPlantName}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="0" y="0" width="37" height="20" uuid="0613c250-02ca-4ea0-9055-5cfa1a32bdd2"/>
+				<box>
+					<pen lineWidth="0.5"/>
+					<topPen lineWidth="0.5"/>
+					<leftPen lineWidth="0.5"/>
+					<bottomPen lineWidth="0.5"/>
+					<rightPen lineWidth="0.5"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle"/>
+				<textFieldExpression><![CDATA[$V{s_no}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="499" y="0" width="56" height="20" uuid="32acf255-ea7e-42ac-92be-8acc2a0efba5"/>
+				<box>
+					<pen lineWidth="1.0"/>
+					<topPen lineWidth="1.0"/>
+					<leftPen lineWidth="1.0"/>
+					<bottomPen lineWidth="1.0"/>
+					<rightPen lineWidth="1.0"/>
+				</box>
+				<textFieldExpression><![CDATA[$F{leveldifference}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="462" y="0" width="37" height="20" uuid="1e28b07e-b090-46ba-8dad-7c3edf32f41a"/>
+				<box>
+					<pen lineWidth="0.5"/>
+					<topPen lineWidth="0.5"/>
+					<leftPen lineWidth="0.5"/>
+					<bottomPen lineWidth="0.5"/>
+					<rightPen lineWidth="0.5"/>
+				</box>
+				<textFieldExpression><![CDATA[$F{colname}]]></textFieldExpression>
+			</textField>
+		</band>
+	</detail>
+	<columnFooter>
+		<band height="278" splitType="Stretch">
+			<staticText>
+				<reportElement x="157" y="10" width="148" height="20" uuid="7b9c26bc-405d-4a1f-9672-25c31c03efde"/>
+				<box>
+					<pen lineWidth="0.5"/>
+					<topPen lineWidth="0.5"/>
+					<leftPen lineWidth="0.5"/>
+					<bottomPen lineWidth="0.5"/>
+					<rightPen lineWidth="0.5"/>
+				</box>
+				<textElement>
+					<font size="12" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Leakage Time Difference]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="0" y="10" width="157" height="20" uuid="6935e290-48fe-4a25-acae-7b1de53d7523"/>
+				<box>
+					<pen lineWidth="0.5"/>
+					<topPen lineWidth="0.5"/>
+					<leftPen lineWidth="0.5"/>
+					<bottomPen lineWidth="0.5"/>
+					<rightPen lineWidth="0.5"/>
+				</box>
+				<textElement>
+					<font size="12" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Leakage Level Difference]]></text>
+			</staticText>
+			<textField>
+				<reportElement x="0" y="30" width="157" height="20" uuid="4ed6e88c-b8e1-4ca5-97a9-0c38b4b9c5d7"/>
+				<box>
+					<pen lineWidth="0.5"/>
+					<topPen lineWidth="0.5"/>
+					<leftPen lineWidth="0.5"/>
+					<bottomPen lineWidth="0.5"/>
+					<rightPen lineWidth="0.5"/>
+				</box>
+				<textFieldExpression><![CDATA[$F{totalleakagevalue}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="157" y="30" width="148" height="20" uuid="d528105a-96b6-40da-9dad-ea5b354dbad8"/>
+				<box>
+					<pen lineWidth="0.5"/>
+					<topPen lineWidth="0.5"/>
+					<leftPen lineWidth="0.5"/>
+					<bottomPen lineWidth="0.5"/>
+					<rightPen lineWidth="0.5"/>
+				</box>
+				<textFieldExpression><![CDATA[$F{totalleakagetime}]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement x="0" y="67" width="157" height="20" uuid="16149079-ea38-4097-9474-eadb3b9c0329"/>
+				<box>
+					<pen lineWidth="0.5"/>
+					<topPen lineWidth="0.5"/>
+					<leftPen lineWidth="0.5"/>
+					<bottomPen lineWidth="0.5"/>
+					<rightPen lineWidth="0.5"/>
+				</box>
+				<textElement>
+					<font size="12" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Stable Level Difference]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="157" y="67" width="148" height="20" uuid="9b17f491-3eae-46d2-abd4-02b6a19a1bce"/>
+				<box>
+					<pen lineWidth="0.5"/>
+					<topPen lineWidth="0.5"/>
+					<leftPen lineWidth="0.5"/>
+					<bottomPen lineWidth="0.5"/>
+					<rightPen lineWidth="0.5"/>
+				</box>
+				<textElement>
+					<font size="12" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Stable Time Difference]]></text>
+			</staticText>
+			<textField>
+				<reportElement x="157" y="87" width="148" height="20" uuid="f91228c2-8ba8-4cea-8e91-181878aad5a0"/>
+				<box>
+					<pen lineWidth="0.5"/>
+					<topPen lineWidth="0.5"/>
+					<leftPen lineWidth="0.5"/>
+					<bottomPen lineWidth="0.5"/>
+					<rightPen lineWidth="0.5"/>
+				</box>
+				<textFieldExpression><![CDATA[$F{totalstabletime}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="0" y="87" width="157" height="20" uuid="b7c5b5fa-d504-4cd4-9f74-ab8ad8ae612c"/>
+				<box>
+					<pen lineWidth="0.5"/>
+					<topPen lineWidth="0.5"/>
+					<leftPen lineWidth="0.5"/>
+					<bottomPen lineWidth="0.5"/>
+					<rightPen lineWidth="0.5"/>
+				</box>
+				<textFieldExpression><![CDATA[$F{totalstablevalue}]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement x="0" y="124" width="157" height="20" uuid="1c9aa9ea-452f-468a-8bcb-d796bb31f88d"/>
+				<box>
+					<pen lineWidth="0.5"/>
+					<topPen lineWidth="0.5"/>
+					<leftPen lineWidth="0.5"/>
+					<bottomPen lineWidth="0.5"/>
+					<rightPen lineWidth="0.5"/>
+				</box>
+				<textElement>
+					<font size="12" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Supply Level Difference]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="157" y="124" width="148" height="20" uuid="8951b33d-e4af-4257-bcdf-c060d5a545f1"/>
+				<box>
+					<pen lineWidth="0.5"/>
+					<topPen lineWidth="0.5"/>
+					<leftPen lineWidth="0.5"/>
+					<bottomPen lineWidth="0.5"/>
+					<rightPen lineWidth="0.5"/>
+				</box>
+				<textElement>
+					<font size="12" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Supply Time Difference]]></text>
+			</staticText>
+			<textField>
+				<reportElement x="0" y="144" width="157" height="20" uuid="e99cb592-ce71-4a9d-a0e4-8f0d08dba2be"/>
+				<box>
+					<pen lineWidth="0.5"/>
+					<topPen lineWidth="0.5"/>
+					<leftPen lineWidth="0.5"/>
+					<bottomPen lineWidth="0.5"/>
+					<rightPen lineWidth="0.5"/>
+				</box>
+				<textFieldExpression><![CDATA[$F{totalsupplyvalue}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="157" y="144" width="148" height="20" uuid="a4fa45c8-b832-4bed-9363-b885be6da35e"/>
+				<box>
+					<pen lineWidth="0.5"/>
+					<topPen lineWidth="0.5"/>
+					<leftPen lineWidth="0.5"/>
+					<bottomPen lineWidth="0.5"/>
+					<rightPen lineWidth="0.5"/>
+				</box>
+				<textFieldExpression><![CDATA[$F{totalsupplytime}]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement x="164" y="181" width="164" height="20" uuid="fd950350-6c49-4b55-ae19-6a6cdb03ca31"/>
+				<box>
+					<pen lineWidth="0.5"/>
+					<topPen lineWidth="0.5"/>
+					<leftPen lineWidth="0.5"/>
+					<bottomPen lineWidth="0.5"/>
+					<rightPen lineWidth="0.5"/>
+				</box>
+				<textElement>
+					<font size="12" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Distribution Time Difference]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="0" y="181" width="164" height="20" uuid="da888060-7b52-48c2-a6f6-9bfd3052daa6"/>
+				<box>
+					<pen lineWidth="0.5"/>
+					<topPen lineWidth="0.5"/>
+					<leftPen lineWidth="0.5"/>
+					<bottomPen lineWidth="0.5"/>
+					<rightPen lineWidth="0.5"/>
+				</box>
+				<textElement>
+					<font size="12" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Distribution Level Difference]]></text>
+			</staticText>
+			<textField>
+				<reportElement x="0" y="201" width="164" height="20" uuid="f0327b7f-cd80-48b6-8867-3bf60d5877e6"/>
+				<box>
+					<pen lineWidth="0.5"/>
+					<topPen lineWidth="0.5"/>
+					<leftPen lineWidth="0.5"/>
+					<bottomPen lineWidth="0.5"/>
+					<rightPen lineWidth="0.5"/>
+				</box>
+				<textFieldExpression><![CDATA[$F{totaldistributionvalue}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="164" y="201" width="164" height="20" uuid="6cf14d4f-91aa-49d2-9325-7b7cd27fbd58"/>
+				<box>
+					<pen lineWidth="0.5"/>
+					<topPen lineWidth="0.5"/>
+					<leftPen lineWidth="0.5"/>
+					<bottomPen lineWidth="0.5"/>
+					<rightPen lineWidth="0.5"/>
+				</box>
+				<textFieldExpression><![CDATA[$F{totaldistributiontime}]]></textFieldExpression>
+			</textField>
+		</band>
+	</columnFooter>
+	<pageFooter>
+		<band splitType="Stretch"/>
+	</pageFooter>
+	<summary>
+		<band splitType="Stretch"/>
+	</summary>
+</jasperReport>

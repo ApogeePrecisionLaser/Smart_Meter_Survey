@@ -1,0 +1,363 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="report name" pageWidth="750" pageHeight="842" columnWidth="710" leftMargin="20" rightMargin="20" topMargin="20" bottomMargin="20">
+	<property name="ireport.zoom" value="1.3310000000000008"/>
+	<property name="ireport.x" value="0"/>
+	<property name="ireport.y" value="0"/>
+	<field name="waterTreatmentPlantName" class="java.lang.String"/>
+	<field name="overHeadTankName" class="java.lang.String"/>
+	<field name="capacityHeight" class="java.lang.Float"/>
+	<field name="capacityLTR" class="java.lang.Integer"/>
+	<field name="height" class="java.lang.Float"/>
+	<field name="cityName" class="java.lang.String"/>
+	<field name="address1" class="java.lang.String"/>
+	<field name="address2" class="java.lang.String"/>
+	<field name="dateTime" class="java.lang.String"/>
+	<field name="remark" class="java.lang.String"/>
+	<variable name="S.No." class="java.lang.Integer">
+		<variableExpression><![CDATA[$V{S.No.}+1]]></variableExpression>
+		<initialValueExpression><![CDATA[0]]></initialValueExpression>
+	</variable>
+	<background>
+		<band splitType="Stretch"/>
+	</background>
+	<title>
+		<band height="37" splitType="Stretch">
+			<staticText>
+				<reportElement mode="Opaque" x="0" y="0" width="710" height="25" forecolor="#FFFFFF" backcolor="#9999FF"/>
+				<box>
+					<pen lineWidth="1.0" lineColor="#0000CC"/>
+					<topPen lineWidth="1.0" lineColor="#0000CC"/>
+					<leftPen lineWidth="1.0" lineColor="#0000CC"/>
+					<bottomPen lineWidth="1.0" lineColor="#0000CC"/>
+					<rightPen lineWidth="1.0" lineColor="#0000CC"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font fontName="Times New Roman" size="14" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Overhead Tank Report]]></text>
+			</staticText>
+		</band>
+	</title>
+	<pageHeader>
+		<band splitType="Stretch"/>
+	</pageHeader>
+	<columnHeader>
+		<band height="27" splitType="Stretch">
+			<staticText>
+				<reportElement mode="Opaque" x="0" y="0" width="32" height="20" forecolor="#3333FF" backcolor="#CCFFCC"/>
+				<box>
+					<pen lineWidth="1.0" lineColor="#0000CC"/>
+					<topPen lineWidth="1.0" lineColor="#0000CC"/>
+					<leftPen lineWidth="1.0" lineColor="#0000CC"/>
+					<bottomPen lineWidth="1.0" lineColor="#0000CC"/>
+					<rightPen lineWidth="1.0" lineColor="#0000CC"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font fontName="Times New Roman" isBold="true"/>
+				</textElement>
+				<text><![CDATA[S.No.]]></text>
+			</staticText>
+			<staticText>
+				<reportElement mode="Opaque" x="32" y="0" width="84" height="20" forecolor="#3333FF" backcolor="#CCFFCC"/>
+				<box>
+					<pen lineWidth="1.0" lineColor="#0000CC"/>
+					<topPen lineWidth="1.0" lineColor="#0000CC"/>
+					<leftPen lineWidth="1.0" lineColor="#0000CC"/>
+					<bottomPen lineWidth="1.0" lineColor="#0000CC"/>
+					<rightPen lineWidth="1.0" lineColor="#0000CC"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font fontName="Times New Roman" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Water Treatment PlantName]]></text>
+			</staticText>
+			<staticText>
+				<reportElement mode="Opaque" x="116" y="0" width="75" height="20" forecolor="#3333FF" backcolor="#CCFFCC"/>
+				<box>
+					<pen lineWidth="1.0" lineColor="#0000CC"/>
+					<topPen lineWidth="1.0" lineColor="#0000CC"/>
+					<leftPen lineWidth="1.0" lineColor="#0000CC"/>
+					<bottomPen lineWidth="1.0" lineColor="#0000CC"/>
+					<rightPen lineWidth="1.0" lineColor="#0000CC"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font fontName="Times New Roman" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Overhead Tank]]></text>
+			</staticText>
+			<staticText>
+				<reportElement mode="Opaque" x="191" y="0" width="77" height="20" forecolor="#3333FF" backcolor="#CCFFCC"/>
+				<box>
+					<pen lineWidth="1.0" lineColor="#0000CC"/>
+					<topPen lineWidth="1.0" lineColor="#0000CC"/>
+					<leftPen lineWidth="1.0" lineColor="#0000CC"/>
+					<bottomPen lineWidth="1.0" lineColor="#0000CC"/>
+					<rightPen lineWidth="1.0" lineColor="#0000CC"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font fontName="Times New Roman" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Capacity Height]]></text>
+			</staticText>
+			<staticText>
+				<reportElement mode="Opaque" x="268" y="0" width="72" height="20" forecolor="#3333FF" backcolor="#CCFFCC"/>
+				<box>
+					<pen lineWidth="1.0" lineColor="#0000CC"/>
+					<topPen lineWidth="1.0" lineColor="#0000CC"/>
+					<leftPen lineWidth="1.0" lineColor="#0000CC"/>
+					<bottomPen lineWidth="1.0" lineColor="#0000CC"/>
+					<rightPen lineWidth="1.0" lineColor="#0000CC"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font fontName="Times New Roman" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Capacity LTR]]></text>
+			</staticText>
+			<staticText>
+				<reportElement mode="Opaque" x="340" y="0" width="65" height="20" forecolor="#3333FF" backcolor="#CCFFCC"/>
+				<box>
+					<pen lineWidth="1.0" lineColor="#0000CC"/>
+					<topPen lineWidth="1.0" lineColor="#0000CC"/>
+					<leftPen lineWidth="1.0" lineColor="#0000CC"/>
+					<bottomPen lineWidth="1.0" lineColor="#0000CC"/>
+					<rightPen lineWidth="1.0" lineColor="#0000CC"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font fontName="Times New Roman" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Height]]></text>
+			</staticText>
+			<staticText>
+				<reportElement mode="Opaque" x="405" y="0" width="66" height="20" forecolor="#3333FF" backcolor="#CCFFCC"/>
+				<box>
+					<pen lineWidth="1.0" lineColor="#0000CC"/>
+					<topPen lineWidth="1.0" lineColor="#0000CC"/>
+					<leftPen lineWidth="1.0" lineColor="#0000CC"/>
+					<bottomPen lineWidth="1.0" lineColor="#0000CC"/>
+					<rightPen lineWidth="1.0" lineColor="#0000CC"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font fontName="Times New Roman" isBold="true"/>
+				</textElement>
+				<text><![CDATA[City Name]]></text>
+			</staticText>
+			<staticText>
+				<reportElement mode="Opaque" x="471" y="0" width="57" height="20" forecolor="#3333FF" backcolor="#CCFFCC"/>
+				<box>
+					<pen lineWidth="1.0" lineColor="#0000CC"/>
+					<topPen lineWidth="1.0" lineColor="#0000CC"/>
+					<leftPen lineWidth="1.0" lineColor="#0000CC"/>
+					<bottomPen lineWidth="1.0" lineColor="#0000CC"/>
+					<rightPen lineWidth="1.0" lineColor="#0000CC"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font fontName="Times New Roman" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Address1]]></text>
+			</staticText>
+			<staticText>
+				<reportElement mode="Opaque" x="528" y="0" width="59" height="20" forecolor="#3333FF" backcolor="#CCFFCC"/>
+				<box>
+					<pen lineWidth="1.0" lineColor="#0000CC"/>
+					<topPen lineWidth="1.0" lineColor="#0000CC"/>
+					<leftPen lineWidth="1.0" lineColor="#0000CC"/>
+					<bottomPen lineWidth="1.0" lineColor="#0000CC"/>
+					<rightPen lineWidth="1.0" lineColor="#0000CC"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font fontName="Times New Roman" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Address 2]]></text>
+			</staticText>
+			<staticText>
+				<reportElement mode="Opaque" x="587" y="0" width="73" height="20" forecolor="#3333FF" backcolor="#CCFFCC"/>
+				<box>
+					<pen lineWidth="1.0" lineColor="#0000CC"/>
+					<topPen lineWidth="1.0" lineColor="#0000CC"/>
+					<leftPen lineWidth="1.0" lineColor="#0000CC"/>
+					<bottomPen lineWidth="1.0" lineColor="#0000CC"/>
+					<rightPen lineWidth="1.0" lineColor="#0000CC"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font fontName="Times New Roman" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Date Time]]></text>
+			</staticText>
+			<staticText>
+				<reportElement mode="Opaque" x="660" y="0" width="50" height="20" forecolor="#3333FF" backcolor="#CCFFCC"/>
+				<box>
+					<pen lineWidth="1.0" lineColor="#0000CC"/>
+					<topPen lineWidth="1.0" lineColor="#0000CC"/>
+					<leftPen lineWidth="1.0" lineColor="#0000CC"/>
+					<bottomPen lineWidth="1.0" lineColor="#0000CC"/>
+					<rightPen lineWidth="1.0" lineColor="#0000CC"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font fontName="Times New Roman" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Remark]]></text>
+			</staticText>
+		</band>
+	</columnHeader>
+	<detail>
+		<band height="23" splitType="Stretch">
+			<textField>
+				<reportElement mode="Opaque" x="0" y="0" width="32" height="20" forecolor="#CC66FF" backcolor="#CCCCFF"/>
+				<box topPadding="3" leftPadding="5">
+					<pen lineWidth="1.0" lineColor="#0000CC"/>
+					<topPen lineWidth="1.0" lineColor="#0000CC"/>
+					<leftPen lineWidth="1.0" lineColor="#0000CC"/>
+					<bottomPen lineWidth="1.0" lineColor="#0000CC"/>
+					<rightPen lineWidth="1.0" lineColor="#0000CC"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font fontName="Times New Roman"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$V{S.No.}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement mode="Opaque" x="32" y="0" width="84" height="20" forecolor="#CC66FF" backcolor="#CCCCFF"/>
+				<box topPadding="3" leftPadding="5">
+					<pen lineWidth="1.0" lineColor="#0000CC"/>
+					<topPen lineWidth="1.0" lineColor="#0000CC"/>
+					<leftPen lineWidth="1.0" lineColor="#0000CC"/>
+					<bottomPen lineWidth="1.0" lineColor="#0000CC"/>
+					<rightPen lineWidth="1.0" lineColor="#0000CC"/>
+				</box>
+				<textElement>
+					<font fontName="Times New Roman"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{waterTreatmentPlantName}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement mode="Opaque" x="116" y="0" width="75" height="20" forecolor="#CC66FF" backcolor="#CCCCFF"/>
+				<box topPadding="3" leftPadding="5" rightPadding="5">
+					<pen lineWidth="1.0" lineColor="#0000CC"/>
+					<topPen lineWidth="1.0" lineColor="#0000CC"/>
+					<leftPen lineWidth="1.0" lineColor="#0000CC"/>
+					<bottomPen lineWidth="1.0" lineColor="#0000CC"/>
+					<rightPen lineWidth="1.0" lineColor="#0000CC"/>
+				</box>
+				<textElement>
+					<font fontName="Times New Roman"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{overHeadTankName}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement mode="Opaque" x="405" y="0" width="66" height="20" forecolor="#CC66FF" backcolor="#CCCCFF"/>
+				<box topPadding="3" leftPadding="5">
+					<pen lineWidth="1.0" lineColor="#0000CC"/>
+					<topPen lineWidth="1.0" lineColor="#0000CC"/>
+					<leftPen lineWidth="1.0" lineColor="#0000CC"/>
+					<bottomPen lineWidth="1.0" lineColor="#0000CC"/>
+					<rightPen lineWidth="1.0" lineColor="#0000CC"/>
+				</box>
+				<textElement>
+					<font fontName="Times New Roman"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{cityName}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement mode="Opaque" x="471" y="0" width="57" height="20" forecolor="#CC66FF" backcolor="#CCCCFF"/>
+				<box topPadding="3" leftPadding="5">
+					<pen lineWidth="1.0" lineColor="#0000CC"/>
+					<topPen lineWidth="1.0" lineColor="#0000CC"/>
+					<leftPen lineWidth="1.0" lineColor="#0000CC"/>
+					<bottomPen lineWidth="1.0" lineColor="#0000CC"/>
+					<rightPen lineWidth="1.0" lineColor="#0000CC"/>
+				</box>
+				<textElement>
+					<font fontName="Times New Roman"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{address1}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement mode="Opaque" x="528" y="0" width="59" height="20" forecolor="#CC66FF" backcolor="#CCCCFF"/>
+				<box topPadding="3" leftPadding="5">
+					<pen lineWidth="1.0" lineColor="#0000CC"/>
+					<topPen lineWidth="1.0" lineColor="#0000CC"/>
+					<leftPen lineWidth="1.0" lineColor="#0000CC"/>
+					<bottomPen lineWidth="1.0" lineColor="#0000CC"/>
+					<rightPen lineWidth="1.0" lineColor="#0000CC"/>
+				</box>
+				<textElement>
+					<font fontName="Times New Roman"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{address2}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement mode="Opaque" x="587" y="0" width="73" height="20" forecolor="#CC66FF" backcolor="#CCCCFF"/>
+				<box topPadding="3" leftPadding="5">
+					<pen lineWidth="1.0" lineColor="#0000CC"/>
+					<topPen lineWidth="1.0" lineColor="#0000CC"/>
+					<leftPen lineWidth="1.0" lineColor="#0000CC"/>
+					<bottomPen lineWidth="1.0" lineColor="#0000CC"/>
+					<rightPen lineWidth="1.0" lineColor="#0000CC"/>
+				</box>
+				<textElement>
+					<font fontName="Times New Roman"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{dateTime}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement mode="Opaque" x="660" y="0" width="50" height="20" forecolor="#CC66FF" backcolor="#CCCCFF"/>
+				<box topPadding="3" leftPadding="5">
+					<pen lineWidth="1.0" lineColor="#0000CC"/>
+					<topPen lineWidth="1.0" lineColor="#0000CC"/>
+					<leftPen lineWidth="1.0" lineColor="#0000CC"/>
+					<bottomPen lineWidth="1.0" lineColor="#0000CC"/>
+					<rightPen lineWidth="1.0" lineColor="#0000CC"/>
+				</box>
+				<textElement>
+					<font fontName="Times New Roman"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{remark}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement mode="Opaque" x="191" y="0" width="77" height="20" forecolor="#CC66FF" backcolor="#CCCCFF"/>
+				<box rightPadding="5">
+					<pen lineWidth="1.0" lineColor="#0000CC"/>
+					<topPen lineWidth="1.0" lineColor="#0000CC"/>
+					<leftPen lineWidth="1.0" lineColor="#0000CC"/>
+					<bottomPen lineWidth="1.0" lineColor="#0000CC"/>
+					<rightPen lineWidth="1.0" lineColor="#0000CC"/>
+				</box>
+				<textElement textAlignment="Right" verticalAlignment="Middle"/>
+				<textFieldExpression><![CDATA[$F{capacityHeight}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement mode="Opaque" x="268" y="0" width="72" height="20" forecolor="#CC66FF" backcolor="#CCCCFF"/>
+				<box rightPadding="5">
+					<pen lineWidth="1.0" lineColor="#0000CC"/>
+					<topPen lineWidth="1.0" lineColor="#0000CC"/>
+					<leftPen lineWidth="1.0" lineColor="#0000CC"/>
+					<bottomPen lineWidth="1.0" lineColor="#0000CC"/>
+					<rightPen lineWidth="1.0" lineColor="#0000CC"/>
+				</box>
+				<textElement textAlignment="Right" verticalAlignment="Middle"/>
+				<textFieldExpression><![CDATA[$F{capacityLTR}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement mode="Opaque" x="340" y="0" width="65" height="20" forecolor="#CC66FF" backcolor="#CCCCFF"/>
+				<box rightPadding="5">
+					<pen lineWidth="1.0" lineColor="#0000CC"/>
+					<topPen lineWidth="1.0" lineColor="#0000CC"/>
+					<leftPen lineWidth="1.0" lineColor="#0000CC"/>
+					<bottomPen lineWidth="1.0" lineColor="#0000CC"/>
+					<rightPen lineWidth="1.0" lineColor="#0000CC"/>
+				</box>
+				<textElement textAlignment="Right" verticalAlignment="Middle"/>
+				<textFieldExpression><![CDATA[$F{height}]]></textFieldExpression>
+			</textField>
+		</band>
+	</detail>
+	<columnFooter>
+		<band splitType="Stretch"/>
+	</columnFooter>
+	<pageFooter>
+		<band splitType="Stretch"/>
+	</pageFooter>
+	<summary>
+		<band splitType="Stretch"/>
+	</summary>
+</jasperReport>

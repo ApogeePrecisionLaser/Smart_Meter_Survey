@@ -1,0 +1,447 @@
+/*
+ * To change this template, choose Tools | Templates
+ * and open the template in the editor.
+ */
+package com.Webservice.Model;
+
+import com.mysql.jdbc.PreparedStatement;
+import java.math.BigInteger;
+import java.sql.Connection;
+import java.sql.ResultSet;
+import javax.servlet.ServletContext;
+import javax.servlet.http.HttpSession;
+
+/**
+ *
+ * @author Com7_2
+ */
+public class OHLevelEntryModel {
+
+    private static Connection connection;
+    private HttpSession session;
+    private ServletContext context;
+
+    public String junctionRefreshFunction(byte[] dataToProcess, int firstStartDataPosition, boolean testRequestFromJunction) {
+        String responseVal = null;
+        String[] receivedPhase1status = null;
+        String[] receivedPhase2status = null;
+        String[] receivedPhase3status = null;
+        String[] receivedStatus = null;
+
+        double divisor = 100;
+
+//        int firstStartDelimiter = dataToProcess[firstStartDataPosition - 4];
+//        int secStartDelimiter = dataToProcess[firstStartDataPosition - 4];
+//        int dataSize1 = dataToProcess[firstStartDataPosition - 3];
+//        int dataSize2 = dataToProcess[firstStartDataPosition - 2];
+//        int project_no = dataToProcess[firstStartDataPosition - 1];
+        byte junctionID = dataToProcess[firstStartDataPosition];
+//        int program_version_no = dataToProcess[firstStartDataPosition + 1];
+//        int fileNo = dataToProcess[firstStartDataPosition + 2];
+//        int functionNo = dataToProcess[firstStartDataPosition + 3];
+
+        byte twoByteData[] = new byte[2];
+
+        twoByteData[0] = dataToProcess[firstStartDataPosition + 5];
+        twoByteData[1] = dataToProcess[firstStartDataPosition + 6];
+//        byte_data(twoByteData[0], twoByteData[1], junctionID);
+//        if (twoByteData[1] < 0) {
+//            int temp = twoByteData[1];
+//            int temp1 = 256 + temp;
+//            // byte b = (byte)temp1;
+//            byte c = (byte) (temp >> 8);
+//            System.out.println(c);
+//            System.out.println(twoByteData[1] & 0xFF);
+        //       }
+        long voltage1 = (new BigInteger(twoByteData).longValue());
+
+//        twoByteData[0] = dataToProcess[firstStartDataPosition + 6];
+//        twoByteData[1] = (byte) Math.abs(dataToProcess[firstStartDataPosition + 7]);
+//        long voltage2 = new BigInteger(twoByteData).longValue();
+
+//        twoByteData[0] = dataToProcess[firstStartDataPosition + 8];
+//        twoByteData[1] = dataToProcess[firstStartDataPosition + 9];
+//        long voltage3 = new BigInteger(twoByteData).longValue() / 100;
+//
+//        twoByteData[0] = dataToProcess[firstStartDataPosition + 10];
+//        twoByteData[1] = dataToProcess[firstStartDataPosition + 11];
+//        long current1 = new BigInteger(twoByteData).longValue() / 100;
+//
+//        twoByteData[0] = dataToProcess[firstStartDataPosition + 12];
+//        twoByteData[1] = dataToProcess[firstStartDataPosition + 13];
+//        long current2 = new BigInteger(twoByteData).longValue();
+//
+//        twoByteData[0] = dataToProcess[firstStartDataPosition + 14];
+//        twoByteData[1] = dataToProcess[firstStartDataPosition + 15];
+//        long current3 = new BigInteger(twoByteData).longValue() / 100;
+//
+//        twoByteData[0] = dataToProcess[firstStartDataPosition + 16];
+//        twoByteData[1] = dataToProcess[firstStartDataPosition + 17];
+//        long activePower1 = new BigInteger(twoByteData).longValue() / 100;
+//
+//        twoByteData[0] = dataToProcess[firstStartDataPosition + 18];
+//        twoByteData[1] = dataToProcess[firstStartDataPosition + 19];
+//        long activePower2 = new BigInteger(twoByteData).longValue();
+//
+//        twoByteData[0] = dataToProcess[firstStartDataPosition + 20];
+//        twoByteData[1] = dataToProcess[firstStartDataPosition + 21];
+//        long activePower3 = new BigInteger(twoByteData).longValue() / 100;
+//
+//        twoByteData[0] = dataToProcess[firstStartDataPosition + 22];
+//        twoByteData[1] = dataToProcess[firstStartDataPosition + 23];
+//        long connectedLoad = new BigInteger(twoByteData).longValue() / 100; // totalActivePower
+//
+//        twoByteData[0] = dataToProcess[firstStartDataPosition + 24];
+//        twoByteData[1] = dataToProcess[firstStartDataPosition + 25];
+//        long powerFactor = new BigInteger(twoByteData).longValue() / 100;
+//
+//        byte fourByteData[] = new byte[4];
+//        fourByteData[0] = dataToProcess[firstStartDataPosition + 26];
+//        fourByteData[1] = dataToProcess[firstStartDataPosition + 27];
+//        fourByteData[2] = dataToProcess[firstStartDataPosition + 28];
+//        fourByteData[3] = dataToProcess[firstStartDataPosition + 29];
+//        long consumedUnit = (long) (new BigInteger(fourByteData).longValue() / divisor);
+//
+//        int activity = dataToProcess[firstStartDataPosition + 30];
+//        int activity1 = 1;
+//        int activity2 = 0;
+//        int activity3 = 0;
+//        int receivedActivity = activity;
+//
+//        int unsignedPhase1 = dataToProcess[firstStartDataPosition + 31] & 0xFF;
+//        int unsignedPhase2 = dataToProcess[firstStartDataPosition + 32] & 0xFF;
+//        int unsignedPhase3 = dataToProcess[firstStartDataPosition + 33] & 0xFF;
+//
+//        int unsignedStatusByte = dataToProcess[firstStartDataPosition + 34] & 0xFF;
+//
+//        String phase1Status = Integer.toBinaryString(unsignedPhase1);
+//        String phase2Status = Integer.toBinaryString(unsignedPhase2);
+//        String phase3Status = Integer.toBinaryString(unsignedPhase3);
+//
+//        String statusByte = Integer.toBinaryString(unsignedStatusByte);
+//
+//        int contactorOnStatus = dataToProcess[firstStartDataPosition + 35];
+//
+//        int juncOnTimeHr = dataToProcess[firstStartDataPosition + 36];
+//        int juncOnTimeMin = dataToProcess[firstStartDataPosition + 37];
+//        int juncOffTimeHr = dataToProcess[firstStartDataPosition + 38];
+//        int juncOffTimeMin = dataToProcess[firstStartDataPosition + 39];
+//
+//        int juncHr = dataToProcess[firstStartDataPosition + 40];
+//        int juncMin = dataToProcess[firstStartDataPosition + 41];
+//        int juncDat = dataToProcess[firstStartDataPosition + 42];
+//        int juncMonth = dataToProcess[firstStartDataPosition + 43];
+//        int juncYear = dataToProcess[firstStartDataPosition + 44];
+//
+//        int crc = dataToProcess[firstStartDataPosition + 45];
+//        int firstLastDelimiter = dataToProcess[firstStartDataPosition + 46];
+//        int secLastDelimiter = dataToProcess[firstStartDataPosition + 46];
+//
+//        int appHr = 0, appMin = 0, appDat = 0, appMonth = 0, appYear = 0;
+//        Calendar cald = Calendar.getInstance();
+//        SimpleDateFormat sd = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+//        String dateTime = sd.format(cald.getTime());
+//
+//        String appDate = dateTime.split(" ")[0];
+//        String appTime = dateTime.split(" ")[1];
+//
+//        String time[] = appTime.split(":");
+//        String dte[] = appDate.split("-");
+//
+//        appHr = Integer.parseInt(time[0]);
+//        appMin = Integer.parseInt(time[1]);
+//
+//        appDat = Integer.parseInt(dte[2]);
+//        appMonth = Integer.parseInt(dte[1]);
+//        appYear = Integer.parseInt(dte[0].substring(2));
+
+        /*---------------------------- code started to manage one minute difference in junction time and in application time  ------------------------------------------*/
+
+
+        return responseVal;
+    }
+
+    public byte[] sendResponse(String response)
+            throws Exception {
+        byte[] finalBytes = null;
+        if (response != null && !response.isEmpty()) {
+
+            String[] b1 = response.split(" ");
+            // byte[] bytes = new byte[b1.length];
+            finalBytes = new byte[b1.length + 3];
+            int[] k = new int[b1.length];
+            for (int j = 0; j < b1.length; j++) {
+                k[j] = Integer.parseInt(b1[j]);
+                //   bytes[j] = ((byte) k[j]);
+            }
+            finalBytes = getFinalBytes(k);
+
+        }
+        System.out.println("sent response: " + response);
+        return finalBytes;
+    }
+
+    public byte[] getFinalBytes(int[] k) {
+        int length = k.length;
+
+        int dSize = 0;
+        int dSum = 0;
+
+        byte dataSize[] = new byte[2];
+        byte[] finalBytes = new byte[length + 3];
+        try {
+
+            for (int i = 4; i < (length - 2); i++) {
+                dSum += k[i];
+                dSize++;
+            }
+
+            dataSize[0] = (byte) ((dSize >> 8) & 0xFF); //>> 8 discards the lowest 8 bits by moving all bits 8 places to the right.
+            dataSize[1] = (byte) (dSize & 0xFF); //& 0xFF masks the lowest eight bits.
+
+            byte lowByte = (byte) (dSum & 0xFF); //get lowest 8-bit
+            byte crcByte = (byte) (0xFF - lowByte); // subtract lowest 8-bit from 255
+
+            for (int i = 0, j = 0; j < finalBytes.length; j++) {
+                if (j == 4) {
+                    finalBytes[j] = dataSize[0];
+                } else if (j == 5) {
+                    finalBytes[j] = dataSize[1];
+                } else if (j == finalBytes.length - 3) {
+                    finalBytes[j] = crcByte;
+                } else {
+                    finalBytes[j] = ((byte) k[i]);
+                    i++;
+                }
+            }
+
+        } catch (Exception e) {
+            System.out.println("Exception in EnergyMeateWebServiceModel getFinalBytes: " + e);
+        }
+        return finalBytes;
+    }
+
+    public int insertfolder(String level, String overheadtank_id, String level_datetime) {
+        int rowsAffected = 0;
+        String query = "INSERT INTO ohlevel (overheadtank_id,level,level_datetime) "
+                + " VALUES (?,?,?)";
+        try {
+            PreparedStatement ps = (PreparedStatement) connection.prepareStatement(query);
+            ps.setString(1, overheadtank_id);
+            ps.setString(2, level);
+            ps.setString(3, level_datetime);
+            rowsAffected = ps.executeUpdate();
+
+        } catch (Exception e) {
+            System.out.println("insertRecord ERROR inside SmartMeterSurveyServiceModel - " + e);
+        }
+        return rowsAffected;
+    }
+
+    public void byte_data(byte[] data, byte junction_id) {
+        byte[] twoByteData = new byte[2];
+        int ohlevel_id = 0;
+        String type = "";
+        int level = 0, temp_level = 0;
+        String query = "INSERT INTO ohlevel (level_a,level_b,overheadtank_id,remark,step,level1,level2,level3,level4) "
+                + " VALUES (?,?,?,?,?,?,?,?,?)";
+        try {
+            PreparedStatement ps = (PreparedStatement) connection.prepareStatement(query);
+            ps.setByte(1, data[0]);
+            ps.setByte(2, data[1]);
+            ps.setInt(3, junction_id);
+            twoByteData[0] = data[0];
+            twoByteData[1] = data[1];
+            long voltage1 = (new BigInteger(twoByteData).longValue());
+            ps.setString(4, ("" + voltage1).trim());
+            ps.setByte(5, data[2]);
+            ps.setByte(6, data[3]);
+            ps.setByte(7, data[4]);
+            ps.setByte(8, data[5]);
+            ps.setByte(9, data[6]);
+            if (voltage1 > 0 && voltage1 < 1000) {
+                ps.executeUpdate();
+                ResultSet rs = ps.getGeneratedKeys();
+                if (rs.next()) {
+                    ohlevel_id = rs.getInt(1);
+                }
+                if (ohlevel_id > 0) {
+                    //  String query1 = "select remark from ohlevel where ohlevel_id=( select max(ohlevel_id) from ohlevel "
+                    //          + " where ohlevel_id not in (select max(ohlevel_id) from ohlevel where overheadtank_id=" + junction_id + ") and overheadtank_id=" + junction_id + " )";
+                    String query1 = "select * from  (select * from ohlevel where overheadtank_id='" + junction_id + "' order by ohlevel_id desc limit 2 ) a order by ohlevel_id limit 1";
+                    try {
+                        ResultSet rs1 = connection.prepareStatement(query1).executeQuery();
+                        if (rs1.next()) {
+                            level = rs1.getInt("remark");
+                        }
+                    } catch (Exception e) {
+                        System.out.println(e);
+                    }
+                    String query4 = "select type,level from temp_distribution where overheadtank_id='" + junction_id + "'  order by temp_distribution_id desc;";
+                    try {
+                        ResultSet rs4 = connection.prepareStatement(query4).executeQuery();
+                        if (rs4.next()) {
+                            type = rs4.getString("type");
+                            temp_level = rs4.getInt("level");
+                        }
+                    } catch (Exception e) {
+                        System.out.println(e);
+                    }
+                    if (level > voltage1 && type.equals("Off")) {
+                        String query3 = "insert into temp_distribution (overheadtank_id,level,type) values(?,?,?)";
+                        PreparedStatement ps3 = (PreparedStatement) connection.prepareStatement(query3);
+                        ps3.setInt(1, junction_id);
+                        ps3.setInt(2, level);
+                        ps3.setString(3, "On");
+                        ps3.executeUpdate();
+                        if ((voltage1 - temp_level) > 100) {
+                            String query5 = "insert into distribution (ohlevel_id,type) values(?,?)";
+                            PreparedStatement ps5 = (PreparedStatement) connection.prepareStatement(query5);
+                            ps5.setInt(1, ohlevel_id);
+                            ps5.setString(2, "On");
+                            ps5.executeUpdate();
+                        }
+
+                    } else if (voltage1 > level && type.equals("On")) {
+                        String query3 = "insert into temp_distribution (overheadtank_id,level,type) values(?,?,?)";
+                        PreparedStatement ps4 = (PreparedStatement) connection.prepareStatement(query3);
+                        ps4.setInt(1, junction_id);
+                        ps4.setInt(2, level);
+                        ps4.setString(3, "Off");
+                        ps4.executeUpdate();
+                        if ((temp_level - voltage1) > 100) {
+                            String query6 = "insert into distribution (ohlevel_id,type) values(?,?)";
+                            PreparedStatement ps6 = (PreparedStatement) connection.prepareStatement(query6);
+                            ps6.setInt(1, ohlevel_id);
+                            ps6.setString(2, "Off");
+                            ps6.executeUpdate();
+                        }
+                    }
+
+
+//                    else {
+//                        String query2 = "insert into distribution (ohlevel_id,type) values(?,?)";
+//                        PreparedStatement ps2 = (PreparedStatement) connection.prepareStatement(query2);
+//                        ps2.setInt(1, ohlevel_id);
+//                        ps2.setString(2, "Off");
+//                        ps2.executeUpdate();
+//                    }
+
+                }
+            }
+
+        } catch (Exception e) {
+            System.out.println("insertRecord ERROR inside SmartMeterSurveyServiceModel - " + e);
+        }
+    }
+
+    public byte[] getData(byte junction_id) {
+        byte[] response = new byte[7];
+        String query = "select level_a,level_b,step,level1,level2,level3,level4 from ohlevel where overheadtank_id='" + junction_id + "' order by ohlevel_id  desc";
+        try {
+            ResultSet rset = connection.prepareStatement(query).executeQuery();
+
+            if (rset.next()) {
+                byte a = rset.getByte("level_a");
+                response[0] = a;
+                byte b = rset.getByte("level_b");
+                response[1] = b;
+                byte c = rset.getByte("step");
+                response[2] = c;
+                byte d = rset.getByte("level1");
+                response[3] = d;
+                byte e = rset.getByte("level2");
+                response[4] = e;
+                byte f = rset.getByte("level3");
+                response[5] = f;
+                byte g = rset.getByte("level4");
+                response[6] = g;
+
+            }
+
+        } catch (Exception e) {
+            System.out.println(e);
+        }
+        return response;
+    }
+
+    public byte[] junctionRefreshFunction1(byte[] dataToProcess, int firstStartDataPosition, boolean testRequestFromJunction) {
+        byte junctionID = dataToProcess[firstStartDataPosition];
+        int type_of_data = dataToProcess[firstStartDataPosition + 4];
+
+        if (type_of_data == 1) {
+            byte twoByteData[] = new byte[7];
+            twoByteData[0] = dataToProcess[firstStartDataPosition + 5];
+            twoByteData[1] = dataToProcess[firstStartDataPosition + 6];
+            twoByteData[2] = dataToProcess[firstStartDataPosition + 7];
+            twoByteData[3] = dataToProcess[firstStartDataPosition + 8];
+            twoByteData[4] = dataToProcess[firstStartDataPosition + 9];
+            twoByteData[5] = dataToProcess[firstStartDataPosition + 10];
+            twoByteData[6] = dataToProcess[firstStartDataPosition + 11];
+            if (twoByteData[3] != 1) {
+                byte_data(twoByteData, junctionID);
+            }
+            String command_value = (String) context.getAttribute("" + junctionID);
+            if (command_value == null) {
+                command_value = "" + 0;
+            }
+            Byte command = (byte) Integer.parseInt(command_value);
+            dataToProcess[13] = command;
+            return dataToProcess;
+        } else if (type_of_data == 9) {
+            byte twoByteDisplayData[] = new byte[7];
+            twoByteDisplayData = getData(junctionID);
+            byte data1 = twoByteDisplayData[0];
+            byte data2 = twoByteDisplayData[1];
+            byte data3 = twoByteDisplayData[2];
+            byte data4 = twoByteDisplayData[3];
+            byte data5 = twoByteDisplayData[4];
+            byte data6 = twoByteDisplayData[5];
+            byte data7 = twoByteDisplayData[6];
+
+            dataToProcess[firstStartDataPosition + 5] = data1;
+            dataToProcess[firstStartDataPosition + 6] = data2;
+            dataToProcess[firstStartDataPosition + 7] = data3;
+            dataToProcess[firstStartDataPosition + 8] = data4;
+            dataToProcess[firstStartDataPosition + 9] = data5;
+            dataToProcess[firstStartDataPosition + 10] = data6;
+            dataToProcess[firstStartDataPosition + 11] = data7;
+            return dataToProcess;
+        } else {
+            return dataToProcess;
+        }
+    }
+
+//         public static void setConnection1() {
+//        try {
+//            System.out.println("hii");
+//            Class.forName("com.mysql.jdbc.Driver");
+//            connection = DriverManager.getConnection("jdbc:mysql://localhost:3306/smart_meter_survey?useUnicode=true&characterEncoding=UTF-8&character_set_results=utf8", "jpss_2", "jpss_1277");
+//        } catch (Exception e) {
+//            System.out.println("ReadMailModel setConnection() Error: " + e);
+//        }
+//    }
+    public Connection getConnection() {
+        return connection;
+    }
+
+    public void setConnection(Connection connection) {
+        this.connection = connection;
+    }
+
+    public void closeConnection() {
+        try {
+            connection.close();
+        } catch (Exception e) {
+            System.out.println(" closeConnection() Error: " + e);
+        }
+    }
+
+    public void setSession(HttpSession session) {
+        this.session = session;
+    }
+
+    public void setContext(ServletContext ctx) {
+        this.context = ctx;
+    }
+}

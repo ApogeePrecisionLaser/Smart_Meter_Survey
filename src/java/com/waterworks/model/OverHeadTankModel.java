@@ -1,0 +1,533 @@
+package com.waterworks.model;
+
+import com.waterworks.tableClasses.OverHeadTank;
+import java.sql.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Locale;
+
+import net.sf.jasperreports.engine.JasperCompileManager;
+import net.sf.jasperreports.engine.JasperReport;
+import net.sf.jasperreports.engine.JasperRunManager;
+import net.sf.jasperreports.engine.data.JRBeanCollectionDataSource;
+import org.json.JSONException;
+import org.json.simple.JSONArray;
+import org.json.simple.JSONObject;
+
+public class OverHeadTankModel {
+
+    private Connection connection;
+    private String driver, url, user, password;
+    private String message, messageBGColor;
+    private String driverClass;
+    private String connectionString;
+    private String db_username;
+    private String db_password;
+    private String msgBgColor;
+    private final String COLOR_OK = "yellow";
+    private final String COLOR_ERROR = "red";
+
+    public void setConnection() {
+        try {
+            Class.forName(driver);
+            // connection = DriverManager.getConnection(connectionString+"?useUnicode=true&characterEncoding=UTF-8&character_set_results=utf8", db_username, db_password);
+            connection = (Connection) DriverManager.getConnection(url, user, password);
+        } catch (Exception e) {
+            System.out.println("WattageTypeModel setConnection() Error: " + e);
+        }
+    }
+
+    public byte[] generateMapReport(String jrxmlFilePath, List<OverHeadTank> listAll) {
+        byte[] reportInbytes = null;
+        try {
+
+            JRBeanCollectionDataSource beanColDataSource = new JRBeanCollectionDataSource(listAll);
+            JasperReport compiledReport = JasperCompileManager.compileReport(jrxmlFilePath);
+            reportInbytes = JasperRunManager.runReportToPdf(compiledReport, null, beanColDataSource);
+        } catch (Exception e) {
+            System.out.println("Error: in OverHeadTankModel generateMapReport() JRException: " + e);
+        }
+        return reportInbytes;
+    }
+
+    public List<OverHeadTank> showAllData(String waterTreatmentPlantName, String overHeadTankName) {
+        ArrayList<OverHeadTank> list = new ArrayList<OverHeadTank>();
+        String query = "SELECT wtp.name,oht.name,oht.capacity_height,oht.capacity_ltr,oht.height,ci.city_name,oht.address1,"
+                + " oht.address2,oht.date_time,oht.remark, oht.latitude, oht.longitude "
+                + "FROM overheadtank AS oht "
+                + "LEFT JOIN watertreatmentplant AS wtp ON oht.watertreatmentplant_id = wtp.watertreatmentplant_id "
+                + "LEFT JOIN city AS ci ON oht.city_id = ci.city_id "
+                + "WHERE IF('" + waterTreatmentPlantName + "'='',wtp.name LIKE '%%',wtp.name=?) "
+                + "AND IF('" + overHeadTankName + "'='',oht.name LIKE '%%',oht.name=?) "
+                + "ORDER BY oht.name ";
+        try {
+            PreparedStatement pstmt = connection.prepareStatement(query);
+            pstmt.setString(1, waterTreatmentPlantName);
+            pstmt.setString(2, overHeadTankName);
+            ResultSet rset = pstmt.executeQuery();
+            while (rset.next()) {
+                OverHeadTank overHeadTankBean = new OverHeadTank();
+                overHeadTankBean.setWaterTreatmentPlantName(rset.getString(1));
+                overHeadTankBean.setOverHeadTankName(rset.getString(2));
+                overHeadTankBean.setCapacityHeight(rset.getInt("capacity_height"));
+                overHeadTankBean.setCapacityLTR(rset.getInt("capacity_ltr"));
+                overHeadTankBean.setHeight(rset.getInt("height"));
+                overHeadTankBean.setCityName(rset.getString("city_name"));
+                overHeadTankBean.setAddress1(rset.getString("address1"));
+                overHeadTankBean.setAddress2(rset.getString("address2"));
+                overHeadTankBean.setRemark(rset.getString("remark"));
+                overHeadTankBean.setDateTime(rset.getString("date_time"));
+                overHeadTankBean.setLatitude(rset.getString("latitude"));
+                overHeadTankBean.setLongitude(rset.getString("longitude"));
+                list.add(overHeadTankBean);
+            }
+        } catch (Exception e) {
+            System.out.println("Error in showAllRecrod -- OverHeadTankModel : " + e);
+            message = "Something going wrong";
+            messageBGColor = "red";
+        }
+        return list;
+    }
+
+    public List<String> getWaterTreatmentPlant(String q) {
+        List<String> list = new ArrayList<String>();
+        String query = "SELECT name FROM watertreatmentplant order by name";
+        try {
+            ResultSet rset = connection.prepareStatement(query).executeQuery();
+            int count = 0;
+            q = q.trim();
+            while (rset.next()) {    // move cursor from BOR to valid record.
+                String waterTreatmentPlant_type = rset.getString("name");
+                if (waterTreatmentPlant_type.toUpperCase().startsWith(q.toUpperCase())) {
+                    list.add(waterTreatmentPlant_type);
+                    count++;
+                }
+            }
+            if (count == 0) {
+                list.add("No such Water Treatment Plant exists.......");
+            }
+        } catch (Exception e) {
+            System.out.println("Error in getOverHeadTank ERROR inside OverHeadTankModel - " + e);
+            message = "Something going wrong";
+            messageBGColor = "red";
+        }
+        return list;
+    }
+
+    public int getWaterTreatmentPlantId(String waterTreatmentPlantName) {
+        List<String> list = new ArrayList<String>();
+        String query = "SELECT watertreatmentplant_id FROM watertreatmentplant WHERE name='" + waterTreatmentPlantName + "'";
+        try {
+            ResultSet rset = connection.prepareStatement(query).executeQuery();
+            if (rset.next()) {
+                return rset.getInt("watertreatmentplant_id");
+            } else {
+                return 0;
+            }
+        } catch (Exception e) {
+            System.out.println("Error in getOverHeadTankId - OverHeadTankModel : " + waterTreatmentPlantName);
+            message = "Something going wrong";
+            messageBGColor = "red";
+            return 0;
+        }
+    }
+
+    public List<String> getOverHeadTank(String q, String waterTreatmentPlantName) {
+        List<String> list = new ArrayList<String>();
+        String query = "SELECT oht.name FROM overheadtank as oht "
+                + "LEFT JOIN watertreatmentplant AS wtp ON oht.watertreatmentplant_id = wtp.watertreatmentplant_id "
+                + "WHERE IF('" + waterTreatmentPlantName + "'='',wtp.name LIKE '%%',wtp.name='" + waterTreatmentPlantName + "') "
+                + "ORDER BY oht.name ";
+        try {
+            ResultSet rset = connection.prepareStatement(query).executeQuery();
+            int count = 0;
+            q = q.trim();
+            while (rset.next()) {    // move cursor from BOR to valid record.
+                String overHeadTank_type = rset.getString("name");
+                if (overHeadTank_type.toUpperCase().startsWith(q.toUpperCase())) {
+                    list.add(overHeadTank_type);
+                    count++;
+                }
+            }
+            if (count == 0) {
+                list.add("No such Overhead Tank exists.......");
+            }
+        } catch (Exception e) {
+            System.out.println("Error in getOverHeadTank - OverHeadTankModel - " + e);
+            message = "Something going wrong";
+            messageBGColor = "red";
+        }
+        return list;
+    }
+
+    public List<String> getCityName(String q) {
+        List<String> list = new ArrayList<String>();
+        String query = "SELECT city_name FROM city order by city_name";
+        try {
+            ResultSet rset = connection.prepareStatement(query).executeQuery();
+            int count = 0;
+            q = q.trim();
+            while (rset.next()) {    // move cursor from BOR to valid record.
+                String city_type = rset.getString("city_name");
+                if (city_type.toUpperCase().startsWith(q.toUpperCase())) {
+                    list.add(city_type);
+                    count++;
+                }
+            }
+            if (count == 0) {
+                list.add("No such City exists.......");
+            }
+        } catch (Exception e) {
+            System.out.println("Error in getCityName - OverHeadTankModel : " + e);
+            message = "Something going wrong";
+            messageBGColor = "red";
+        }
+        return list;
+    }
+
+    public int getCityId(String cityName) {
+
+        String query = "SELECT city_id FROM city WHERE city_name=?";
+        try {
+            PreparedStatement presta = connection.prepareStatement(query);
+            presta.setString(1, cityName);
+            ResultSet rset = presta.executeQuery();
+            rset.next();
+            return rset.getInt("city_id");
+        } catch (Exception e) {
+            System.out.println("Error in getCityId - OverHeadTankModel : " + e);
+            message = "Something going wrong";
+            messageBGColor = "red";
+        }
+        return 0;
+    }
+
+    public void updateRecord(OverHeadTank overHeadTankBean) {
+        String query = "UPDATE overheadtank SET watertreatmentplant_id=?,name=?,capacity_height=?,capacity_ltr=?,height=?,city_id=?,address1=?,address2=?,remark=?, latitude=?, longitude=?,type=? WHERE overheadtank_id=?";
+        try {
+            PreparedStatement presta = connection.prepareStatement(query);
+            presta.setInt(1, overHeadTankBean.getWaterTreatmentPlantId());
+            presta.setString(2, overHeadTankBean.getOverHeadTankName());
+            presta.setFloat(3, overHeadTankBean.getCapacityHeight());
+            presta.setFloat(4, overHeadTankBean.getCapacityLTR());
+            presta.setFloat(5, overHeadTankBean.getHeight());
+            presta.setInt(6, overHeadTankBean.getCityId());
+            presta.setString(7, overHeadTankBean.getAddress1());
+            presta.setString(8, overHeadTankBean.getAddress2());
+            presta.setString(9, overHeadTankBean.getRemark());
+            presta.setString(10, overHeadTankBean.getLatitude());
+            presta.setString(11, overHeadTankBean.getLongitude());
+            presta.setString(12, overHeadTankBean.getSelect());
+            presta.setInt(13, overHeadTankBean.getOverHeadTankId());
+            int i = presta.executeUpdate();
+            if (i > 0) {
+                message = "Record updated successfully";
+                messageBGColor = "yellow";
+            } else {
+                message = "Record not updated successfully";
+                messageBGColor = "red";
+            }
+        } catch (Exception e) {
+            System.out.println("Error in updateRecord - OverHeadTankModel : " + e);
+            message = "Something going wrong";
+            messageBGColor = "red";
+        }
+    }
+
+    public void deleteRecord(int overHeadTankId) {
+        PreparedStatement presta = null;
+        try {
+            presta = connection.prepareStatement("DELETE FROM overheadtank WHERE overheadtank_id=?");
+            presta.setInt(1, overHeadTankId);
+            int i = presta.executeUpdate();
+            if (i > 0) {
+                message = "Record deleted successfully......";
+                messageBGColor = "yellow";
+            } else {
+                message = "Record not deleted successfully......";
+                messageBGColor = "red";
+            }
+        } catch (Exception e) {
+            System.out.println("Error in deleteRecord ---- OverHeadTankModel : " + e);
+            message = "Something going wrong";
+            messageBGColor = "red";
+        }
+    }
+
+    public ArrayList<OverHeadTank> getAllRecords(int lowerLimit, int noOfRowsToDisplay, String waterTreatmentPlantName, String overHeadTankName) {
+        ArrayList<OverHeadTank> list = new ArrayList<OverHeadTank>();
+        String query = "SELECT wtp.name,oht.overheadtank_id,oht.name,oht.capacity_height,oht.capacity_ltr,oht.height,"
+                + " ci.city_name,oht.address1,oht.address2,oht.date_time,oht.remark, oht.latitude, oht.longitude,oht.type "
+                + "FROM overheadtank AS oht "
+                + "LEFT JOIN watertreatmentplant AS wtp ON oht.watertreatmentplant_id = wtp.watertreatmentplant_id "
+                + "LEFT JOIN city AS ci ON oht.city_id = ci.city_id "
+                + "WHERE IF('" + waterTreatmentPlantName + "'='',wtp.name LIKE '%%',wtp.name=?) "
+                + "AND IF('" + overHeadTankName + "'='',oht.name LIKE '%%',oht.name=?) "
+                + "ORDER BY oht.name "
+                + "LIMIT " + lowerLimit + "," + noOfRowsToDisplay;
+        try {
+            PreparedStatement pstmt = connection.prepareStatement(query);
+            pstmt.setString(1, waterTreatmentPlantName);
+            pstmt.setString(2, overHeadTankName);
+            ResultSet rset = pstmt.executeQuery();
+            while (rset.next()) {
+                OverHeadTank overHeadTankBean = new OverHeadTank();
+                overHeadTankBean.setWaterTreatmentPlantName(rset.getString(1));
+                overHeadTankBean.setOverHeadTankId(rset.getInt("overheadtank_id"));
+                overHeadTankBean.setOverHeadTankName(rset.getString(3));
+                overHeadTankBean.setCapacityHeight(rset.getFloat("capacity_height"));
+                overHeadTankBean.setCapacityLTR(rset.getInt("capacity_ltr"));
+                System.out.println("Height is --- " + rset.getDouble("height"));
+                overHeadTankBean.setHeight(rset.getFloat("height"));
+                overHeadTankBean.setCityName(rset.getString("city_name"));
+                overHeadTankBean.setAddress1(rset.getString("address1"));
+                overHeadTankBean.setAddress2(rset.getString("address2"));
+                overHeadTankBean.setRemark(rset.getString("remark"));
+                overHeadTankBean.setSelect(rset.getString("type"));
+                overHeadTankBean.setDateTime(rset.getString("date_time"));
+                overHeadTankBean.setLatitude(rset.getString("latitude"));
+                overHeadTankBean.setLongitude(rset.getString("longitude"));
+
+                list.add(overHeadTankBean);
+            }
+        } catch (Exception e) {
+            System.out.println("Error in getAllRecrod -- OverHeadTankModel : " + e);
+            message = "Something going wrong";
+            messageBGColor = "red";
+        }
+        return list;
+    }
+
+    public int getTotalRowsInTable(String waterTreatmentPlantName, String overHeadTankName) {
+        String query = " SELECT count(*) "
+                + " FROM overheadtank AS oht "
+                + "LEFT JOIN watertreatmentplant AS wtp ON oht.watertreatmentplant_id = wtp.watertreatmentplant_id "
+                + "WHERE IF('" + waterTreatmentPlantName + "'='',wtp.name LIKE '%%',wtp.name=?) "
+                + "AND IF('" + overHeadTankName + "'='',oht.name LIKE '%%',oht.name=?) ";
+        int noOfRows = 0;
+        try {
+            PreparedStatement stmt = connection.prepareStatement(query);
+            stmt.setString(1, waterTreatmentPlantName);
+            stmt.setString(2, overHeadTankName);
+            ResultSet rs = stmt.executeQuery();
+            rs.next();
+            noOfRows = rs.getInt(1);
+        } catch (Exception e) {
+            System.out.println("Error inside getNoOfRows - OverHeadTankModel : " + e);
+            message = "Something going wrong";
+            messageBGColor = "red";
+        }
+        System.out.println("No of Rows in Table for search is****....." + noOfRows);
+        return noOfRows;
+    }
+
+    public void insertRecord(OverHeadTank overHeadTankBean) {
+        String query = "INSERT INTO overheadtank(watertreatmentplant_id,name,capacity_height,capacity_ltr,height,city_id,address1,address2,remark, latitude, longitude,type) VALUES(?,?,?,?,?,?,?,?,?,?,?,?)";
+        try {
+            PreparedStatement presta = connection.prepareStatement(query);
+            presta.setInt(1, overHeadTankBean.getWaterTreatmentPlantId());
+            presta.setString(2, overHeadTankBean.getOverHeadTankName());
+            presta.setFloat(3, overHeadTankBean.getCapacityHeight());
+            presta.setFloat(4, overHeadTankBean.getCapacityLTR());
+            presta.setFloat(5, overHeadTankBean.getHeight());
+            presta.setInt(6, overHeadTankBean.getCityId());
+            presta.setString(7, overHeadTankBean.getAddress1());
+            presta.setString(8, overHeadTankBean.getAddress2());
+            presta.setString(9, overHeadTankBean.getRemark());
+            presta.setString(10, overHeadTankBean.getLatitude());
+            presta.setString(11, overHeadTankBean.getLongitude());
+            presta.setString(12, overHeadTankBean.getSelect());
+            int i = presta.executeUpdate();
+            if (i >= 0) {
+                message = "Record inserted succesfully";
+                messageBGColor = "Yellow";
+            } else {
+                message = "Record not inserted succesfully";
+                messageBGColor = "red";
+            }
+        } catch (Exception e) {
+            System.out.println("Error in insertRecord - OverHeadTankModel : " + e);
+            message = "Something going wrong";
+            messageBGColor = "red";
+        }
+    }
+
+//    public List<OverHeadTank> showDataBean() {
+//        List<OverHeadTank> list = new ArrayList<OverHeadTank>();
+//        String query = " select latitude,longitude from overheadtank";
+//        try {
+//            java.sql.PreparedStatement pstmt = connection.prepareStatement(query);
+//            ResultSet rset = pstmt.executeQuery();
+//            while (rset.next()) {
+//                OverHeadTank bean = new OverHeadTank();
+//                bean.setLatitude(rset.getString("latitude"));
+//                bean.setLongitude(rset.getString("longitude"));
+//                list.add(bean);
+//            }
+//        } catch (Exception e) {
+//            System.out.println("Error in ShowDataBean() :ShiftLoginModel" + e);
+//        }
+//        return list;
+//    }
+
+    public List<OverHeadTank> showDataBean() {
+        List<OverHeadTank> list = new ArrayList<OverHeadTank>();
+        String query = " select latitude,longitude from overheadtank";
+        try {
+            java.sql.PreparedStatement pstmt = connection.prepareStatement(query);
+            ResultSet rset = pstmt.executeQuery();
+            while (rset.next()) {
+                OverHeadTank bean = new OverHeadTank();
+                bean.setLatitude(rset.getString("latitude"));
+                bean.setLongitude(rset.getString("longitude"));
+                list.add(bean);
+            }
+        } catch (Exception e) {
+            System.out.println("Error in ShowDataBean() :ShiftLoginModel" + e);
+        }
+        return list;
+    }
+
+    public List<OverHeadTank> showDataBean1() {
+        List<OverHeadTank> list = new ArrayList<OverHeadTank>();
+        String query = " select latitude,longitude from watertreatmentplant";
+        try {
+            java.sql.PreparedStatement pstmt = connection.prepareStatement(query);
+            ResultSet rset = pstmt.executeQuery();
+            while (rset.next()) {
+                OverHeadTank bean = new OverHeadTank();
+                bean.setLatitude(rset.getString("latitude"));
+                bean.setLongitude(rset.getString("longitude"));
+                list.add(bean);
+            }
+        } catch (Exception e) {
+            System.out.println("Error in ShowDataBean() :ShiftLoginModel" + e);
+        }
+        return list;
+    }
+    public JSONObject getAllLetLng() throws JSONException {
+        JSONObject json = new JSONObject();
+        JSONArray jsonArray = new JSONArray();
+        String query = " select wtp.latitude as wlatitude,wtp.longitude  as wlongitude,o.latitude as olatitude,o.longitude as olongitude"
+                        +" from overheadtank o,watertreatmentplant wtp "
+                        +" where o.watertreatmentplant_id=wtp.watertreatmentplant_id";
+        try {
+            ResultSet rs = connection.prepareStatement(query).executeQuery();
+            while (rs.next()) {
+                JSONObject json1 = new JSONObject();
+                json1.put("wlatitude", rs.getString("wlatitude"));
+                json1.put("wlongitude", rs.getString("wlongitude"));
+                json1.put("olatitude", rs.getString("olatitude"));
+                json1.put("olongitude", rs.getString("olongitude"));
+
+                jsonArray.add(json1);
+            }
+        } catch (Exception e) {
+            System.out.println("ShowData ERROR inside PipeTypeModel - " + e);
+        }
+        json.put("data", jsonArray);
+        return json;
+    }
+
+
+    public void closeConnection() {
+        try {
+            connection.close();
+        } catch (Exception e) {
+            System.out.println("Error in closeConnection -- OverHeadTankModel : " + e);
+        }
+    }
+
+    public void setConnection(Connection con) {
+        try {
+
+            connection = con;
+        } catch (Exception e) {
+            System.out.println("PaymentStatusModel setConnection() Error: " + e);
+        }
+    }
+
+    public Connection getConnection() {
+        return connection;
+    }
+
+    public void setDriver(String driver) {
+        this.driver = driver;
+    }
+
+    public void setUrl(String url) {
+        this.url = url;
+    }
+
+    public void setUser(String user) {
+        this.user = user;
+    }
+
+    public void setPassword(String password) {
+        this.password = password;
+    }
+
+    public String getDriver() {
+        return driver;
+    }
+
+    public String getUrl() {
+        return url;
+    }
+
+    public String getUser() {
+        return user;
+    }
+
+    public String getPassword() {
+        return password;
+    }
+
+    public String getMessage() {
+        return message;
+    }
+
+    public String getMessageBGColor() {
+        return messageBGColor;
+    }
+
+    public String getConnectionString() {
+        return connectionString;
+    }
+
+    public void setConnectionString(String connectionString) {
+        this.connectionString = connectionString;
+    }
+
+    public String getDb_password() {
+        return db_password;
+    }
+
+    public void setDb_password(String db_password) {
+        this.db_password = db_password;
+    }
+
+    public String getDb_username() {
+        return db_username;
+    }
+
+    public void setDb_username(String db_username) {
+        this.db_username = db_username;
+    }
+
+    public String getDriverClass() {
+        return driverClass;
+    }
+
+    public void setDriverClass(String driverClass) {
+        this.driverClass = driverClass;
+    }
+
+    public String getMsgBgColor() {
+        return msgBgColor;
+    }
+
+    public void setMsgBgColor(String msgBgColor) {
+        this.msgBgColor = msgBgColor;
+    }
+}

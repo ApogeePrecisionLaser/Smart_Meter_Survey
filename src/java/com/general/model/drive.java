@@ -1,0 +1,195 @@
+/*
+ * To change this template, choose Tools | Templates
+ * and open the template in the editor.
+ */
+package com.general.model;
+
+import com.Webservice.Model.SmartMeterSurveyServiceModel;
+import com.google.api.client.auth.oauth2.Credential;
+import com.google.api.client.extensions.java6.auth.oauth2.AuthorizationCodeInstalledApp;
+import com.google.api.client.extensions.jetty.auth.oauth2.LocalServerReceiver;
+import com.google.api.client.googleapis.auth.oauth2.GoogleAuthorizationCodeFlow;
+import com.google.api.client.googleapis.auth.oauth2.GoogleClientSecrets;
+import com.google.api.client.googleapis.javanet.GoogleNetHttpTransport;
+import com.google.api.client.http.FileContent;
+import com.google.api.client.http.HttpTransport;
+import com.google.api.client.json.jackson2.JacksonFactory;
+import com.google.api.client.json.JsonFactory;
+import com.google.api.client.util.store.FileDataStoreFactory;
+
+import com.google.api.services.drive.DriveScopes;
+import com.google.api.services.drive.Drive;
+import com.google.api.services.drive.model.File;
+import java.sql.Connection;
+
+
+
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.sql.SQLException;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
+import javax.servlet.ServletContext;
+
+/**
+ *
+ * @author Navitus1
+ */
+public class drive {
+
+    ServletContext serveletContext;
+    Connection connection = null;
+
+    /** Application name. */
+    private static final String APPLICATION_NAME =
+            "Drive API Java Quickstart";
+    /** Directory to store user credentials for this application. */
+    private static final java.io.File DATA_STORE_DIR = new java.io.File(
+            System.getProperty("user.home"), ".credentials/drive-java-quickstart");
+    /** Global instance of the {@link FileDataStoreFactory}. */
+    private static FileDataStoreFactory DATA_STORE_FACTORY;
+    /** Global instance of the JSON factory. */
+    private static final JsonFactory JSON_FACTORY =
+            JacksonFactory.getDefaultInstance();
+    /** Global instance of the HTTP transport. */
+    private static HttpTransport HTTP_TRANSPORT;
+    /** Global instance of the scopes required by this quickstart.
+     *
+     * If modifying these scopes, delete your previously saved credentials
+     * at ~/.credentials/drive-java-quickstart
+     */
+    private static final List<String> SCOPES =
+            Arrays.asList(DriveScopes.DRIVE_FILE);
+
+    static {
+        try {
+            HTTP_TRANSPORT = GoogleNetHttpTransport.newTrustedTransport();
+            DATA_STORE_FACTORY = new FileDataStoreFactory(DATA_STORE_DIR);
+        } catch (Throwable t) {
+            t.printStackTrace();
+            System.exit(1);
+        }
+    }
+
+    /**
+     * Creates an authorized Credential object.
+     * @return an authorized Credential object.
+     * @throws IOException
+     */
+    public static Credential authorize() throws IOException {
+        // Load client secrets.
+
+    //   java.io.File file = new java.io.File("E:\\Netebeans Project\\Smart_Meter_survey\\src\\java\\com\\general\\model\\client_secret.json");
+        java.io.File file = new java.io.File("C:\\google_json_file\\client_secret.json");
+        java.io.FileInputStream in = new java.io.FileInputStream(file);
+        GoogleClientSecrets clientSecrets =
+                GoogleClientSecrets.load(JSON_FACTORY, new InputStreamReader(in));
+
+        // Build flow and trigger user authorization request.
+        GoogleAuthorizationCodeFlow flow =
+                new GoogleAuthorizationCodeFlow.Builder(
+                HTTP_TRANSPORT, JSON_FACTORY, clientSecrets, SCOPES).setDataStoreFactory(DATA_STORE_FACTORY).setAccessType("offline").build();
+        Credential credential = new AuthorizationCodeInstalledApp(
+                flow, new LocalServerReceiver()).authorize("user");
+        System.out.println(
+                "Credentials saved to " + DATA_STORE_DIR.getAbsolutePath());
+        return credential;
+    }
+
+    /**
+     * Build and return an authorized Drive client service.
+     * @return an authorized Drive client service
+     * @throws IOException
+     */
+    public static Drive getDriveService() throws IOException {
+        Credential credential = authorize();
+        return new Drive.Builder(
+                HTTP_TRANSPORT, JSON_FACTORY, credential).setApplicationName(APPLICATION_NAME).build();
+    }
+
+    public void drive(String filename, String path,int g_id,String meter_id_folder) throws IOException, SQLException {
+//   String folder_id="0B1jxNG7yPTezczNEYzBGUTJweUE";
+        Drive service = getDriveService();
+        SmartMeterSurveyServiceModel sm = new SmartMeterSurveyServiceModel();
+      //  sm.setConnection(DBConnection.getConnectionForUtf(serveletContext));
+        String folder_id = "";
+        String file_id = "";
+        //  FileList result = service.files().list().setPageSize(10).setFields("nextPageToken, files(id, name)").execute();
+        int folderid = sm.getfolderId("Smart_Meter_Survey");
+        int foldermeterid = sm.getfolderId("Meter_Reading_Folder");
+        File fileMetadata = new File();
+        if ((folderid == 0) && (foldermeterid == 0 )) {
+            fileMetadata.setName("Smart_Meter_Survey");
+
+            fileMetadata.setMimeType("application/vnd.google-apps.folder");
+            File folder = service.files().create(fileMetadata).setFields("id").execute();
+
+            folder_id = folder.getId();
+           folderid= sm.insertfolder(folder_id, "4");
+           
+           File folder2 = new File();
+            folder2.setParents(Collections.singletonList(folder_id));
+
+    try {
+         folder2.setName("Meter_Reading");
+         folder2.setMimeType("application/vnd.google-apps.folder");
+         folder2 = service.files().create(folder2).setFields("id").execute();
+         folder_id=folder2.getId();
+          foldermeterid= sm.insertfolder(folder_id, "5");
+    }
+    catch (IOException e){
+      System.out.println(e);
+    }
+
+        }
+        else if((folderid > 0) && (foldermeterid == 0 ))
+        {
+              File folder2 = new File();
+            folder2.setParents(Collections.singletonList(folder_id));
+
+    try {
+         folder2.setName("Meter_Reading");
+         folder2.setMimeType("application/vnd.google-apps.folder");
+         folder2 = service.files().create(folder2).setFields("id").execute();
+         folder_id=folder2.getId();
+          foldermeterid= sm.insertfolder(folder_id, "5");
+    }
+    catch (IOException e){
+        System.out.println(e);
+    }
+        }
+        else {
+            System.out.println("both folders are already created");
+        }
+              folder_id = sm.getDrivefolderId("Meter_Reading_Folder");
+            System.out.println("Folder ID: " + folder_id);
+              File meter_folder = new File();
+            meter_folder.setParents(Collections.singletonList(folder_id));
+             try {
+         meter_folder.setName(meter_id_folder);
+         meter_folder.setMimeType("application/vnd.google-apps.folder");
+         meter_folder = service.files().create(meter_folder).setFields("id").execute();
+         folder_id=meter_folder.getId();
+         // foldermeterid= sm.insertfolder(folder_id, "5");
+    }
+    catch (IOException e){
+       System.out.println(e);
+    }
+        
+
+
+        fileMetadata.setName(filename);
+        fileMetadata.setMimeType("image/jpeg");
+        fileMetadata.setParents(Collections.singletonList(folder_id));
+
+        java.io.File filePath = new java.io.File(path);
+        FileContent mediaContent = new FileContent("image/jpeg", filePath);
+        File file = service.files().create(fileMetadata, mediaContent).setFields("id").execute();
+        file_id = file.getId();
+        System.out.println("File ID: " + file_id);
+        sm.insertfile(foldermeterid, g_id, file_id);
+        share.shareSpreadsheet(folder_id,sm.getConnection());
+    }
+
+}
