@@ -207,16 +207,24 @@ public class OHLevelModel {
     public ArrayList<OHLevel> getAllRecords(int lowerLimit, int noOfRowsToDisplay, String waterTreatmentPlantName, String overHeadTankName,ServletContext ctx) {
         ArrayList<OHLevel> list = new ArrayList<OHLevel>();
         byte[] twoByteData = new byte[2];
-        String query = " select * from (SELECT wtp.name as name1,oht.name,le.ohlevel_id,le.overheadtank_id,"
-                + " le.level_a,le.level_b,le.date_time,le.remark,"
-                + " date_format(level_datetime, '%d-%m-%Y %h:%i') AS level_datetime,step,level1,level2,level3,level4,oht.capacity_height "
-                + "FROM ohlevel AS le "
-                + "LEFT JOIN overheadtank AS oht ON le.overheadtank_id = oht.overheadtank_id "
-                + "LEFT JOIN watertreatmentplant AS wtp ON oht.watertreatmentplant_id = wtp.watertreatmentplant_id "
-                + "WHERE IF('" + overHeadTankName + "'='',oht.name LIKE '%%',oht.name=?) "
-                + "AND IF('" + waterTreatmentPlantName + "'='',wtp.name LIKE '%%',wtp.name=?) "
-                + "  ORDER BY ohlevel_id desc )  as a group by a.name order by name1,date_time desc"
+        String query = " SELECT wtp.name as name1,oht.name,le.ohlevel_id,le.overheadtank_id, \n" +
+"le.level_a,le.level_b,le.date_time,le.remark, date_format(level_datetime, '%d-%m-%Y %h:%i') \n" +
+"AS level_datetime,step,level1,level2,level3,level4,oht.capacity_height FROM ohlevel AS le\n" +
+" LEFT JOIN overheadtank AS oht ON le.overheadtank_id = oht.overheadtank_id \n" +
+" LEFT JOIN watertreatmentplant AS wtp ON oht.watertreatmentplant_id = wtp.watertreatmentplant_id \n" +
+"WHERE IF(''='',oht.name LIKE '%%',oht.name=?) AND IF(''='',wtp.name LIKE '%%',wtp.name=?) \n" +
+" and le.ohlevel_id in(select max(ohlevel_id) from ohlevel group by overheadtank_id)group by overheadtank_id "
                 + " LIMIT " + lowerLimit + "," + noOfRowsToDisplay;
+//        String query = " select * from (SELECT wtp.name as name1,oht.name,le.ohlevel_id,le.overheadtank_id,"
+//                + " le.level_a,le.level_b,le.date_time,le.remark,"
+//                + " date_format(level_datetime, '%d-%m-%Y %h:%i') AS level_datetime,step,level1,level2,level3,level4,oht.capacity_height "
+//                + "FROM ohlevel AS le "
+//                + "LEFT JOIN overheadtank AS oht ON le.overheadtank_id = oht.overheadtank_id "
+//                + "LEFT JOIN watertreatmentplant AS wtp ON oht.watertreatmentplant_id = wtp.watertreatmentplant_id "
+//                + "WHERE IF('" + overHeadTankName + "'='',oht.name LIKE '%%',oht.name=?) "
+//                + "AND IF('" + waterTreatmentPlantName + "'='',wtp.name LIKE '%%',wtp.name=?) "
+//                + "  ORDER BY ohlevel_id desc )  as a group by a.name order by name1,date_time desc"
+//                + " LIMIT " + lowerLimit + "," + noOfRowsToDisplay;
         try {
             PreparedStatement pstmt = connection.prepareStatement(query);
             pstmt.setString(1, overHeadTankName);
@@ -257,6 +265,82 @@ public class OHLevelModel {
                 }
                 ohLevelBean.setCommand(command_value);
                 ohLevelBean.setFeedback(feedback);
+                list.add(ohLevelBean);
+            }
+        } catch (Exception e) {
+            System.out.println("Error in getAllRecrod -- OHLevelModel : " + e);
+            message = "Something going wrong";
+            messageBGColor = "red";
+        }
+        return list;
+    }
+    public ArrayList<OHLevel> getDeviceOverheadMapAllRecords(int lowerLimit, int noOfRowsToDisplay, String waterTreatmentPlantName, String overHeadTankName,ServletContext ctx) {
+        ArrayList<OHLevel> list = new ArrayList<OHLevel>();
+        byte[] twoByteData = new byte[2];
+        String query = " select djm.device_id,djm.overheadttank_id,oht.name,oht.capacity_height,oht.capacity_ltr,oht.remark "
+                + "from device_junction_map as djm ,overheadtank as oht where djm.overheadttank_id=oht.overheadtank_id and djm.active='y'  "
+                + " LIMIT " + lowerLimit + "," + noOfRowsToDisplay;
+//        String query = " select * from (SELECT wtp.name as name1,oht.name,le.ohlevel_id,le.overheadtank_id,"
+//                + " le.level_a,le.level_b,le.date_time,le.remark,"
+//                + " date_format(level_datetime, '%d-%m-%Y %h:%i') AS level_datetime,step,level1,level2,level3,level4,oht.capacity_height "
+//                + "FROM ohlevel AS le "
+//                + "LEFT JOIN overheadtank AS oht ON le.overheadtank_id = oht.overheadtank_id "
+//                + "LEFT JOIN watertreatmentplant AS wtp ON oht.watertreatmentplant_id = wtp.watertreatmentplant_id "
+//                + "WHERE IF('" + overHeadTankName + "'='',oht.name LIKE '%%',oht.name=?) "
+//                + "AND IF('" + waterTreatmentPlantName + "'='',wtp.name LIKE '%%',wtp.name=?) "
+//                + "  ORDER BY ohlevel_id desc )  as a group by a.name order by name1,date_time desc"
+//                + " LIMIT " + lowerLimit + "," + noOfRowsToDisplay;
+        try {
+            PreparedStatement pstmt = connection.prepareStatement(query);
+          //  pstmt.setString(1, overHeadTankName);
+         //   pstmt.setString(2, waterTreatmentPlantName);
+            ResultSet rset = pstmt.executeQuery();
+            while (rset.next()) {
+                OHLevel ohLevelBean = new OHLevel();
+                 ohLevelBean.setWaterTreatmentPlantName(rset.getString(1));
+                ohLevelBean.setOverHeadTankName(rset.getString(3));
+               
+                ohLevelBean.setOhLevelId(rset.getInt(2));
+              
+               ohLevelBean.setRemark(rset.getString(6));
+                list.add(ohLevelBean);
+            }
+        } catch (Exception e) {
+            System.out.println("Error in getAllRecrod -- OHLevelModel : " + e);
+            message = "Something going wrong";
+            messageBGColor = "red";
+        }
+        return list;
+    }
+    public ArrayList<OHLevel> getOverheadMapAllRecords(int lowerLimit, int noOfRowsToDisplay, String waterTreatmentPlantName, String overHeadTankName,ServletContext ctx) {
+        ArrayList<OHLevel> list = new ArrayList<OHLevel>();
+        byte[] twoByteData = new byte[2];
+        String query = "SELECT overheadtank_id,name,remark FROM smart_meter_survey.overheadtank where remark!='' and type='yes'"
+                + " LIMIT " + 0 + "," + noOfRowsToDisplay;
+//        String query = " select * from (SELECT wtp.name as name1,oht.name,le.ohlevel_id,le.overheadtank_id,"
+//                + " le.level_a,le.level_b,le.date_time,le.remark,"
+//                + " date_format(level_datetime, '%d-%m-%Y %h:%i') AS level_datetime,step,level1,level2,level3,level4,oht.capacity_height "
+//                + "FROM ohlevel AS le "
+//                + "LEFT JOIN overheadtank AS oht ON le.overheadtank_id = oht.overheadtank_id "
+//                + "LEFT JOIN watertreatmentplant AS wtp ON oht.watertreatmentplant_id = wtp.watertreatmentplant_id "
+//                + "WHERE IF('" + overHeadTankName + "'='',oht.name LIKE '%%',oht.name=?) "
+//                + "AND IF('" + waterTreatmentPlantName + "'='',wtp.name LIKE '%%',wtp.name=?) "
+//                + "  ORDER BY ohlevel_id desc )  as a group by a.name order by name1,date_time desc"
+//                + " LIMIT " + lowerLimit + "," + noOfRowsToDisplay;
+        try {
+            PreparedStatement pstmt = connection.prepareStatement(query);
+          //  pstmt.setString(1, overHeadTankName);
+         //   pstmt.setString(2, waterTreatmentPlantName);
+            ResultSet rset = pstmt.executeQuery();
+            while (rset.next()) {
+                OHLevel ohLevelBean = new OHLevel();
+                 //ohLevelBean.setWaterTreatmentPlantName(rset.getString(1));
+                ohLevelBean.setOverHeadTankName(rset.getString(2));
+               
+                ohLevelBean.setOhLevelId(rset.getInt(1));
+              ohLevelBean.setRemark(rset.getString(3));
+              
+              
                 list.add(ohLevelBean);
             }
         } catch (Exception e) {

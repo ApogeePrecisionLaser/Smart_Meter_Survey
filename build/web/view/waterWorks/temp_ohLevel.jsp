@@ -270,7 +270,7 @@
                             </td></tr>
                         <tr>
                             <td> <div align="center">
-                                    <form name="form0" method="POST" action="OHLevelCont1.do" onsubmit="return searchCheck()">
+                                    <form name="form0" method="POST" action="Temp_ohLevelCont.do" onsubmit="return searchCheck()">
                                         <table align="center" class="heading1" >
                                             <tr><td colspan="7" align="center" style="color: red;" id="searchMessage"></td></tr>
                                             <tr>
@@ -307,7 +307,7 @@
                         <%--  <c:if test="${isSelectPriv eq 'Y'}">--%>
                         <tr>
                             <td align="center">
-                                <form name="form1" method="POST" action="OHLevelCont1.do">
+                                <form name="form1" method="POST" action="Temp_ohLevelCont.do">
                                     <DIV class="content_div">
                                         <table id="table1" width="800"  border="1"  align="center" class="content">
                                             <tr >

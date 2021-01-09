@@ -30,16 +30,23 @@ import org.json.simple.JSONObject;
  * @author Com7_2
  */
 public class DashboardController extends HttpServlet {
-
+  String newdevidcheck="";
+    String waterlvlnext="";
+    String waterlvlnexttemp="";
+    String did1="";
+    String oid1="";
+    String ohname1="";
+    String ohdevicenameidtemp="";
     protected void processRequest(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException, ParseException {
+        try{
         response.setContentType("text/html;charset=UTF-8");
         //PrintWriter out = response.getWriter();
 
         response.setContentType("text/html;charset=UTF-8");
         response.setCharacterEncoding("UTF-8");
         request.setCharacterEncoding("UTF-8");
-        ServletContext ctx = getServletContext();
+        ServletContext ctx = getServletContext(); 
         DashboardModel vkpm = new DashboardModel();
         HttpSession session = request.getSession();
         String task = request.getParameter("task");
@@ -54,9 +61,87 @@ public class DashboardController extends HttpServlet {
         String key_person = "";
         String vehicle_no = "";
         int lowerLimit = 0, noOfRowsTraversed = 0, noOfRowsToDisplay = 10, noOfRowsInTable = 0;
+ String device_idfromjsp = request.getParameter("did");
+ 
+   String oht_idfromjsp = request.getParameter("ohid");
+   String ohname = request.getParameter("ohname");
+   String ohdevicenameid = request.getParameter("ohdevicename");
+    if(!device_idfromjsp.equals(newdevidcheck)){
+   newdevidcheck=device_idfromjsp;
+   waterlvlnext="";
+   waterlvlnexttemp="";
+   did1=device_idfromjsp;
+   oid1=oht_idfromjsp;
+   ohname1=ohname;
+   ohdevicenameidtemp=ohdevicenameid;
+   }
+   if(  device_idfromjsp == null){
+       
+   device_idfromjsp=did1;
+   oht_idfromjsp=oid1;
+   ohname=ohname1;
+    ohdevicenameid=ohdevicenameidtemp;
+  
+   }else{
+   did1=device_idfromjsp;
+   oid1=oht_idfromjsp;
+   ohname1=ohname;
+    ohdevicenameidtemp=ohdevicenameid;
+   }
+   
+   
+   //for overhead tank data from mqtt
+       int status_idtemp = vkpm.getStatusId(ohdevicenameid);
+        String device_idtemp = vkpm.getDeviceId(status_idtemp);   
 
-        int status_id = vkpm.getStatusId();
-        String device_id = vkpm.getDeviceId(status_id);
+        //  status = vkpm.getVehicleStatus(status_id);
+        // String idle_running = vkpm.getIdleRunningStatus(status_id);
+        //  double voltage = vkpm.getVoltage(status_id);
+      //  String datetime1temp = vkpm.getDate();
+        
+
+        //Water Level Data---- Start
+        String waterleveltemp = vkpm.getWaterLevel(device_idtemp);
+        String[] waterleveldatatemp = waterleveltemp.split("_");
+        waterleveltemp = waterleveldatatemp[0];
+          
+        String type=vkpm.getOverheadTankType(ohdevicenameid);
+        int atemp=vkpm.getOverHeadTankHeight(ohdevicenameid,type);  
+        if(Integer.parseInt(waterleveltemp)>atemp){
+          atemp= Integer.parseInt(waterleveltemp)-atemp;
+        }else{
+      atemp=atemp-Integer.parseInt(waterleveltemp);
+        }
+        waterleveltemp=Integer.toString(atemp);
+                     int diff1temp=0;
+                        if(!"".equals(waterlvlnexttemp)){
+                            if(Integer.parseInt(waterlvlnexttemp) >=Integer.parseInt(waterleveltemp)){
+                                diff1temp=Integer.parseInt(waterlvlnexttemp) -Integer.parseInt(waterleveltemp);
+                            }else{
+                           diff1temp= Integer.parseInt(waterleveltemp) -Integer.parseInt(waterlvlnexttemp);
+                            }
+                        
+                        if(diff1temp<=500){
+                             waterlvlnexttemp=waterleveltemp;
+                        }else{
+                        waterleveltemp=waterlvlnexttemp;
+                        }
+                        }else{
+                        waterlvlnexttemp=waterleveltemp;
+                        }
+						
+	  int a1temp=Integer.parseInt(waterleveltemp)/10;
+                 waterleveltemp=String.valueOf(a1temp);
+                    String datetimetemp = waterleveldatatemp[3];
+      
+      // 
+   
+   
+   
+   
+   //
+        int status_id = vkpm.getStatusId(device_idfromjsp);
+        String device_id = vkpm.getDeviceId(status_id);   
 
         //  status = vkpm.getVehicleStatus(status_id);
         // String idle_running = vkpm.getIdleRunningStatus(status_id);
@@ -68,6 +153,33 @@ public class DashboardController extends HttpServlet {
         String waterlevel = vkpm.getWaterLevel(device_id);
         String[] waterleveldata = waterlevel.split("_");
         waterlevel = waterleveldata[0];
+          String type1=vkpm.getOverheadTankType(device_id);
+       int a=vkpm.getOverHeadTankHeight(device_id,type1); 
+        if(Integer.parseInt(waterlevel)>a){
+          a= Integer.parseInt(waterlevel)-a;
+        }else{
+      a=a-Integer.parseInt(waterlevel);
+        }
+        waterlevel=Integer.toString(a);
+                     int diff1=0;
+                        if(!"".equals(waterlvlnext)){
+                            if(Integer.parseInt(waterlvlnext) >=Integer.parseInt(waterlevel)){
+                                diff1=Integer.parseInt(waterlvlnext) -Integer.parseInt(waterlevel);
+                            }else{
+                           diff1= Integer.parseInt(waterlevel) -Integer.parseInt(waterlvlnext);
+                            }
+                        
+                        if(diff1<=500){
+                             waterlvlnext=waterlevel;
+                        }else{
+                        waterlevel=waterlvlnext;
+                        }
+                        }else{
+                        waterlvlnext=waterlevel;
+                        }
+						
+	  int a1=Integer.parseInt(waterlevel)/10;
+                 waterlevel=String.valueOf(a1);
         String water_temperature = waterleveldata[1];
         String water_intensity = waterleveldata[2];
         String datetime = waterleveldata[3];
@@ -93,15 +205,21 @@ public class DashboardController extends HttpServlet {
         String total_active_power = vkpm.getEnergyLevel(device_id);
         String[] energylevel = total_active_power.split("_");
         total_active_power = energylevel[0];
+         total_active_power=String.valueOf(Integer.parseInt(total_active_power)/1000);
         String Cons_energy_mains = energylevel[1];
+          Cons_energy_mains=String.valueOf(Integer.parseInt(Cons_energy_mains)/10);
         String active_energy_dg = energylevel[2];
+          active_energy_dg=String.valueOf(Integer.parseInt(active_energy_dg)/100);
         String total_active_energy = energylevel[3];
         String phase_voltage_R = energylevel[4];
         String phase_voltage_Y = energylevel[5];
         String phase_voltage_B = energylevel[6];
         String phase_current_R = energylevel[7];
+           phase_current_R=String.valueOf(Integer.parseInt(phase_current_R)/100);
         String phase_current_Y = energylevel[8];
+           phase_current_Y=String.valueOf(Integer.parseInt(phase_current_Y)/100);
         String phase_current_B = energylevel[9];
+           phase_current_B=String.valueOf(Integer.parseInt(phase_current_B)/100);
         String datetimeenergy = energylevel[10];
         String energy_id = energylevel[12];
         //-------------------End
@@ -174,6 +292,7 @@ public class DashboardController extends HttpServlet {
         }
 
         double acc = Double.parseDouble(accuracy);
+        
 //          if (!(acc>=80 && acc<=90))
 //          {
 //             accuracy = accuracy+" ---------(NOT VALID VALUE)";
@@ -235,18 +354,7 @@ public class DashboardController extends HttpServlet {
             String from = request.getParameter("from");
             String To = request.getParameter("To");
 
-//            if(){
-//                
-//                String List = vkpm.showDataBeanLive1(device_id, from, To);
-//            request.setAttribute("CoordinatesList", List);
-//            latitude = List.split("_")[0];
-//            longitude = List.split("_")[1];
-//            }
-//            String List = vkpm.showDataBeanLive1(device_id, from, To);
-//            request.setAttribute("CoordinatesList", List);
-//            latitude = List.split("_")[0];
-//            longitude = List.split("_")[1];
-            //request.setAttribute("CoordinatesList", List);
+ 
             request.setAttribute("latitude", latitude);
             request.setAttribute("longitude", longitude);
             //request.getRequestDispatcher("/view/showLatestPreviousCoordinateMap.jsp").forward(request, response);
@@ -310,67 +418,7 @@ public class DashboardController extends HttpServlet {
             return;
         }
 
-//        if (task.equals("Viewdata")) {
-//
-//            JSONObject obj1 = new JSONObject();
-//            JSONObject obj2 = new JSONObject();
-//            JSONObject obj3 = new JSONObject();
-//            JSONObject obj4 = new JSONObject();
-//
-//            obj1.put("fuel", fuel_level);
-//            obj2.put("voltage", voltage);
-//            obj3.put("accuracy", accuracy);
-//            PrintWriter out = response.getWriter();
-//            out.println(obj1);
-////             out.println(obj2);
-////              out.println(obj3);
-//            System.out.println("data -" + obj1);
-//            out.flush();
-//        }
-//        try {
-//            String JQstring = request.getParameter("action1");
-//            String q = request.getParameter("q");
-//            if (JQstring != null) {
-//                PrintWriter out = response.getWriter();
-//                List<String> list = null;
-//
-//                if (JQstring.equals("getsearch_key_person_name")) {
-//
-//                    list = vkpm.getSearchKeyPersonName(q);
-//                }
-//                Iterator<String> iter = list.iterator();
-//                while (iter.hasNext()) {
-//                    String data = iter.next();
-//                    out.println(data);
-//                }
-//                return;
-//            }
-//        } catch (Exception e) {
-//            System.out.println(e);
-//        }
-//
-//        try {
-//            String JQstring = request.getParameter("action1");
-//            String q = request.getParameter("q");
-//            if (JQstring != null) {
-//                PrintWriter out = response.getWriter();
-//                List<String> list = null;
-//
-//                if (JQstring.equals("getsearch_vehicle_no")) {
-//
-//                    list = vkpm.getSearchVehicleNo(q);
-//                }
-//                Iterator<String> iter = list.iterator();
-//                while (iter.hasNext()) {
-//                    String data = iter.next();
-//                    out.println(data);
-//                }
-//                return;
-//            }
-//        } catch (Exception e) {
-//            System.out.println(e);
-        //     }
-        /////////////////////////////////////////////
+ 
         try {
             String JQstring = request.getParameter("action1");
             String q = request.getParameter("q");
@@ -478,8 +526,13 @@ public class DashboardController extends HttpServlet {
 //          vkpm.getStatus(fuel_level, voltage, refresh, fuel_level_litre,
 //                    waterlevel,water_temperature,water_intensity,datetime,relay_state);
             request.setAttribute("datetime", datetime1);
+            request.setAttribute("datetimetemp", datetimetemp);
+            request.setAttribute("device_idfromjsp", device_idfromjsp);
+            request.setAttribute("oht_idfromjsp", oht_idfromjsp);
+            request.setAttribute("ohname", ohname);
 
             request.setAttribute("waterlevel", waterlevel);
+            request.setAttribute("waterleveltemp", waterleveltemp);
             request.setAttribute("water_intensity", water_intensity);
             request.setAttribute("water_temperature", water_temperature);
             request.setAttribute("watertime", datetime);
@@ -515,6 +568,11 @@ public class DashboardController extends HttpServlet {
         } catch (Exception e) {
             System.out.println(e);
             //out.close();
+        }
+        } catch (Exception e) {
+            System.out.println(e);
+            RequestDispatcher rd = request.getRequestDispatcher("/view/waterWorks/error500.jsp");
+              rd.forward(request, response);
         }
 
     }
@@ -600,8 +658,10 @@ public class DashboardController extends HttpServlet {
 //        catch (Exception e) {
 //            System.out.print(e);
 //        }
-
-            int status_id = vkpm.getStatusId();
+ String device_idfromjsp = request.getParameter("did");
+   String oht_idfromjsp = request.getParameter("ohid");
+   
+            int status_id = vkpm.getStatusId(device_idfromjsp);
 
             String device_id = vkpm.getDeviceId(status_id);
             status = vkpm.getVehicleStatus(status_id);

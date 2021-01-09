@@ -13,8 +13,28 @@
         <url-pattern>/CanvasJSController1</url-pattern>
     </servlet-mapping>
     <servlet-mapping>
+        <servlet-name>CanvasJSController11</servlet-name>
+        <url-pattern>/CanvasJSController11</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>CanvasJSController111</servlet-name>
+        <url-pattern>/CanvasJSController111</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
         <servlet-name>DashboardController</servlet-name>
         <url-pattern>/DashboardController</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>DashboardController2</servlet-name>
+        <url-pattern>/DashboardController2</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>DashboardController1</servlet-name>
+        <url-pattern>/DashboardController1</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>ViewDeviceOverheadMapController</servlet-name>
+        <url-pattern>/DeviceOverheadMapController</url-pattern>
     </servlet-mapping>
     <session-config>
         <session-timeout>
@@ -30,7 +50,7 @@
     </context-param>
     <context-param>
         <param-name>connectionString</param-name>
-        <param-value>jdbc:mysql://localhost:3307/smart_meter_survey</param-value>
+        <param-value>jdbc:mysql://localhost:3306/smart_meter_survey</param-value>
     </context-param>
     <context-param>
         <param-name>db_username</param-name>
@@ -47,6 +67,11 @@
         <servlet-name>General TimeSchedulerCont</servlet-name>
         <servlet-class>com.waterworks.controller.SchedulerController</servlet-class>
         <load-on-startup>1</load-on-startup>
+    </servlet>
+    <servlet>
+        <servlet-name>General TimeSchedulerContleakage</servlet-name>
+        <servlet-class>com.waterworks.controller.SchedulerControllerforLeakage</servlet-class>
+        <load-on-startup>6</load-on-startup>
     </servlet>
     <servlet>
         <servlet-name>General TimeSchedulerCont1</servlet-name>
@@ -74,12 +99,32 @@
         <jsp-file>/view/data_entry/keyperson.jsp</jsp-file>
     </servlet>
     <servlet>
+        <servlet-name>CanvasJSController11</servlet-name>
+        <servlet-class>com.waterworks.controller.CanvasJSController11</servlet-class>
+    </servlet>
+    <servlet>
+        <servlet-name>CanvasJSController111</servlet-name>
+        <servlet-class>com.waterworks.controller.CanvasJSController111</servlet-class>
+    </servlet>
+    <servlet>
         <servlet-name>CanvasJSController1</servlet-name>
         <servlet-class>com.waterworks.controller.CanvasJSController1</servlet-class>
     </servlet>
     <servlet>
         <servlet-name>DashboardController</servlet-name>
         <servlet-class>com.waterworks.controller.DashboardController</servlet-class>
+    </servlet>
+    <servlet>
+        <servlet-name>DashboardController2</servlet-name>
+        <servlet-class>com.waterworks.controller.ViewSumpWellDashboardController</servlet-class>
+    </servlet>
+    <servlet>
+        <servlet-name>DashboardController1</servlet-name>
+        <servlet-class>com.waterworks.controller.OverHeadDashboardController</servlet-class>
+    </servlet>
+    <servlet>
+        <servlet-name>ViewDeviceOverheadMapController</servlet-name>
+        <servlet-class>com.waterworks.controller.ViewDeviceOverheadMapController</servlet-class>
     </servlet>
     <servlet-mapping>
         <servlet-name>DataEntry keyPerson_view</servlet-name>
@@ -1002,5 +1047,15 @@
     <servlet-mapping>
         <servlet-name>InsertDistributionController</servlet-name>
         <url-pattern>/InsertDistributionCont.do</url-pattern>
+    </servlet-mapping>
+    
+    
+    <servlet>
+        <servlet-name>DeviceOverheaMapEntryController</servlet-name>
+        <servlet-class>com.waterworks.controller.DeviceOverheaMapEntryController</servlet-class>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>DeviceOverheaMapEntryController</servlet-name>
+        <url-pattern>/DeviceOverheaMapEntryController</url-pattern>
     </servlet-mapping>
 </web-app>

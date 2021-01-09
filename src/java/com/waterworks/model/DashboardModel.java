@@ -241,7 +241,70 @@ public class DashboardModel {
 //        return rowsAffected;
 //    }
 
-   
+    
+     public String getOverheadTankType(String deviceid) {
+         String typ="";
+        String query = "select type FROM overheadtank where remark='"+deviceid+"'";
+        try {
+           Class.forName("com.mysql.jdbc.Driver");
+            Connection con=DriverManager.getConnection("jdbc:mysql://localhost:3306/smart_meter_survey","root","root");
+            Statement stmt = con.createStatement();
+            ResultSet rset = stmt.executeQuery(query);
+            if (rset.next()) {
+                 typ= rset.getString(1);
+            } else {
+                return "";
+            }
+        } catch (Exception e) {
+            System.out.println("Error in getOverHeadTank - OHLevelModel - " + e);
+            message = "Something going wrong";
+          //  messageBGColor = "red";
+            return "";
+        }
+        return typ;
+    }
+      public String getOverheadTankid1(String deviceid) {
+         String typ="";
+        String query = "select overheadtank_id FROM overheadtank where remark='"+deviceid+"'";
+        try {
+           Class.forName("com.mysql.jdbc.Driver");
+            Connection con=DriverManager.getConnection("jdbc:mysql://localhost:3306/smart_meter_survey","root","root");
+            Statement stmt = con.createStatement();
+            ResultSet rset = stmt.executeQuery(query);
+            if (rset.next()) {
+                 typ= rset.getString(1);
+            } else {
+                return "";
+            }
+        } catch (Exception e) {
+            System.out.println("Error in getOverHeadTank - OHLevelModel - " + e);
+          //  message = "Something going wrong";
+          //  messageBGColor = "red";
+            return "";
+        }
+        return typ;
+    }
+    public int getOverHeadTankHeight(String deviceid,String type) {
+       String overid=getOverheadTankid1(deviceid);
+        String query = "select oht.height from overheadtank_height as oht,overheadtank as ot\n" +
+"where oht.overheadtank_id=ot.overheadtank_id and ot.type='"+type+"' and oht.overheadtank_id='"+overid+"'";
+        try {
+          Class.forName("com.mysql.jdbc.Driver");
+            Connection con=DriverManager.getConnection("jdbc:mysql://localhost:3306/smart_meter_survey","root","root");
+            Statement stmt = con.createStatement();
+            ResultSet rset = stmt.executeQuery(query);
+            if (rset.next()) {
+                return rset.getInt(1);
+            } else {
+                return 0;
+            }
+        } catch (Exception e) {
+            System.out.println("Error in getOverHeadTank - OHLevelModel - " + e);
+            message = "Something going wrong";
+          //  messageBGColor = "red";
+            return 0;
+        }
+    }
     public boolean deleteRecord(int device_vehicle_mapping_id) {
         boolean status = false;
         int rowsAffected = 0;
@@ -423,7 +486,7 @@ public class DashboardModel {
    
  try {
             Class.forName("com.mysql.jdbc.Driver");
-            Connection con=DriverManager.getConnection("jdbc:mysql://localhost:3306/mqtt_server","jpss_2","jpss_1277");
+            Connection con=DriverManager.getConnection("jdbc:mysql://localhost:3306/mqtt_server","root","root");
                Statement stmt = con.createStatement();
             ResultSet rs = stmt.executeQuery(query);
        rs.next();    // move cursor from BOR to valid record.
@@ -604,7 +667,7 @@ public class DashboardModel {
         String query = "select device_id from device_status  where  device_status_id ='"+device_id+"'";
         try {
             Class.forName("com.mysql.jdbc.Driver");
-            Connection con=DriverManager.getConnection("jdbc:mysql://localhost:3306/mqtt_server","jpss_2","jpss_1277");
+            Connection con=DriverManager.getConnection("jdbc:mysql://localhost:3306/mqtt_server","root","root");
             Statement stmt = con.createStatement();
             ResultSet rs = stmt.executeQuery(query);
             while (rs.next()) {
@@ -839,23 +902,23 @@ public class DashboardModel {
        String relay_status1 = "";
        String magnetic_sensor_value="";
        
-        String query = "select distinct wd.water_level,wd.water_temperature,wd.water_intensity,wd.created_date,wd.relay_state,wd.relay_state_2,wd.water_data_id,wd.magnetic_sensor_value from water_data wd,device_status dd where wd.device_status_id='" + device_status_id + "' and dd.active='Y'";
+        String query = "select distinct wd.water_level,wd.water_temperature,wd.water_intensity,wd.date_time,wd.relay_state,wd.relay_state_2,wd.water_data_id,wd.magnetic_sensor_value from water_data wd,device_status dd where wd.device_status_id='" + device_status_id + "' and dd.active='Y' order by date_time ";
         try {
             Class.forName("com.mysql.jdbc.Driver");
-            Connection con=DriverManager.getConnection("jdbc:mysql://localhost:3306/mqtt_server","jpss_2","jpss_1277");
+            Connection con=DriverManager.getConnection("jdbc:mysql://localhost:3306/mqtt_server","root","root");
             Statement stmt = con.createStatement();
             ResultSet rs = stmt.executeQuery(query);
             while (rs.next()) {
                 status = rs.getString("water_level");
                 temp = rs.getString("water_temperature");
                 intensity = rs.getString("water_intensity");
-                datetime =  rs.getString("created_date");
+                datetime =  rs.getString("date_time");
                relay_status = rs.getString("relay_state");
                water_id = rs.getInt("water_data_id");
                relay_status1 = rs.getString("relay_state_2");
                
                 magnetic_sensor_value = rs.getString("magnetic_sensor_value");
-                
+             
                 if(magnetic_sensor_value.equals("1"))
                 {
                    magnetic_sensor_value =" Level 1";
@@ -871,6 +934,9 @@ public class DashboardModel {
                  else if(magnetic_sensor_value.equals("15"))
                 {
                    magnetic_sensor_value =" Level 4";
+                }  else if(magnetic_sensor_value.equals("0") || magnetic_sensor_value.equals(""))
+                {
+                   magnetic_sensor_value =" Level 0";
                 }
                 else
                  {
@@ -904,10 +970,10 @@ public class DashboardModel {
        String datetime="";
        String relay_status = "";
        int energy_id = 0;
-        String query = "select distinct wd.total_active_power,wd.Cons_energy_mains,wd.active_energy_dg,wd.total_active_energy,wd.phase_voltage_R,wd.phase_voltage_Y,wd.phase_voltage_B,wd.phase_current_R,phase_current_Y,wd.phase_current_B,wd.created_date,wd.relay_state,wd.energy_data_id from energy_data wd,device_status dd where wd.device_status_id='" + device_status_id + "' and dd.active='Y'";
+        String query = "select distinct wd.total_active_power,wd.Cons_energy_mains,wd.active_energy_dg,wd.total_active_energy,wd.phase_voltage_R,wd.phase_voltage_Y,wd.phase_voltage_B,wd.phase_current_R,phase_current_Y,wd.phase_current_B,wd.date_time,wd.relay_state,wd.energy_data_id from energy_data wd,device_status dd where wd.device_status_id='" + device_status_id + "' and dd.active='Y' order by date_time desc limit 1";
         try {
             Class.forName("com.mysql.jdbc.Driver");
-            Connection con=DriverManager.getConnection("jdbc:mysql://localhost:3306/mqtt_server","jpss_2","jpss_1277");
+            Connection con=DriverManager.getConnection("jdbc:mysql://localhost:3306/mqtt_server","root","root");
             Statement stmt = con.createStatement();
             ResultSet rs = stmt.executeQuery(query);
             while (rs.next()) {
@@ -922,7 +988,7 @@ public class DashboardModel {
                 phase_current_Y = rs.getString("phase_current_Y");
                  phase_current_B = rs.getString("phase_current_B");
                 
-                datetime =  rs.getString("created_date");
+                datetime =  rs.getString("date_time");
                relay_status = rs.getString("relay_state");
                energy_id = rs.getInt("energy_data_id");
             }
@@ -937,12 +1003,12 @@ public class DashboardModel {
     
         
         
-     public int getStatusId() {
+     public int getStatusId( String did) {
         int vehicle_id = 0;
-        String query = "select device_status_id from device_status where active='Y'";
+        String query = "select device_status_id from device_status where active='Y' and device_id='"+did+"'";
         try {
            Class.forName("com.mysql.jdbc.Driver");
-            Connection con=DriverManager.getConnection("jdbc:mysql://localhost:3306/mqtt_server","jpss_2","jpss_1277");
+            Connection con=DriverManager.getConnection("jdbc:mysql://localhost:3306/mqtt_server","root","root");
             Statement stmt = con.createStatement();
             ResultSet rs = stmt.executeQuery(query);
             while (rs.next()) {
@@ -1002,7 +1068,7 @@ public class DashboardModel {
         
         try {
            Class.forName("com.mysql.jdbc.Driver");
-            Connection con=DriverManager.getConnection("jdbc:mysql://localhost:3306/mqtt_server","jpss_2","jpss_1277");
+            Connection con=DriverManager.getConnection("jdbc:mysql://localhost:3306/mqtt_server","root","root");
             Statement stmt = con.createStatement();
              Statement stmt1 = con.createStatement();
                Statement stmt2 = con.createStatement();
@@ -1047,7 +1113,7 @@ public class DashboardModel {
         }
         try {
            Class.forName("com.mysql.jdbc.Driver");
-            Connection con=DriverManager.getConnection("jdbc:mysql://localhost:3306/mqtt_server","jpss_2","jpss_1277");
+            Connection con=DriverManager.getConnection("jdbc:mysql://localhost:3306/mqtt_server","root","root");
             Statement stmt = con.createStatement();
              Statement stmt1 = con.createStatement();
             vehicle_id = stmt.executeUpdate(query);
@@ -1071,7 +1137,7 @@ public class DashboardModel {
         String query = "select device_status_id from device_status where active='Y' and device_id='"+device_id+"'";
         try {
            Class.forName("com.mysql.jdbc.Driver");
-            Connection con=DriverManager.getConnection("jdbc:mysql://localhost:3306/mqtt_server","jpss_2","jpss_1277");
+            Connection con=DriverManager.getConnection("jdbc:mysql://localhost:3306/mqtt_server","root","root");
             Statement stmt = con.createStatement();
             ResultSet rs = stmt.executeQuery(query);
             while (rs.next()) {
@@ -1166,7 +1232,7 @@ public class DashboardModel {
         String query = "select dd.created_date from water_data dd where dd.active='Y' ORDER BY created_date desc LIMIT 1";
         try {
            Class.forName("com.mysql.jdbc.Driver");
-            Connection con=DriverManager.getConnection("jdbc:mysql://localhost:3306/mqtt_server","jpss_2","jpss_1277");
+            Connection con=DriverManager.getConnection("jdbc:mysql://localhost:3306/mqtt_server","root","root");
             Statement stmt = con.createStatement();
             ResultSet rs = stmt.executeQuery(query);
             while (rs.next()) {

@@ -265,7 +265,7 @@ $.ajax({
                        
                         time.setTime(dateTime1[i].getTime());
                         yValue1 = Math.round((OhLevel1[i])*100)/100;
-                        
+                               
                         dataPoints1.push({
                             x: time.getTime(),
                             y: yValue1

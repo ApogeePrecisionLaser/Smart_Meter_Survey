@@ -26,51 +26,24 @@ Com7_2
 
 bb2a1e29-86ca-ef48-b096-f23b4a743b66
 
-TypeOfError.java
+LevelRangeBean.java
 file
+0
 
 
-
-
-2017-09-18T10:37:15.484852Z
-4d697bf5697691ee35995a1e294f811c
-2017-09-19T11:28:02.246743Z
-800
-Com7_2
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-1776
+add
 
-SourceWater.java
+OHLevel.java
 file
 
 
 
 
-2017-02-23T10:05:51.082272Z
-6287f3eecaadde575d16605cb3922277
-2017-02-21T11:44:39.530936Z
-499
-Com7_2
+2020-12-26T07:20:22.010000Z
+88fd37aaaeaadd61a6d033d3fd5dd01b
+2017-09-05T10:14:57.229492Z
+780
+Navitus1
 
 
 
@@ -92,75 +65,7 @@ Com7_2
 
 
 
-3409
-
-RawWaterLevel.java
-file
-
-
-
-
-2017-02-23T10:05:51.082272Z
-8253c61411ff9544557f499fbb22ce9b
-2017-02-21T11:44:39.530936Z
-499
-Com7_2
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-2711
-
-WaterTreatmentPlant.java
-file
-
-
-
-
-2017-02-23T10:05:51.082272Z
-ba65390537614d8e6b7e4040c040a2cf
-2017-02-21T11:44:39.530936Z
-499
-Com7_2
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-3904
+5331
 
 OnOff.java
 file
@@ -230,40 +135,6 @@ Navitus1
 
 4385
 
-SourceWaterLevel.java
-file
-
-
-
-
-2017-02-23T10:05:51.082272Z
-3ae1de8c886723dead50f120ff500126
-2017-02-21T11:44:39.530936Z
-499
-Com7_2
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-2791
-
 OverheadTankKeyPerson.java
 file
 
@@ -332,17 +203,17 @@ Com7_2
 
 3377
 
-OHLevel.java
+RawWaterLevel.java
 file
 
 
 
 
-2017-09-08T08:04:16.174616Z
-88fd37aaaeaadd61a6d033d3fd5dd01b
-2017-09-05T10:14:57.229492Z
-780
-Navitus1
+2017-02-23T10:05:51.082272Z
+8253c61411ff9544557f499fbb22ce9b
+2017-02-21T11:44:39.530936Z
+499
+Com7_2
 
 
 
@@ -364,5 +235,162 @@ Navitus1
 
 
 
-5086
+2711
+
+SendPDFSchedularBean.java
+file
+0
+
+
+add
+
+SourceWater.java
+file
+
+
+
+
+2017-02-23T10:05:51.082272Z
+6287f3eecaadde575d16605cb3922277
+2017-02-21T11:44:39.530936Z
+499
+Com7_2
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+3409
+
+SourceWaterLevel.java
+file
+
+
+
+
+2017-02-23T10:05:51.082272Z
+3ae1de8c886723dead50f120ff500126
+2017-02-21T11:44:39.530936Z
+499
+Com7_2
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+2791
+
+SumpwellOverheadtankBean.java
+file
+0
+
+
+add
+
+Temp_ohLevel.java
+file
+0
+
+
+add
+
+TypeOfError.java
+file
+
+
+
+
+2017-09-18T10:37:15.484852Z
+4d697bf5697691ee35995a1e294f811c
+2017-09-19T11:28:02.246743Z
+800
+Com7_2
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+1776
+
+WaterTreatmentPlant.java
+file
+
+
+
+
+2017-02-23T10:05:51.082272Z
+ba65390537614d8e6b7e4040c040a2cf
+2017-02-21T11:44:39.530936Z
+499
+Com7_2
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+3904
 

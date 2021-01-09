@@ -57,12 +57,17 @@ private Connection connection;
                 + " LEFT JOIN overheadtank AS oht ON le.overheadtank_id = oht.overheadtank_id "
                 + " LEFT JOIN watertreatmentplant AS wtp ON oht.watertreatmentplant_id = wtp.watertreatmentplant_id "
                 + " where " + addOverheadtank_id
-                + "  IF('" + searchDateFrom + "'='', le.date_time LIKE '%%',le.date_time >='" + searchDateFrom + "') "
-                + " And IF('" + searchDateTo + "'='', le.date_time LIKE '%%',date_format(le.date_time, '%Y-%m-%d') <='" + searchDateTo + "') "
-                + " AND IF('" + overHeadTankName + "'='',oht.name LIKE '%%',oht.name=?) "
-                + " AND IF('" + waterTreatmentPlantName + "'='',wtp.name LIKE '%%',wtp.name=?) "
-                + "  ORDER BY ohlevel_id desc "
-                + addQuery;
+            //    + "  IF('" + searchDateFrom + "'='', le.date_time LIKE '%%',le.date_time >='" + searchDateFrom + "') "
+             //   + " And IF('" + searchDateTo + "'='', le.date_time LIKE '%%',date_format(le.date_time, '%Y-%m-%d') <='" + searchDateTo + "') "
+                + "  IF('" + overHeadTankName + "'='',oht.name LIKE '%%',oht.name=?) "
+                + " AND IF('" + waterTreatmentPlantName + "'='',wtp.name LIKE '%%',wtp.name=?) ";
+                  if (!searchDateFrom.equals("")) {
+                query += " and le.date_time='" + searchDateFrom + "' ";
+            };
+                 if (!searchDateTo.equals("")) {
+                query += " and le.date_time='" + searchDateTo + "' ";
+            };
+              query += " ORDER BY ohlevel_id desc limit " + lowerLimit + "," + noOfRowsToDisplay;
         try {
             PreparedStatement pstmt = connection.prepareStatement(query);
             pstmt.setString(1, overHeadTankName);
@@ -118,10 +123,16 @@ private Connection connection;
                 + "LEFT JOIN overheadtank AS oht ON le.overheadtank_id = oht.overheadtank_id "
                 + "LEFT JOIN watertreatmentplant AS wtp ON oht.watertreatmentplant_id = wtp.watertreatmentplant_id "
                 + " WHERE  " + addOverheadtank_id
-                + "  IF('" + searchDateFrom + "'='', le.date_time LIKE '%%',le.date_time >='" + searchDateFrom + "') "
-                + " And IF('" + searchDateTo + "'='', le.date_time LIKE '%%',date_format(le.date_time, '%Y-%m-%d') <='" + searchDateTo + "') "
-                + " AND IF('" + overHeadTankName + "'='',oht.name LIKE '%%',oht.name=?) "
+             //   + "  IF('" + searchDateFrom + "'='', le.date_time LIKE '%%',le.date_time >='" + searchDateFrom + "') "
+             //   + " And IF('" + searchDateTo + "'='', le.date_time LIKE '%%',date_format(le.date_time, '%Y-%m-%d') <='" + searchDateTo + "') "
+                + "  IF('" + overHeadTankName + "'='',oht.name LIKE '%%',oht.name=?) "
                 + "AND IF('" + waterTreatmentName + "'='',wtp.name LIKE '%%',wtp.name=?) ";
+             if (!searchDateFrom.equals("")) {
+                query += " and le.date_time='" + searchDateFrom + "' ";
+            };
+                 if (!searchDateTo.equals("")) {
+                query += " and le.date_time='" + searchDateTo + "' ";
+            };
         int noOfRows = 0;
         try {
             PreparedStatement presta = connection.prepareStatement(query);

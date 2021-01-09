@@ -7,7 +7,9 @@ package com.Webservice.Model;
 import java.sql.PreparedStatement;
 import java.math.BigInteger;
 import java.sql.Connection;
+import java.sql.DriverManager;
 import java.sql.ResultSet;
+import java.sql.Statement;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -290,7 +292,7 @@ long final_date = date4+Fifteen_MINUTE_IN_MILLIS;
         String query9 = "INSERT INTO temp_ohlevel (level_a,level_b,overheadtank_id,remark,step,level1,level2,level3,level4) "
                 + " VALUES (?,?,?,?,?,?,?,?,?)";
         try {
-            PreparedStatement ps = (PreparedStatement) connection.prepareStatement(query);
+            PreparedStatement ps = (PreparedStatement) connection.prepareStatement(query,Statement.RETURN_GENERATED_KEYS);
             PreparedStatement ps9 = (PreparedStatement) connection.prepareStatement(query9);
             ps.setByte(1, data[0]);
             ps.setByte(2, data[1]);
@@ -330,7 +332,6 @@ long final_date = date4+Fifteen_MINUTE_IN_MILLIS;
                 String queryDate=" select date_time from smart_meter_survey.ohlevel ohl "
                                  +" where ohl.ohlevel_id="+ohlevel_id
                                  +" and ohl.overheadtank_id="+junction_id;
-
                  ResultSet rs13 = connection.prepareStatement(queryDate).executeQuery();
                               if (rs13.next()) {
                             current_dateTime = rs13.getString("date_time");
@@ -433,41 +434,48 @@ long final_date = date4+Fifteen_MINUTE_IN_MILLIS;
 
 ////////////////////////////calculate time difference start/////////////
 
-                        double currentlevelRatio = (levelDifference / Double.parseDouble(newTimeDifference+".0"));
+                        double currentlevelRatio = (levelDifference / Double.parseDouble(newTimeDifference+".0"));   
+                      if (Double.isNaN(currentlevelRatio)) {
+    currentlevelRatio=0;
+}
                         if(currentlevelRatio < db_level_ratio && currentlevelRatio > 0.005){   
                             /////////////////////////get level_type for  Leakage////////////////
                             String query11="Select level_type_id,type_name from level_type where type_name='Leakage'";
-                            ResultSet rs6 = connection.prepareStatement(query11).executeQuery();
-                            if (rs6.next()) {
-                            levelType = rs6.getInt("level_type_id");
-                            levelTypeName=rs6.getString("type_name");
+                             getConnection();
+                            ResultSet rs64 = connection.prepareStatement(query11).executeQuery();
+                            if (rs64.next()) {
+                            levelType = rs64.getInt("level_type_id");
+                            levelTypeName=rs64.getString("type_name");
                         }
                         }
                          if(currentlevelRatio >= 0 && currentlevelRatio <= 0.001){
                             /////////////////////////get level_type for  Stable ////////////////
                               String query11="Select level_type_id,type_name from level_type where type_name='Stable'";
-                           ResultSet rs6 = connection.prepareStatement(query11).executeQuery();
-                            if (rs6.next()) {
-                            levelType = rs6.getInt("level_type_id");
-                            levelTypeName=rs6.getString("type_name");
+                           getConnection();
+                              ResultSet rs62 = connection.prepareStatement(query11).executeQuery();
+                            if (rs62.next()) {
+                            levelType = rs62.getInt("level_type_id");
+                            levelTypeName=rs62.getString("type_name");
                         }
                             }
                          if(currentlevelRatio < 0 ){
                             /////////////////////////get level_type for Supply////////////////
                              String query11="Select level_type_id,type_name from level_type where type_name='Supply'";
-                           ResultSet rs6 = connection.prepareStatement(query11).executeQuery();
-                            if (rs6.next()) {
-                            levelType = rs6.getInt("level_type_id");
-                            levelTypeName=rs6.getString("type_name");
+                          getConnection();
+                             ResultSet rs63 = connection.prepareStatement(query11).executeQuery();
+                            if (rs63.next()) {
+                            levelType = rs63.getInt("level_type_id");
+                            levelTypeName=rs63.getString("type_name");
                         }
                             }
                          if(currentlevelRatio >  db_level_ratio){
                             /////////////////////////get level_type for Distribution ////////////////
                              String query11="Select level_type_id,type_name from level_type where type_name='Distribution'";
-                           ResultSet rs6 = connection.prepareStatement(query11).executeQuery();
-                            if (rs6.next()) {
-                            levelType = rs6.getInt("level_type_id");
-                            levelTypeName=rs6.getString("type_name");
+                             getConnection();
+                           ResultSet rs61 = connection.prepareStatement(query11).executeQuery();
+                            if (rs61.next()) {
+                            levelType = rs61.getInt("level_type_id");
+                            levelTypeName=rs61.getString("type_name");
                         }
                             }
 
@@ -480,9 +488,10 @@ long final_date = date4+Fifteen_MINUTE_IN_MILLIS;
                                     int time_range=0;
                                     String query15="SELECT TIMESTAMPDIFF(MINUTE,'" + created_date + "','" + current_dateTime + "' ) ";
                                 try {
-                                  ResultSet rs6 = connection.prepareStatement(query15).executeQuery();
-                                  if (rs6.next()) {
-                                   time_range = rs6.getInt(1);
+                                    getConnection();
+                                  ResultSet rs65 = connection.prepareStatement(query15).executeQuery();
+                                  if (rs65.next()) {
+                                   time_range = rs65.getInt(1);
                                     }
                                    } catch (Exception e) {
                                      System.out.println("Error in OHLevelEntryModel byte_data() time_range query "+e);
@@ -577,6 +586,7 @@ long final_date = date4+Fifteen_MINUTE_IN_MILLIS;
                                        +" and ohl.overheadtank_id=oht.overheadtank_id "
                                        +" and oht.overheadtank_id="+junction_id
                                        +" order by d.distribution_id desc Limit 1 ";
+                        getConnection();
                         PreparedStatement ps12 = (PreparedStatement) connection.prepareStatement(query12);
                         ResultSet rs12 = ps12.executeQuery();
                         while(rs12.next()){
@@ -665,6 +675,7 @@ long final_date = date4+Fifteen_MINUTE_IN_MILLIS;
 
 
                             String query5 = "insert into distribution (ohlevel_id,type,level_type_id) values(?,?,?)";
+                            
                             PreparedStatement ps5 = (PreparedStatement) connection.prepareStatement(query5);
                             ps5.setInt(1, ohlevel_id);
                             ps5.setString(2,levelTypeName);
@@ -691,11 +702,210 @@ long final_date = date4+Fifteen_MINUTE_IN_MILLIS;
         }
         return;
     }
+      public String getOverheadTankType(String deviceid) {
+         String typ="";
+        String query = "select remark FROM overheadtank where overheadtank_id='"+deviceid+"'";
+        try {
+           Class.forName("com.mysql.jdbc.Driver");
+            Connection con=DriverManager.getConnection("jdbc:mysql://localhost:3306/smart_meter_survey","root","root");
+            Statement stmt = con.createStatement();
+            ResultSet rset = stmt.executeQuery(query);
+            if (rset.next()) {
+                 typ= rset.getString(1);
+            } else {
+                return "";
+            }
+        } catch (Exception e) {
+            System.out.println("Error in getOverHeadTank - OHLevelModel - " + e);
+          //  message = "Something going wrong";
+          //  messageBGColor = "red";
+            return "";
+        }
+        return typ;
+    }
+       public int getStatusId( String did) {
+        int vehicle_id = 0;
+        String query = "select device_status_id from device_status where active='Y' and device_id='"+did+"'";
+        try {
+           Class.forName("com.mysql.jdbc.Driver");
+            Connection con=DriverManager.getConnection("jdbc:mysql://localhost:3306/mqtt_server","root","root");
+            Statement stmt = con.createStatement();
+            ResultSet rs = stmt.executeQuery(query);
+            while (rs.next()) {
+                vehicle_id = rs.getInt("device_status_id");
+            }
+            con.close();
+        } catch (Exception e) {
+            System.out.println(e);
+        }
+        return vehicle_id;
+    }
+        public String getOverheadTankType1(String deviceid) {
+         String typ="";
+        String query = "select type FROM overheadtank where remark='"+deviceid+"'";
+        try {
+           Class.forName("com.mysql.jdbc.Driver");
+            Connection con=DriverManager.getConnection("jdbc:mysql://localhost:3306/smart_meter_survey","root","root");
+            Statement stmt = con.createStatement();
+            ResultSet rset = stmt.executeQuery(query);
+            if (rset.next()) {
+                 typ= rset.getString(1);
+            } else {
+                return "";
+            }
+        } catch (Exception e) {
+            System.out.println("Error in getOverHeadTank - OHLevelModel - " + e);
+          //  message = "Something going wrong";
+          //  messageBGColor = "red";
+            return "";
+        }
+        return typ;
+    }
+          public String getOverheadTankid1(String deviceid) {
+         String typ="";
+        String query = "select overheadtank_id FROM overheadtank where remark='"+deviceid+"'";
+        try {
+           Class.forName("com.mysql.jdbc.Driver");
+            Connection con=DriverManager.getConnection("jdbc:mysql://localhost:3306/smart_meter_survey","root","root");
+            Statement stmt = con.createStatement();
+            ResultSet rset = stmt.executeQuery(query);
+            if (rset.next()) {
+                 typ= rset.getString(1);
+            } else {
+                return "";
+            }
+        } catch (Exception e) {
+            System.out.println("Error in getOverHeadTank - OHLevelModel - " + e);
+          //  message = "Something going wrong";
+          //  messageBGColor = "red";
+            return "";
+        }
+        return typ;
+    }
+    public int getOverHeadTankHeight(String deviceid,String type) {
+        String overid=getOverheadTankid1(deviceid);
+        String query = "select oht.height from overheadtank_height as oht,overheadtank as ot\n" +
+"where oht.overheadtank_id=ot.overheadtank_id and ot.type='"+type+"' and oht.overheadtank_id='"+overid+"'";
+        try {
+          Class.forName("com.mysql.jdbc.Driver");
+            Connection con=DriverManager.getConnection("jdbc:mysql://localhost:3306/smart_meter_survey","root","root");
+            Statement stmt = con.createStatement();
+            ResultSet rset = stmt.executeQuery(query);
+            if (rset.next()) {
+                return rset.getInt(1);
+            } else {
+                return 0;
+            }
+        } catch (Exception e) {
+            System.out.println("Error in getOverHeadTank - OHLevelModel - " + e);
+           // message = "Something going wrong";
+          //  messageBGColor = "red";
+            return 0;   
+        }
+    }
+ public byte[] getdevicedatalevel(byte junction_id) {
+      String did=getOverheadTankType(String.valueOf(junction_id));
+      int statusid=getStatusId(did);
+       String type=getOverheadTankType1(did);
+       int height=getOverHeadTankHeight(did,type);
+        byte[] response = new byte[7];
+        String query = "select remark FROM smart_meter_survey.ohlevel where overheadtank_id='"+junction_id+"' order by ohlevel_id desc limit 1";
+        try {
+            Class.forName("com.mysql.jdbc.Driver");
+            Connection con=DriverManager.getConnection("jdbc:mysql://localhost:3306/smart_meter_survey","root","root");
+            Statement stmt = con.createStatement();
+            ResultSet rset = stmt.executeQuery(query);
+            if (rset.next()) {
+                int  a1 = rset.getInt("remark");
+//               byte [] data = new byte [2]; 
+//               data[0] = (byte) (a1 & 0xFF);
+//                data[1] = (byte) ((a1 >> 8) & 0xFF);
+     
+    int newdata = a1 / 10;
+    int c = newdata & 0x00ff;  //just removes the upper 8 bits and returns an unsigned char
+    byte b=(byte)c;
+    int hi = newdata>>8; 
+	  byte b1=(byte)hi;	
+                 
+                byte [] data = new byte [2];
+                 data[0] = (byte) (newdata & 0xFF);
+                response[0] =  b1;      
+               // byte b = rset.getByte("level_b");
+                response[1] = b;
+              //  byte c = rset.getByte("step");
+                response[2] = 1;
+              //  byte d = rset.getByte("level1");
+                response[3] = 1;
+             //   byte e = rset.getByte("level2");
+                response[4] = 1;
+             //   byte f = rset.getByte("level3");
+                response[5] = 1;
+             //   byte g = rset.getByte("level4");
+                response[6] = 1;
 
+            }
+        } catch (Exception e) {
+            System.out.println(e);
+        }
+        return response;
+    }
+    
+// public byte[] getdevicedatalevel(byte junction_id) {
+//      String did=getOverheadTankType(String.valueOf(junction_id));
+//      int statusid=getStatusId(did);
+//       String type=getOverheadTankType1(did);
+//       int height=getOverHeadTankHeight(did,type);
+//        byte[] response = new byte[7];
+//        String query = "SELECT wd.water_level FROM water_data as wd where device_status_id='"+statusid+"' order by wd.water_data_id desc limit 1";
+//        try {
+//            Class.forName("com.mysql.jdbc.Driver");
+//            Connection con=DriverManager.getConnection("jdbc:mysql://localhost:3306/mqtt_server","root","root");
+//            Statement stmt = con.createStatement();
+//            ResultSet rset = stmt.executeQuery(query);
+//            if (rset.next()) {
+//                int  a1 = rset.getInt("water_level");
+////               byte [] data = new byte [2]; 
+////               data[0] = (byte) (a1 & 0xFF);
+////                data[1] = (byte) ((a1 >> 8) & 0xFF);
+//    if(a1>height){
+//          a1= a1-height;
+//        }else{
+//      a1=height-a1;
+//        }   
+//    int newdata = a1 / 10;
+//    int c = newdata & 0x00ff;  //just removes the upper 8 bits and returns an unsigned char
+//    byte b=(byte)c;
+//    int hi = newdata>>8; 
+//	  byte b1=(byte)hi;	
+//                 
+//                byte [] data = new byte [2];
+//                 data[0] = (byte) (newdata & 0xFF);
+//                response[0] =  b1;      
+//               // byte b = rset.getByte("level_b");
+//                response[1] = b;
+//              //  byte c = rset.getByte("step");
+//                response[2] = 1;
+//              //  byte d = rset.getByte("level1");
+//                response[3] = 1;
+//             //   byte e = rset.getByte("level2");
+//                response[4] = 1;
+//             //   byte f = rset.getByte("level3");
+//                response[5] = 1;
+//             //   byte g = rset.getByte("level4");
+//                response[6] = 1;
+//
+//            }
+//        } catch (Exception e) {
+//            System.out.println(e);
+//        }
+//        return response;
+//    }
+//    
     public byte[] getData(byte junction_id) {
         byte[] response = new byte[7];
         String query = "select level_a,level_b,step,level1,level2,level3,level4 from ohlevel where overheadtank_id='" + junction_id + "' order by ohlevel_id  desc";
         try {
+            
             ResultSet rset = connection.prepareStatement(query).executeQuery();
 
             if (rset.next()) {
@@ -747,11 +957,16 @@ long final_date = date4+Fifteen_MINUTE_IN_MILLIS;
             }
             Byte command = (byte) Integer.parseInt(command_value);
             dataToProcess[13] = command;
-            System.out.println("type_of_data is 1");
+            System.out.println("type_of_data is 1"); 
             return dataToProcess;
         } else if (type_of_data == 9) {
             byte twoByteDisplayData[] = new byte[7];
+          
+            if(junctionID ==30 || junctionID==26 ||junctionID==27){
+                 twoByteDisplayData = getdevicedatalevel(junctionID);
+            }else{
             twoByteDisplayData = getData(junctionID);
+            }
             byte data1 = twoByteDisplayData[0];
             byte data2 = twoByteDisplayData[1];
             byte data3 = twoByteDisplayData[2];
@@ -800,8 +1015,8 @@ long final_date = date4+Fifteen_MINUTE_IN_MILLIS;
             System.out.println(data3+"=="+data4);
             dataToProcess[firstStartDataPosition + 8] = data4;  //level2
             dataToProcess[firstStartDataPosition + 9] = data3;
-            dataToProcess[firstStartDataPosition + 10] = data6;
-            dataToProcess[firstStartDataPosition + 11] = data7;
+            dataToProcess[firstStartDataPosition + 10] = data1;
+            dataToProcess[firstStartDataPosition + 11] = data2;
             System.out.println("type_of_data is 9.");
             return dataToProcess;
         } else {

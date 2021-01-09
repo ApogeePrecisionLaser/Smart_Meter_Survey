@@ -26,14 +26,14 @@ Com7_2
 
 bb2a1e29-86ca-ef48-b096-f23b4a743b66
 
-overHeadTankView.jsp
+OnOffLevel.jsp
 file
 
 
 
 
-2017-09-08T08:04:13.757478Z
-27811d6ea536b48f849fb7cb5dc9710a
+2017-09-08T08:04:13.760478Z
+b5977cba975d25f51fe998a2abf8f807
 2017-09-05T10:19:19.893554Z
 784
 Navitus1
@@ -58,19 +58,30 @@ Navitus1
 
 
 
-31847
+15490
 
-sourceWaterLevelView.jsp
+dashboard.jsp
+file
+0
+
+
+add
+
+dashboard_2.jsp
+file
+0
+
+
+add
+
+deviceoverheadmap.jsp
 file
 
 
 
+add
 
-2017-02-23T10:05:53.125876Z
-32fd2f40a433e29ea3ac14450b8d5f5b
-2017-02-21T11:46:12.783270Z
-500
-Com7_2
+a85058e7bd078ddfbd071d4922884573
 
 
 
@@ -82,51 +93,9 @@ Com7_2
 
 
 
-
-
-
-
-
-
-
-
-
-
-25392
-
-rawWaterView.jsp
-file
-
-
-
-
-2017-02-23T10:05:53.125876Z
-aba2b7bab12234af624fa50d9bb8aae0
-2017-02-21T11:46:12.783270Z
-500
-Com7_2
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-27704
+copied
+file://192.168.1.6/e/new_repository/Smart_Meter_survey/web/view/waterWorks/ohLevelView.jsp
+801
 
 ohLevelView.jsp
 file
@@ -196,6 +165,54 @@ Navitus1
 
 27839
 
+ohlevelmapEntry.jsp
+file
+0
+
+
+add
+
+onoffvalue.jsp
+file
+0
+
+
+add
+
+overHeadTankView.jsp
+file
+
+
+
+
+2017-09-08T08:04:13.757478Z
+27811d6ea536b48f849fb7cb5dc9710a
+2017-09-05T10:19:19.893554Z
+784
+Navitus1
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+31847
+
 overhead_tank_keyperson.jsp
 file
 
@@ -229,40 +246,6 @@ Com7_2
 
 
 18457
-
-sourceWaterView.jsp
-file
-
-
-
-
-2017-02-23T10:05:53.125876Z
-fb3f2f7111a3e374de052604c2b9940e
-2017-02-21T11:46:12.783270Z
-500
-Com7_2
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-27972
 
 rawWaterLevelView.jsp
 file
@@ -298,17 +281,17 @@ Com7_2
 
 24562
 
-OnOffLevel.jsp
+rawWaterView.jsp
 file
 
 
 
 
-2017-09-08T08:04:13.760478Z
-b5977cba975d25f51fe998a2abf8f807
-2017-09-05T10:19:19.893554Z
-784
-Navitus1
+2017-02-23T10:05:53.125876Z
+aba2b7bab12234af624fa50d9bb8aae0
+2017-02-21T11:46:12.783270Z
+500
+Com7_2
 
 
 
@@ -330,7 +313,116 @@ Navitus1
 
 
 
-15490
+27704
+
+sourceWaterLevelView.jsp
+file
+
+
+
+
+2017-02-23T10:05:53.125876Z
+32fd2f40a433e29ea3ac14450b8d5f5b
+2017-02-21T11:46:12.783270Z
+500
+Com7_2
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+25392
+
+sourceWaterView.jsp
+file
+
+
+
+
+2017-02-23T10:05:53.125876Z
+fb3f2f7111a3e374de052604c2b9940e
+2017-02-21T11:46:12.783270Z
+500
+Com7_2
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+27972
+
+temp_ohLevel.jsp
+file
+0
+
+
+add
+
+typeOfError.jsp
+file
+
+
+
+
+2017-09-19T08:53:12.779416Z
+c5358854f746f073a34e70cea74dfb51
+2017-09-19T11:28:02.246743Z
+800
+Com7_2
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+20200
 
 waterTreatmentPlantView.jsp
 file
@@ -366,37 +458,17 @@ Com7_2
 
 27145
 
-typeOfError.jsp
+watergraph.jsp
 file
+0
 
 
+add
+
+watergraph_2.jsp
+file
+0
 
 
-2017-09-19T08:53:12.779416Z
-c5358854f746f073a34e70cea74dfb51
-2017-09-19T11:28:02.246743Z
-800
-Com7_2
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-20200
+add
 

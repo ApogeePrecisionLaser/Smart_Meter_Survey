@@ -11,8 +11,8 @@ file://192.168.1.6/e/new_repository
 652
 Navitus1
 has-props
-
-
+has-prop-mods
+svn:special svn:externals svn:needs-lock
 
 
 
@@ -26,17 +26,19 @@ has-props
 
 bb2a1e29-86ca-ef48-b096-f23b4a743b66
 
-test
+.git
 dir
+
+
+
+add
 
-nbproject
-dir
-
-src
-dir
-
-web
-dir
+SumpwellOverheadtankMapping.jrxml
+file
+0
+
+
+add
 
 build.xml
 file
@@ -71,4 +73,16 @@ jpss
 
 
 3517
+
+nbproject
+dir
+
+src
+dir
+
+test
+dir
+
+web
+dir
 

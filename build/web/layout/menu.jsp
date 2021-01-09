@@ -47,6 +47,7 @@
 
                         <li id="LevelRangeCont.do" style="display: block"><a href="LevelRangeCont.do">Level Range</a></li>
                          <li id="InsertDistributionCont.do" style="display: block"><a href="InsertDistributionCont.do">insert Dist</a></li>
+                         <li id="InsertDistributionCont.do" style="display: block"><a href="DeviceOverheaMapEntryController">OverHead Junction Map</a></li>
                     </ul>
                 </li>
                 <li id="menu1" style="display: block"><a id="status" href="#">Pipe Detail</a>
@@ -83,7 +84,9 @@
 
                     </ul>
                 </li>
-           <li><a id="mpeb1" href="DashboardController" onclick="">Dashboard</a></li>
+<!--           <li><a id="mpeb1" href="DashboardController" onclick="">Dashboard</a></li>
+                -->
+           <li><a id="mpeb1" href="DeviceOverheadMapController" onclick="">Dashboard</a></li>
                 
                 <li><a id="mpeb1" href="LoginCont.do?task=logout" onclick="">LogOut</a></li>
             </ul>

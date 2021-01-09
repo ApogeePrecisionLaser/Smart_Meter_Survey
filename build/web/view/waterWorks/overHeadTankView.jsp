@@ -315,6 +315,7 @@
                                         <table id="table1" width="800"  border="1"  align="center" class="content">
                                             <tr >
                                                 <th class="heading">S.No.</th>
+                                                 <th class="heading">Overhead Tank Id.</th>
                                                 <th class="heading">Water Treatment Plant</th>
                                                 <th class="heading">Overhead Tank</th>
                                                 <th  class="heading">Capacity Height</th>
@@ -332,8 +333,9 @@
                                             </tr>
                                             <c:forEach var="overHeadTankBean" items="${requestScope['overHeadTankList']}"  varStatus="loopCounter">
                                                 <tr class="${loopCounter.index % 2 == 0 ? 'even': 'odd'}" >
-                                                    <td id="t1c${IDGenerator.uniqueID}" style="display: none;" onclick="fillColumns(id)">${overHeadTankBean.overHeadTankId}</td>
+                                                    <td id="t1c${IDGenerator.uniqueID}" style="display: none" onclick="fillColumns(id)">${overHeadTankBean.overHeadTankId}</td>
                                                     <td id="t1c${IDGenerator.uniqueID}" onclick="fillColumns(id)" align="center">${lowerLimit - noOfRowsTraversed + loopCounter.count}</td>
+                                                     <td id="t1c${IDGenerator.uniqueID}"  onclick="fillColumns(id)">${overHeadTankBean.overHeadTankId}</td>
                                                     <td id="t1c${IDGenerator.uniqueID}"  onclick="fillColumns(id)" >${overHeadTankBean.waterTreatmentPlantName}</td>
                                                     <td id="t1c${IDGenerator.uniqueID}"  onclick="fillColumns(id)" >${overHeadTankBean.overHeadTankName}</td>
                                                     <td id="t1c${IDGenerator.uniqueID}"  onclick="fillColumns(id)" style="text-align: right;padding-right: 8px;">${overHeadTankBean.capacityHeight}</td>

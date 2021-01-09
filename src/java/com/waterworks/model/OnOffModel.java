@@ -87,10 +87,16 @@ public class OnOffModel {
                 + " ohlevel as ol,distribution as d"
                 + " where oht.watertreatmentplant_id = wtp.watertreatmentplant_id"
                 + " and ol.overheadtank_id = oht.overheadtank_id and ol.ohlevel_id=d.ohlevel_id "
-                + " And IF('" + searchDateFrom + "'='', ol.date_time LIKE '%%',ol.date_time >='" + searchDateFrom + "') "
-                + " And IF('" + searchDateTo + "'='', ol.date_time LIKE '%%',date_format(ol.date_time, '%Y-%m-%d') <='" + searchDateTo + "') "
+            //    + " And IF('" + searchDateFrom + "'='', ol.date_time LIKE '%%',ol.date_time >='" + searchDateFrom + "') "
+             //   + " And IF('" + searchDateTo + "'='', ol.date_time LIKE '%%',date_format(ol.date_time, '%Y-%m-%d') <='" + searchDateTo + "') "
                 + " And IF('" + searchOverheadtankName + "' = '',oht.name LIKE '%%', oht.name='" + searchOverheadtankName + "')"
                 + " And IF('" + type + "' = '',d.type LIKE '%%', d.type='" + type + "')";
+         if(searchDateFrom!=""){
+        query=query+"and ol.date_time='"+searchDateFrom+"'";
+        }
+         if(searchDateFrom!=""){
+        query+=" and ol.date_time='"+searchDateFrom+"'";
+        }
         int noOfRows = 0;
         try {
             PreparedStatement presta = (PreparedStatement) connection.prepareStatement(query);
@@ -123,7 +129,7 @@ public class OnOffModel {
         }
         byte[] twoByteData = new byte[2];
         String addQuery = " LIMIT " + lowerLimit + ", " + noOfRowsToDisplay;
-        if (lowerLimit == -1) {
+        if (lowerLimit == -1) {     
             addQuery = "";
         }
         //  int overheadtank_id = getOverHeadTankid(Integer.parseInt(oh_level));
@@ -131,12 +137,19 @@ public class OnOffModel {
                 + " ohlevel as ol,distribution as d"
                 + " where oht.watertreatmentplant_id = wtp.watertreatmentplant_id"
                 + " and ol.overheadtank_id = oht.overheadtank_id and ol.ohlevel_id=d.ohlevel_id "
-                + " And IF('" + searchDateFrom + "'='', ol.date_time LIKE '%%',ol.date_time >='" + searchDateFrom + "') "
-                + " And IF('" + searchDateTo + "'='', ol.date_time LIKE '%%',date_format(ol.date_time, '%Y-%m-%d') <='" + searchDateTo + "') "
+             //   + " And IF('" + searchDateFrom + "'='', ol.date_time LIKE '%%',ol.date_time >='" + searchDateFrom + "') "
+            //    + " And IF('" + searchDateTo + "'='', ol.date_time LIKE '%%',date_format(ol.date_time, '%Y-%m-%d') <='" + searchDateTo + "') "
                 + " And IF('" + searchOverheadtankName + "' = '',oht.name LIKE '%%', oht.name='" + searchOverheadtankName + "') "
-                   + " And IF('" + type + "' = '',d.type LIKE '%%', d.type='" + type + "') "
-                + " order by ol.date_time desc "
-                + addQuery;
+                   + " And IF('" + type + "' = '',d.type LIKE '%%', d.type='" + type + "') ";
+        if(!"".equals(searchDateFrom)){
+        query=query+"and ol.date_time='"+searchDateFrom+"'";
+        }
+         if(!"".equals(searchDateFrom)){
+        query+=" and ol.date_time='"+searchDateFrom+"'";
+        }
+              query+= "order by ol.date_time desc ";           
+                  query+=" LIMIT "+lowerLimit+", "+noOfRowsToDisplay;
+               
         try {
             PreparedStatement pstmt = (PreparedStatement) connection.prepareStatement(query);
 
@@ -149,7 +162,7 @@ public class OnOffModel {
                 ohLevelBean.setType(rset.getString("type"));
                 String datetime1 = rset.getString("date_time");
                 
-                 DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss.S");
+                 DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");  
  
        
  
@@ -186,7 +199,7 @@ public class OnOffModel {
                 
           if(!diffdatetime.equals("")) 
           {
-              	SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.S");
+              	SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
               
         d1 =  format.parse(diffdatetime);
 			d2 =  format.parse(aftersubtraction);
@@ -289,12 +302,19 @@ public class OnOffModel {
                 + " ohlevel as ol,distribution as d"
                 + " where oht.watertreatmentplant_id = wtp.watertreatmentplant_id"
                 + " and ol.overheadtank_id = oht.overheadtank_id and ol.ohlevel_id=d.ohlevel_id "
-                + " And IF('" + searchDateFrom + "'='', ol.date_time LIKE '%%',ol.date_time >='" + searchDateFrom + "') "
-                + " And IF('" + searchDateTo + "'='', ol.date_time LIKE '%%',date_format(ol.date_time, '%Y-%m-%d') <='" + searchDateTo + "') "
+              //  + " And IF('" + searchDateFrom + "'='', ol.date_time LIKE '%%',ol.date_time >='" + searchDateFrom + "') "
+              //  + " And IF('" + searchDateTo + "'='', ol.date_time LIKE '%%',date_format(ol.date_time, '%Y-%m-%d') <='" + searchDateTo + "') "
                 + " And IF('" + searchOverheadtankName + "' = '',oht.name LIKE '%%', oht.name='" + searchOverheadtankName + "') "
-                   + " And IF('" + type + "' = '',d.type LIKE '%%', d.type='" + type + "') "
-                + " order by ol.date_time asc "
-                + addQuery;
+                   + " And IF('" + type + "' = '',d.type LIKE '%%', d.type='" + type + "') ";
+         if(!"".equals(searchDateFrom)){
+        query=query+"and ol.date_time>='"+searchDateFrom+"'";
+        }
+         if(!"".equals(searchDateFrom)){
+        query+=" and ol.date_time<='"+searchDateFrom+"'";
+        }
+              query+= "order by ol.date_time desc " + addQuery;  
+           //     + " order by ol.date_time asc "
+              //  + addQuery;
         try {
             PreparedStatement pstmt = (PreparedStatement) connection.prepareStatement(query);
 
@@ -307,7 +327,7 @@ public class OnOffModel {
                 ohLevelBean.setType(rset.getString("type"));
                 String datetime1 = rset.getString("date_time");
                 
-                 DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss.S");
+                 DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
  
        
  
@@ -359,7 +379,7 @@ public class OnOffModel {
                 
                
           
-              	SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.S");
+              	SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
               
         d1 =  format.parse(aftersubtraction);
 			d2 =  format.parse(finaldatetime);
@@ -491,12 +511,19 @@ public class OnOffModel {
                 + " ohlevel as ol,distribution as d"
                 + " where oht.watertreatmentplant_id = wtp.watertreatmentplant_id"
                 + " and ol.overheadtank_id = oht.overheadtank_id and ol.ohlevel_id=d.ohlevel_id "
-                + " And IF('" + searchDateFrom + "'='', ol.date_time LIKE '%%',ol.date_time >='" + searchDateFrom + "') "
-                + " And IF('" + searchDateTo + "'='', ol.date_time LIKE '%%',date_format(ol.date_time, '%Y-%m-%d') <='" + searchDateTo + "') "
+               // + " And IF('" + searchDateFrom + "'='', ol.date_time LIKE '%%',ol.date_time >='" + searchDateFrom + "') "
+              //  + " And IF('" + searchDateTo + "'='', ol.date_time LIKE '%%',date_format(ol.date_time, '%Y-%m-%d') <='" + searchDateTo + "') "
                 + " And IF('" + searchOverheadtankName + "' = '',oht.name LIKE '%%', oht.name='" + searchOverheadtankName + "') "
-                   + " And IF('" + type + "' = '',d.type LIKE '%%', d.type='" + type + "') "
-                + " order by ol.date_time asc "
-                + addQuery;
+                   + " And IF('" + type + "' = '',d.type LIKE '%%', d.type='" + type + "') ";
+         if(!"".equals(searchDateFrom)){
+        query=query+"and ol.date_time>='"+searchDateFrom+"'";
+        }
+         if(!"".equals(searchDateFrom)){
+        query+=" and ol.date_time<='"+searchDateFrom+"'";
+        }
+              query+= "order by ol.date_time desc " + addQuery;  
+              //  + " order by ol.date_time asc "
+               
         try {
             PreparedStatement pstmt = (PreparedStatement) connection.prepareStatement(query);
 
@@ -509,7 +536,7 @@ public class OnOffModel {
                 ohLevelBean.setType(rset.getString("type"));
                 String datetime1 = rset.getString("date_time");
                 
-                 DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss.S");
+                 DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
  
        
  
@@ -561,7 +588,7 @@ public class OnOffModel {
                 
                
           
-              	SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.S");
+              	SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
               
         d1 =  format.parse(aftersubtraction);
 			d2 =  format.parse(finaldatetime);
@@ -678,7 +705,7 @@ public class OnOffModel {
     }
 
     
-
+      
      public String getRemark(String q){
 
         String name="";
@@ -708,11 +735,13 @@ public class OnOffModel {
  String query = " select wtp.name as name1,oht.name,ol.remark,ol.ohlevel_id,d.type,ol.date_time,level3,level4,capacity_height from watertreatmentplant AS wtp,overheadtank AS oht,"
                 + " ohlevel as ol,distribution as d"
                 + " where oht.watertreatmentplant_id = wtp.watertreatmentplant_id"
-                + " and ol.overheadtank_id = oht.overheadtank_id and ol.ohlevel_id=d.ohlevel_id "
-                + " And IF('" + q + "'='', ol.date_time LIKE '%%',ol.date_time >'" + q + "') "
-               
+                + " and ol.overheadtank_id = oht.overheadtank_id and ol.ohlevel_id=d.ohlevel_id ";
+               // + " And IF('" + q + "'='', ol.date_time LIKE '%%',ol.date_time >'" + q + "') ";
+               if(!q.equals("")){
+                   query+=" and ol.date_time>'"+q+"'";
+               }
 //                   + " And IF('" + type + "' = '',d.type LIKE '%%', d.type='" + type + "') "
-                + " order by ol.date_time asc limit 1";
+                query+= " order by ol.date_time asc limit 1";              
         try {
             PreparedStatement ps = (PreparedStatement) connection.prepareStatement(query);
             ResultSet rs = ps.executeQuery();
@@ -724,8 +753,8 @@ public class OnOffModel {
                          {
                  name = rs.getString("date_time");
                          }
-                   DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss.S");
-                 
+                   DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+                   name = rs.getString("date_time");
                  
                     LocalDateTime datetime = LocalDateTime.parse(name,formatter);
  

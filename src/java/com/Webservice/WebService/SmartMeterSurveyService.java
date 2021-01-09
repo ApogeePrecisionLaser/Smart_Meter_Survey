@@ -44,19 +44,20 @@ public class SmartMeterSurveyService {
     @Path("/login")
     @Produces(MediaType.APPLICATION_JSON)
     @Consumes(MediaType.APPLICATION_JSON)
-    public JSONArray Login(JSONObject jsonObj) throws Exception {
+    public JSONObject Login(JSONObject jsonObj) throws Exception {
          JSONArray jsonArray = new JSONArray();
+         JSONObject jsonObj1=new JSONObject();
         SmartMeterSurveyServiceModel webServiceModel = new SmartMeterSurveyServiceModel();
         try {
 
             webServiceModel.setConnection(DBConnection.getConnectionForUtf(serveletContext));
-            jsonArray=webServiceModel.isExits(jsonObj);
+            jsonObj1=webServiceModel.isExits(jsonObj);
             System.out.println("inside SmartMeterSurveyService class login method");
         } catch (Exception ex) {
             System.out.println("ERROR : in Login() in SmartMeterSurveyWebservices : " + ex);
         }
         webServiceModel.closeConnection();
-        return jsonArray;
+        return jsonObj1;
     }
     
      @POST

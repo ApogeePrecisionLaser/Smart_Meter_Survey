@@ -137,7 +137,7 @@ public class SmartMeterSurveyServiceModel {
         return id;
     }     
 
-    public JSONArray isExits(JSONObject jsonObject) {
+    public JSONObject isExits(JSONObject jsonObject) {
          JSONArray jsonArray = new JSONArray();
        try {
            String query = "select u.key_person_id, key_person_name, designation, address_line1, mobile_no1, "
@@ -154,7 +154,7 @@ public class SmartMeterSurveyServiceModel {
                 jsonObject.put("address_line1", rset.getString("address_line1"));
                 jsonObject.put("email_id1", rset.getString("email_id1"));
                 jsonObject.put("result", "success");
-                jsonArray.put(jsonObject);
+               // jsonArray.put(jsonObject);
             } else {
                 jsonObject.put("result", "error");
             }
@@ -162,7 +162,7 @@ public class SmartMeterSurveyServiceModel {
            // jsonObject.put("result", "error");
             System.out.println(e);
         }
-       return jsonArray;
+       return jsonObject;
     }
 
     public JSONArray getMeterDetilData() {

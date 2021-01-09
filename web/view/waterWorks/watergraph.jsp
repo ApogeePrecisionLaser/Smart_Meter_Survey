@@ -47,6 +47,7 @@
 
 
             window.onload = function () {
+                
                 var dataPoints1 = [];
                 var dataPoints2 = [];
                 var energyMeterdataPoints3 = [];
@@ -191,14 +192,14 @@ $.ajax({
                 var chart = new CanvasJS.Chart("chartContainer", {
                     zoomEnabled: true,
                     title: {
-                        text: "Overhead Tank & Energy Meter Level"
+                        text: "Overhead Tank,SumpWell & Energy Meter Level"
                     },
 //                    axisX: {
 //                        title: "chart updates in every 2 minutes"
 //                    },
                     axisY:{
 		
-                        title: "ohLevel & Energy Meter",
+                        title: "ohLevel,SumpWell& Energy Meter",
                         yValueFormatString: "###",
                         includeZero: false,
                         interval: 100
@@ -213,24 +214,24 @@ $.ajax({
                         fontColor: "dimGrey",
                         itemclick : toggleDataSeries
                     },
-                    data: [{
-                            type: "line",
-                            xValueType: "dateTime",
-                            yValueFormatString: "###",
-                            xValueFormatString: "hh:mm:ss TT",
-                            showInLegend: true,
-                            name: " Overhead Tank Water Level ",
-                            dataPoints: dataPoints1
-                        },
-                        {
+                    data: [ {
                           type: "line",
                             xValueType: "dateTime",
                             yValueFormatString: "###",
                             xValueFormatString: "hh:mm:ss TT",
                             showInLegend: true,
                             name: " Sump Well Water Level ",
-                            dataPoints: dataPoints2
+                            dataPoints: dataPoints1
                         },{
+                            type: "line",
+                            xValueType: "dateTime",
+                            yValueFormatString: "###",
+                            xValueFormatString: "hh:mm:ss TT",
+                            showInLegend: true,
+                            name: " Overhead Tank Water Level ",
+                            dataPoints: dataPoints2
+                        },
+                       {
                           type: "line",
                             xValueType: "dateTime",
                             yValueFormatString: "###",
@@ -273,13 +274,14 @@ $.ajax({
                     
                 }
                     // updating legend text with  updated with y Value
-                    chart.options.data[0].legendText = " Current Overhead Tank Level  " + yValue1;
+                    chart.options.data[0].legendText = " Current Sump Well Level  " + yValue1 +" cm" ;
                     chart.render();
                 }
                 function updateSumpwellChart(count) {
                     count = count || 1;
                     try{
                     for (var i = 0; i < count; i++) {
+                       // alert(sumpwellDateTime1[i].getTime());
                         time.setTime(sumpwellDateTime1[i].getTime());
                         yValue1 = Math.round((sumpwellOhLevel1[i])*100)/100;
                         dataPoints2.push({
@@ -292,7 +294,7 @@ $.ajax({
                     //alert(err.message);
                 }
                     // updating legend text with  updated with y Value
-                    chart.options.data[1].legendText = " Current Sump Well Level  " + yValue1;
+                    chart.options.data[1].legendText = " Current Overhead Tank  Level  " + yValue1 +" cm";
                     chart.render();
                 }
                 //////////////energyMeter/////////////////////
@@ -363,7 +365,8 @@ $.ajax({
                     for (var i = 0; i < datetime.length; i++) {
                         //		time.setTime(time.getTime()+ updateInterval);
                         time.setTime(dateTime2[i].getTime()+updateInterval);
-                        yValue1 = Math.round((OhLevel2[i])*100)/100;
+                        yValue1 = Math.round((OhLevel1[i])*100)/100;
+                          alert(yValue1);
                         dataPoints1.push({
                             x: time.getTime(),
                             y: yValue1
@@ -376,6 +379,7 @@ $.ajax({
                 // generates first set of dataPoints
                 updateChart(OhLevel1.length);
                 updateSumpwellChart(sumpwellOhLevel1.length);
+                
                 updateEnergyMeterChart(energyMeterDataArray.length);
                 //setInterval(function(){updateChart1()}, updateInterval);
             }
@@ -383,10 +387,22 @@ $.ajax({
     </head>
     <body>
 
-        <div id="chartContainer" style="height: 500px; width: 100%;"></div>
+        <div id="chartContainer" style="height: 500px; width: 100%;">
+            
+            
+          
+        </div>
         <div id="search_div" style="margin-top:35px; margin-left:60px;">
             <form action="CanvasJSController1" method="post">
          <table>
+             <tr>
+                 <td><h4> date :${date}</h4></td>
+                 <td><h4> OverHeadTank :${ohname}</h4></td>
+                   
+             
+             
+                 
+             </tr>
              <tr>
          <td>Select Date</td>
          <td><input class="input" type="text" data-format="yyyy-MM-dd" id="level_datetime" name="level_datetime" value="" size="12"></td>

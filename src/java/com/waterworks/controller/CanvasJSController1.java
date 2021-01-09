@@ -8,6 +8,8 @@ package com.waterworks.controller;
 import com.waterworks.model.CanvasJSModel1;
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import javax.servlet.RequestDispatcher;
 import javax.servlet.ServletContext;
 import javax.servlet.ServletException;
@@ -25,6 +27,9 @@ public class CanvasJSController1 extends HttpServlet {
 static int ohlevel_id;
    static String searchDate;
   static int energy;
+   static String did;
+  static String oid;
+  static String ohname;
     /**
      * Processes requests for both HTTP <code>GET</code> and <code>POST</code>
      * methods.
@@ -54,8 +59,12 @@ static int ohlevel_id;
                 task="";
             }
          if(task.equals("VIEW_GRAPH2")){
+               did = request.getParameter("did");
+               oid = request.getParameter("oid");
+               ohname = request.getParameter("ohname");
           ohlevel_id = Integer.parseInt(request.getParameter("ohlevel_id"));
           energy = Integer.parseInt(request.getParameter("energy_id"));
+          
         }
         
        
@@ -86,7 +95,7 @@ try{
                  JSONArray arrayObj = new JSONArray();
                  JSONArray arrayObj1 = new JSONArray();
                
-                arrayObj= canvasJSModel.getAllDateTime(ohlevel_id,searchDate);
+                arrayObj= canvasJSModel.getAllDateTime(ohlevel_id,searchDate,did);
                 obj1.put("dateTime", arrayObj);    
                PrintWriter out = response.getWriter();
                out.print(obj1);
@@ -98,7 +107,7 @@ try{
                  JSONObject obj1 = new JSONObject();
                  JSONArray arrayObj = new JSONArray();
                  JSONArray arrayObj1 = new JSONArray();         
-                arrayObj1=canvasJSModel.getAllOhLevel(ohlevel_id,searchDate);
+                arrayObj1=canvasJSModel.getAllOhLevel(ohlevel_id,searchDate,did);
 
                 obj1.put("ohLevel", arrayObj1);
                PrintWriter out = response.getWriter();
@@ -111,7 +120,7 @@ try{
                  JSONArray arrayObj = new JSONArray();
                  JSONArray arrayObj1 = new JSONArray();
 
-                arrayObj= canvasJSModel.getAllSumpwellDateTime(ohlevel_id,searchDate);
+                arrayObj= canvasJSModel.getAllSumpwellDateTime(ohlevel_id,searchDate,oid);
                 obj1.put("dateTime", arrayObj);
                PrintWriter out = response.getWriter();
                out.print(obj1);
@@ -123,7 +132,7 @@ try{
                  JSONObject obj1 = new JSONObject();
                  JSONArray arrayObj = new JSONArray();
                  JSONArray arrayObj1 = new JSONArray();
-                arrayObj1=canvasJSModel.getAllSumpwellOhLevel(ohlevel_id,searchDate);
+                arrayObj1=canvasJSModel.getAllSumpwellOhLevel(ohlevel_id,searchDate,oid);
 
                 obj1.put("ohLevel", arrayObj1);
                PrintWriter out = response.getWriter();
@@ -138,7 +147,7 @@ try{
                  JSONArray arrayObj = new JSONArray();
                  JSONArray arrayObj1 = new JSONArray();
 
-                arrayObj= canvasJSModel.getAllEnergyMeterDateTime(energy,searchDate);
+                arrayObj= canvasJSModel.getAllEnergyMeterDateTime(energy,searchDate,did);
                 obj1.put("dateTime", arrayObj);
                PrintWriter out = response.getWriter();
                out.print(obj1);
@@ -150,7 +159,7 @@ try{
                  JSONObject obj1 = new JSONObject();
                  JSONArray arrayObj = new JSONArray();
                  JSONArray arrayObj1 = new JSONArray();
-                arrayObj1=canvasJSModel.getAllEnergyMeterData(energy,searchDate);
+                arrayObj1=canvasJSModel.getAllEnergyMeterData(energy,searchDate,did);
 
                 obj1.put("ohLevel", arrayObj1);
                PrintWriter out = response.getWriter();
@@ -185,7 +194,17 @@ try{
                out.print(obj1);
                 return;
             }
-
+        Date dtnew = new Date();
+    SimpleDateFormat dfnew = new SimpleDateFormat("yy/MM/dd");
+    SimpleDateFormat df1new = new SimpleDateFormat("yy/MM/dd HH:mm:ss");
+    String cut_dtnew = dfnew.format(dtnew);
+    if(searchDate == null || searchDate==""){
+       // searchDate=cut_dtnew;
+    }else{
+    cut_dtnew=searchDate;
+    }
+request.setAttribute("ohname", ohname);
+request.setAttribute("date", cut_dtnew);
             RequestDispatcher rd=request.getRequestDispatcher("/view/waterWorks/watergraph.jsp");
             rd.forward(request, response);
         } catch(Exception e) {

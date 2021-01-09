@@ -25,10 +25,12 @@
   </style>
   <script>
       
-       function viewChart2(id){
+       function viewChart2(did,oid,ohname){
+          
           var water = document.getElementById("waterid").value;
           var energy = document.getElementById("energyid").value;
-        var queryString = "task=VIEW_GRAPH2&ohlevel_id="+water+"&energy_id="+energy;
+        //  var ohnamedata = document.getElementById("ohname").value;
+        var queryString = "task=VIEW_GRAPH2&ohlevel_id="+water+"&energy_id="+energy+"&did="+did+"&oid="+oid+"&ohname="+ohname;
         var url = "CanvasJSController1?" + queryString;
         popupwin = openPopUp(url, "Previous History Details", 1000, 700);
     }
@@ -174,7 +176,7 @@
 //                                                        document.getElementById("accuracy").value = accuracy;
 //                                                        document.getElementById("voltage").value = voltage;
                             //$("#XDatetime").text(date);
-                            //alert("date value -"+date);
+                         //    alert("date value -"+date);
                             //document.getElementById("XDatetime").value = date;
                             $("#XAccuracy").val(accuracy);
 
@@ -216,7 +218,7 @@
             }
 
             function multiple() {
-                 //alert("under multiple");
+                 // alert(document.getElementById("ohname").value);
             
                 datashow();
                // check();
@@ -248,7 +250,7 @@
     </div>
     <div class="collapse navbar-collapse" id="myNavbar">
       <ul class="nav navbar-nav">
-        <li class="active"><a href="#">Home</a></li>
+        <li class="active"><a href="ohLevelCont.do">Home</a></li>
 <!--        <li><a href="#">Page 2</a></li>
         <li><a href="#">Page 3</a></li>-->
       </ul>
@@ -345,18 +347,56 @@
   <input type="hidden" id="energytime" name="energytime" value="${energytime}">
    <input type="hidden" id="energyid" name="energyid" value="${energyid}">
       <input type="hidden" id="magnetic_sensor_value" name="magnetic_sensor_value" value="${magnetic_sensor_value}">
+    <input type="hidden" id="did" name="did1" value="${device_idfromjsp}">
+    <input type="hidden" id="ohname" name="ohname1" value="${ohname}">
   
 
 <table align="center">
+  
+    
+    
+    <tr><td><h3>
+                Device Id :${device_idfromjsp}
+</h3></td>
+    <td><h3>
+                OverHead Tank  :${ohname}
+</h3></td>
+ 
+    
+    
+    
+    </tr>
+    
     <tr>
-        <td>
-<div class="card text-white bg-info mb-3" style="max-width: 38rem;">
-    <div class="card-header"><h3 align="center">WATER DATA</h3></div>
+        <td><div class="card text-white bg-warning mb-3" style="width: 300px; height: 400px">
+    <div class="card-header"><h3 align="center">OverHead Tank Level DATA</h3></div>
   <div class="card-body">
 <!--    <h5 class="card-title">Info card title</h5>-->
-    <p class="card-text">  Water Level : <strong style="color: black;" id="waterlevel">${waterlevel}</strong></p>
-                                                 <p>Water Temperature : <strong style="color: black;" id="water_temperature">${water_temperature}</strong></p>
-                                            <p>Water Intensity : <strong style="color: black;" id="water_intensity">${water_intensity}</strong></p>
+ 
+
+    <p class="card-text">  Overhead Water Level : <strong style="color: black;" id="waterlevel">${waterleveltemp} cm</strong></p>
+    
+                                            <p style="display: none">Water Intensity : <strong style="color: black;" id="water_intensity">${water_intensity}</strong></p>
+                                             <p>Date Time : <strong style="color: black;" id="watertime">${datetimetemp}</strong></p>
+                                             
+   
+ 
+                                          
+                                         
+                                  
+  </div>
+</div></td>
+ 
+<td>    
+<div class="card text-white bg-info mb-3" style="width: 430px; height: 400px">
+    <div class="card-header"><h3 align="center">SumpWellWater Data</h3></div>
+  <div class="card-body">
+<!--    <h5 class="card-title">Info card title</h5>-->
+ 
+
+    <p class="card-text">  Water Level : <strong style="color: black;" id="waterlevel">${waterlevel} cm</strong></p>
+    <p style="display: none">Water Temperature : <strong style="color: black;" id="water_temperature">${water_temperature}</strong></p>
+                                            <p style="display: none">Water Intensity : <strong style="color: black;" id="water_intensity">${water_intensity}</strong></p>
                                              <p>Date Time : <strong style="color: black;" id="watertime">${watertime}</strong></p>
                                               <p>Magnetic Sensor Value : <strong style="color: black;" id="magnetic_sensor_value">${magnetic_sensor_value}</strong></p>
                                              <p>Relay State1 : <strong style="color: black;" id="relaystate">${relaystate}</strong></p>
@@ -378,27 +418,28 @@
                                           
                                           <input type=button value="OK" class="btn btn-success" onclick="goToNewPage1()" />
                                           <br>
-<input type="button" class="btn btn-primary" id="graph" value="GRAPH" name="view_pdf2" onclick="viewChart2();">
+<input type="button" class="btn btn-primary" id="graph" value="GRAPH" name="view_pdf2" onclick="viewChart2('${device_idfromjsp}','${oht_idfromjsp}','${ohname}');">
                                   
   </div>
 </div>
-        </td>
-      &nbsp;
-        <td>
-<div class="card text-white bg-warning mb-3" style="max-width: 80rem;">
+      
+   </td> 
+    
+   <td> 
+<div class="card text-white bg-warning mb-3" style="width: 300px; height: 400px">
     <div class="card-header"><h3 align="center">ENERGY DATA</h3></div>
   <div class="card-body">
 <!--    <h5 class="card-title">Light card title</h5>-->
     <p class="card-text">   Total Active Power : <strong style="color: black;" id="total_active_power">${total_active_power}</strong></p>
-                                                 <p>Consumed Energy Mains : <strong style="color: black;" id="Cons_energy_mains">${Cons_energy_mains}</strong></p>
+                                                 <p>Consumed Energy Mains : <strong style="color: black;" id="Cons_energy_mains">${Cons_energy_mains} kwh</strong></p>
                                             <p>Active Energy DG : <strong style="color: black;" id="active_energy_dg">${active_energy_dg}</strong></p>
-                                            <p>Total Active Energy : <strong style="color: black;" id="total_active_energy">${total_active_energy}</strong></p>
-                                            <p>Phase Voltage R: <strong style="color: black;" id="phase_voltage_R">${phase_voltage_R}</strong></p>
-                                            <p>Phase Voltage Y: <strong style="color: black;" id="phase_voltage_Y">${phase_voltage_Y}</strong></p>
-                                             <p>Phase Voltage B: <strong style="color: black;" id="phase_voltage_B">${phase_voltage_B}</strong></p>
-                                           <p>Phase Current R: <strong style="color: black;" id="phase_current_R">${phase_current_R}</strong></p>
-                                              <p>Phase Current Y: <strong style="color: black;" id="phase_current_Y">${phase_current_Y}</strong></p>
-                                               <p>Phase Current B: <strong style="color: black;" id="phase_current_B">${phase_current_B}</strong></p>
+                                            <p style="display: none">Total Active Energy : <strong style="color: black;" id="total_active_energy">${total_active_energy}</strong></p>
+                                            <p>Phase Voltage R: <strong style="color: black;" id="phase_voltage_R">${phase_voltage_R} Volt</strong></p>
+                                            <p>Phase Voltage Y: <strong style="color: black;" id="phase_voltage_Y">${phase_voltage_Y} Volt</strong></p>
+                                             <p>Phase Voltage B: <strong style="color: black;" id="phase_voltage_B">${phase_voltage_B} Volt</strong></p>
+                                           <p>Phase Current R: <strong style="color: black;" id="phase_current_R">${phase_current_R} A</strong></p>
+                                              <p>Phase Current Y: <strong style="color: black;" id="phase_current_Y">${phase_current_Y} A</strong></p>
+                                               <p>Phase Current B: <strong style="color: black;" id="phase_current_B">${phase_current_B} A</strong></p>
                                              <p>Date Time : <strong style="color: black;" id="energytime">${energytime}</strong></p>
                                              <p>Relay State : <strong style="color: black;" id="relaystate">${relaystate}</strong></p>
   </div>
