@@ -83,11 +83,17 @@
         <servlet-class>com.waterworks.controller.MsgCheckSchedularController</servlet-class>
         <load-on-startup>3</load-on-startup>
     </servlet>
-    <!--    <servlet>
-        <servlet-name>General TimeSchedulerCont3</servlet-name>
-        <servlet-class>com.waterworks.controller.SendPDFSchedularController</servlet-class>
-        <load-on-startup>4</load-on-startup>
-    </servlet>-->
+       <servlet>
+        <servlet-name>ScheduledTaskController</servlet-name>
+        <servlet-class>com.waterworks.controller.ScheduledTaskController</servlet-class>
+        <load-on-startup>6</load-on-startup>
+    </servlet> 
+    
+     <listener>
+        <listener-class>
+            com.waterworks.controller.ScheduledTaskController
+        </listener-class>
+    </listener>
     <servlet>
         <servlet-name>General TimeSchedulerCont4</servlet-name>
         <servlet-class>com.waterworks.controller.OhLevelSchedularController</servlet-class>

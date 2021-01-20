@@ -288,7 +288,7 @@ public JSONArray  getAllOhLevel(int ohlevel_id,String searchDate,String did){
              
                  JSONObject jsonObj = new JSONObject();
                jsonObj.put("remark",ohlevel);
-              
+                System.out.println("-----------------------------"+ohlevel);
                arrayObj.add(jsonObj);
             }
             con.close();

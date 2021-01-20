@@ -202,7 +202,7 @@
                         title: "ohLevel",
                         yValueFormatString: "###",
                         includeZero: false,
-                        interval: 20
+                        interval: 50
                     },
                     toolTip: {
                         shared: true

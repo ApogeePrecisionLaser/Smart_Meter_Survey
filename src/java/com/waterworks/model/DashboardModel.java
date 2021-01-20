@@ -907,7 +907,7 @@ public class DashboardModel {
             Class.forName("com.mysql.jdbc.Driver");
             Connection con=DriverManager.getConnection("jdbc:mysql://localhost:3306/mqtt_server","root","root");
             Statement stmt = con.createStatement();
-            ResultSet rs = stmt.executeQuery(query);
+            ResultSet rs = stmt.executeQuery(query);    
             while (rs.next()) {
                 status = rs.getString("water_level");
                 temp = rs.getString("water_temperature");

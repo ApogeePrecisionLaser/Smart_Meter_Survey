@@ -821,7 +821,8 @@ long final_date = date4+Fifteen_MINUTE_IN_MILLIS;
 //               data[0] = (byte) (a1 & 0xFF);
 //                data[1] = (byte) ((a1 >> 8) & 0xFF);
      
-    int newdata = a1 / 10;
+   // int newdata = a1 / 10;
+    int newdata = a1;
     int c = newdata & 0x00ff;  //just removes the upper 8 bits and returns an unsigned char
     byte b=(byte)c;
     int hi = newdata>>8; 
