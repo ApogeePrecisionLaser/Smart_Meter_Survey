@@ -113,23 +113,23 @@ public class OverHeadDashboardController extends HttpServlet {
       atemp=atemp-Integer.parseInt(waterleveltemp);
         }
         waterleveltemp=Integer.toString(atemp);
-                     int diff1temp=0;
-                        if(!"".equals(waterlvlnexttemp)){
-                            if(Integer.parseInt(waterlvlnexttemp) >=Integer.parseInt(waterleveltemp)){
-                                diff1temp=Integer.parseInt(waterlvlnexttemp) -Integer.parseInt(waterleveltemp);
-                            }else{
-                           diff1temp= Integer.parseInt(waterleveltemp) -Integer.parseInt(waterlvlnexttemp);
-                            }
-                        
-                        if(diff1temp<=500){
-                             waterlvlnexttemp=waterleveltemp;
-                        }else{
-                        waterleveltemp=waterlvlnexttemp;
-                        }
-                        }else{
-                        waterlvlnexttemp=waterleveltemp;
-                        }
-						
+//                     int diff1temp=0;
+//                        if(!"".equals(waterlvlnexttemp)){
+//                            if(Integer.parseInt(waterlvlnexttemp) >=Integer.parseInt(waterleveltemp)){
+//                                diff1temp=Integer.parseInt(waterlvlnexttemp) -Integer.parseInt(waterleveltemp);
+//                            }else{
+//                           diff1temp= Integer.parseInt(waterleveltemp) -Integer.parseInt(waterlvlnexttemp);
+//                            }
+//                        
+//                        if(diff1temp<=500){
+//                             waterlvlnexttemp=waterleveltemp;
+//                        }else{
+//                        waterleveltemp=waterlvlnexttemp;
+//                        }
+//                        }else{
+//                        waterlvlnexttemp=waterleveltemp;
+//                        }
+//						
 	  int a1temp=Integer.parseInt(waterleveltemp)/10;
                  waterleveltemp=String.valueOf(a1temp);
                     String datetimetemp = waterleveldatatemp[3];
@@ -161,23 +161,23 @@ public class OverHeadDashboardController extends HttpServlet {
       a=a-Integer.parseInt(waterlevel);
         }
         waterlevel=Integer.toString(a);
-                     int diff1=0;
-                        if(!"".equals(waterlvlnext)){
-                            if(Integer.parseInt(waterlvlnext) >=Integer.parseInt(waterlevel)){
-                                diff1=Integer.parseInt(waterlvlnext) -Integer.parseInt(waterlevel);
-                            }else{
-                           diff1= Integer.parseInt(waterlevel) -Integer.parseInt(waterlvlnext);
-                            }
-                        
-                        if(diff1<=500){
-                             waterlvlnext=waterlevel;
-                        }else{
-                        waterlevel=waterlvlnext;
-                        }
-                        }else{
-                        waterlvlnext=waterlevel;
-                        }
-						
+//                     int diff1=0;
+//                        if(!"".equals(waterlvlnext)){
+//                            if(Integer.parseInt(waterlvlnext) >=Integer.parseInt(waterlevel)){
+//                                diff1=Integer.parseInt(waterlvlnext) -Integer.parseInt(waterlevel);
+//                            }else{
+//                           diff1= Integer.parseInt(waterlevel) -Integer.parseInt(waterlvlnext);
+//                            }
+//                        
+//                        if(diff1<=500){
+//                             waterlvlnext=waterlevel;
+//                        }else{
+//                        waterlevel=waterlvlnext;
+//                        }
+//                        }else{
+//                        waterlvlnext=waterlevel;
+//                        }
+//						
 	  int a1=Integer.parseInt(waterlevel)/10;
                  waterlevel=String.valueOf(a1);
         String water_temperature = waterleveldata[1];

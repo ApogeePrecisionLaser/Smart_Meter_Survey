@@ -902,10 +902,10 @@ public class DashboardModel {
        String relay_status1 = "";
        String magnetic_sensor_value="";
        
-        String query = "select distinct wd.water_level,wd.water_temperature,wd.water_intensity,wd.date_time,wd.relay_state,wd.relay_state_2,wd.water_data_id,wd.magnetic_sensor_value from water_data wd,device_status dd where wd.device_status_id='" + device_status_id + "' and dd.active='Y' order by date_time ";
+        String query = "select distinct wd.water_level,wd.water_temperature,wd.water_intensity,wd.date_time,wd.relay_state,wd.relay_state_2,wd.water_data_id,wd.magnetic_sensor_value from water_data wd where wd.device_status_id='" + device_status_id + "'  order by date_time ";
         try {
             Class.forName("com.mysql.jdbc.Driver");
-            Connection con=DriverManager.getConnection("jdbc:mysql://localhost:3306/mqtt_server","root","root");
+            Connection con=DriverManager.getConnection("jdbc:mysql://localhost:3306/smart_meter_survey","root","root");
             Statement stmt = con.createStatement();
             ResultSet rs = stmt.executeQuery(query);    
             while (rs.next()) {
@@ -970,10 +970,10 @@ public class DashboardModel {
        String datetime="";
        String relay_status = "";
        int energy_id = 0;
-        String query = "select distinct wd.total_active_power,wd.Cons_energy_mains,wd.active_energy_dg,wd.total_active_energy,wd.phase_voltage_R,wd.phase_voltage_Y,wd.phase_voltage_B,wd.phase_current_R,phase_current_Y,wd.phase_current_B,wd.date_time,wd.relay_state,wd.energy_data_id from energy_data wd,device_status dd where wd.device_status_id='" + device_status_id + "' and dd.active='Y' order by date_time desc limit 1";
+        String query = "select distinct wd.total_active_power,wd.Cons_energy_mains,wd.active_energy_dg,wd.total_active_energy,wd.phase_voltage_R,wd.phase_voltage_Y,wd.phase_voltage_B,wd.phase_current_R,phase_current_Y,wd.phase_current_B,wd.date_time,wd.relay_state,wd.energy_data_id from energy_data wd where wd.device_status_id='" + device_status_id + "' order by date_time desc limit 1";
         try {
             Class.forName("com.mysql.jdbc.Driver");
-            Connection con=DriverManager.getConnection("jdbc:mysql://localhost:3306/mqtt_server","root","root");
+            Connection con=DriverManager.getConnection("jdbc:mysql://localhost:3306/smart_meter_survey","root","root");
             Statement stmt = con.createStatement();
             ResultSet rs = stmt.executeQuery(query);
             while (rs.next()) {

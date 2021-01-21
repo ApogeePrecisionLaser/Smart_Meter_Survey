@@ -78,6 +78,74 @@ public JSONArray  getAllDateTime(int ohlevel_id,String searchDate,String did) th
 //                +" where o.overheadtank_id="+overheadTank_id;
         try{
             Class.forName("com.mysql.jdbc.Driver");
+            Connection con=DriverManager.getConnection("jdbc:mysql://localhost:3306/smart_meter_survey","root","root");
+            Statement stmt = con.createStatement();
+            ResultSet rs = stmt.executeQuery(query);
+            while(rs.next()){
+               //General general = new General();
+                String dateTime=rs.getString("date_time");
+                String dateTime1[]=dateTime.split(" ");
+                String date1[]=dateTime1[0].split("/");
+                String date2=("20").concat(date1[0])+","+date1[1]+","+date1[2]+",";
+                String time1[]=dateTime1[1].split(":");
+             //   System.out.println("hello----------------------------------------------"+time1[2]);
+                String t1[]=time1[2].split("-");
+                String time2=time1[0]+","+time1[1];
+                String dateTime2=date2+time2;
+          //       System.out.println("hello----------------------------------------------"+dateTime2);
+               JSONObject jsonObj = new JSONObject();
+               jsonObj.put("date_time",dateTime2);
+// System.out.println("jsonObj----------------------------------------------"+jsonObj);
+               arrayObj.add(jsonObj);
+               
+               
+//              SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy");
+//Date date = sdf.parse(dateTime);
+//Calendar cal = Calendar.getInstance();
+//cal.setTime(date); 
+//long date4 = cal.getTimeInMillis();
+//
+//long final_date = date4+Fifteen_MINUTE_IN_MILLIS;
+//        
+//         Date revdate = new Date(final_date);
+//    DateFormat formatter = new SimpleDateFormat("dd/MM/yyyy");
+//    System.out.println(formatter.format(revdate)); 
+//  cut_dt = formatter.format(revdate); 
+  
+  
+  
+            }
+            con.close();
+        }catch(Exception e){
+            System.out.println(e);
+        }
+
+       return arrayObj;    
+    }
+public JSONArray  getAllDateTime1(int ohlevel_id,String searchDate,String did) throws ParseException{
+    //int overheadTank_id=getOverheadTankId(ohlevel_id);
+    String status_id = getAllStatusId(did);
+     JSONObject obj = new JSONObject();
+        JSONArray arrayObj = new JSONArray();
+        String data="";
+         
+   
+        List list = new ArrayList();
+        if(searchDate != null){
+                searchDate=searchDate.replace("2021", "21");
+       searchDate=searchDate.replace("-", "/");
+            cut_dtnew=searchDate;
+        }
+        String query="select date_time from water_data o "
+                +"  where o.date_time LIKE '"+cut_dtnew+"%' and device_status_id in("+status_id+") order by o.date_time ";
+              
+//        String query="select date_time from smart_meter_survey.ohlevel o "
+//                +"  where date_time LIKE '"+cut_dt+"%' "
+//                +" and o.overheadtank_id="+30;
+//        String query="select date_time from smart_meter_survey.ohlevel o "
+//                +" where o.overheadtank_id="+overheadTank_id;
+        try{
+            Class.forName("com.mysql.jdbc.Driver");
             Connection con=DriverManager.getConnection("jdbc:mysql://localhost:3306/mqtt_server","root","root");
             Statement stmt = con.createStatement();
             ResultSet rs = stmt.executeQuery(query);
@@ -225,6 +293,87 @@ public String getAllStatusId( String did) {
         }
     }
 public JSONArray  getAllOhLevel(int ohlevel_id,String searchDate,String did){
+ 
+ 
+ 
+      String type1=getOverheadTankType(did);
+        int a=getOverHeadTankHeight(did,type1); 
+  String status_id = getAllStatusId(did);
+     JSONObject obj = new JSONObject();
+        JSONArray arrayObj = new JSONArray();      
+        String data="";
+        List list = new ArrayList();
+    
+        if(searchDate != null){    
+               searchDate=searchDate.replace("2021", "21");
+       searchDate=searchDate.replace("-", "/");
+       cut_dtnew=searchDate;
+        }
+        String query="select water_level from water_data o "
+                +"  where date_time LIKE '"+cut_dtnew+"%' and device_status_id in("+status_id+") order by o.date_time";
+                 
+//        String query="select remark from smart_meter_survey.ohlevel o "
+//                +"  where date_time LIKE '"+cut_dt+"%' "
+//                 +" and o.overheadtank_id="+30;
+//        String query="select remark from smart_meter_survey.ohlevel o "
+//                 +" where o.overheadtank_id="+overheadTank_id;
+        try{
+             Class.forName("com.mysql.jdbc.Driver");      
+            Connection con=DriverManager.getConnection("jdbc:mysql://localhost:3306/smart_meter_survey","root","root");
+            Statement stmt = con.createStatement();
+            ResultSet rs = stmt.executeQuery(query);
+            while(rs.next()){
+               //General general = new General();
+                String ohlevel=rs.getString("water_level");     
+//                int a=Integer.parseInt(ohlevel)/10;
+//                ohlevel=String.valueOf(a);
+    int b=0;
+        if(Integer.parseInt(ohlevel)>a){
+          b= Integer.parseInt(ohlevel)-a;
+        }else{
+      b=a-Integer.parseInt(ohlevel);
+        }
+        
+//      System.out.println("waterlvlnext--------"+waterlvlnext);
+//        System.out.println("a -----------"+a);
+                     ohlevel=Integer.toString(b);
+//                     int diff=0;
+//                        if(!"".equals(waterlvlnext)){
+//                            if(Integer.parseInt(waterlvlnext) >=Integer.parseInt(ohlevel)){
+//                                diff=Integer.parseInt(waterlvlnext) -Integer.parseInt(ohlevel);
+//                            }else{
+//                           diff= Integer.parseInt(ohlevel) -Integer.parseInt(waterlvlnext);
+//                            }
+//                        
+//                        if(diff<=500){
+//                         waterlvlnext=ohlevel;
+//                        }else{
+//                        ohlevel=waterlvlnext;
+//                        }
+//                        }else{
+//                        waterlvlnext=ohlevel;
+//                        }
+						
+	  int a1=Integer.parseInt(ohlevel)/10;
+                 ohlevel=String.valueOf(a1);			
+             
+                 JSONObject jsonObj = new JSONObject();
+               jsonObj.put("remark",ohlevel);
+                System.out.println("-----------------------------"+ohlevel);
+               arrayObj.add(jsonObj);
+            }
+            con.close();
+        }catch(Exception e){
+            System.out.println(e);
+        }
+           
+       return arrayObj;
+    }
+
+public JSONArray  getAllOhLevel1(int ohlevel_id,String searchDate,String did){
+ 
+ 
+ 
       String type1=getOverheadTankType(did);
         int a=getOverHeadTankHeight(did,type1); 
   String status_id = getAllStatusId(did);
@@ -256,16 +405,16 @@ public JSONArray  getAllOhLevel(int ohlevel_id,String searchDate,String did){
                 String ohlevel=rs.getString("water_level");     
 //                int a=Integer.parseInt(ohlevel)/10;
 //                ohlevel=String.valueOf(a);
-    
+    int b=0;
         if(Integer.parseInt(ohlevel)>a){
-          a= Integer.parseInt(ohlevel)-a;
+          b= Integer.parseInt(ohlevel)-a;
         }else{
-      a=a-Integer.parseInt(ohlevel);
+      b=a-Integer.parseInt(ohlevel);
         }
     
 //      System.out.println("waterlvlnext--------"+waterlvlnext);
 //        System.out.println("a -----------"+a);
-                     ohlevel=Integer.toString(a);
+                     ohlevel=Integer.toString(b);
                      int diff=0;
                         if(!"".equals(waterlvlnext)){
                             if(Integer.parseInt(waterlvlnext) >=Integer.parseInt(ohlevel)){
@@ -453,6 +602,113 @@ public JSONArray  getAllEnergyMeterDateTime(int ohlevel_id,String searchDate,Str
     }
 
 public JSONArray  getAllEnergyMeterData(int ohlevel_id,String searchDate,String did){
+    int overheadTank_id=getOverheadTankId(ohlevel_id);
+    int sump_well_id=getSumpWell_Id(overheadTank_id);
+     int junction_id=getJunction_Id(sump_well_id,overheadTank_id);
+    String status_id = getAllStatusId(did);
+     JSONObject obj = new JSONObject();
+        JSONArray arrayObj = new JSONArray();
+        String data="";
+        List list = new ArrayList();
+        
+        if(searchDate != null){
+                searchDate=searchDate.replace("2021", "21");
+       searchDate=searchDate.replace("-", "/");
+            cut_dtnew=searchDate;
+        }
+//        String query="select remark from smart_meter_survey.ohlevel o "
+//                +"  where date_time LIKE '"+cut_dt+"%' "
+//                 +" and o.overheadtank_id="+overheadTank_id;
+        String query="select total_active_power from energy_data "
+                +"  where date_time LIKE '"+cut_dtnew+"%' and device_status_id in("+status_id+") order by date_time ";
+                                //+" and o.overheadtank_id="+34;
+
+
+//        String query="select remark from smart_meter_survey.ohlevel o "
+//                 +" where o.overheadtank_id="+overheadTank_id;
+        try{
+            Class.forName("com.mysql.jdbc.Driver");
+            Connection con=DriverManager.getConnection("jdbc:mysql://localhost:3306/smart_meter_survey","root","root");
+            Statement stmt = con.createStatement();
+            ResultSet rs = stmt.executeQuery(query);
+            while(rs.next()){
+               //General general = new General();v    
+                String ohlevel=rs.getString("total_active_power");
+                int newval=Integer.parseInt(ohlevel);
+                newval=newval/1000;
+                ohlevel=String.valueOf(newval);
+               JSONObject jsonObj = new JSONObject();
+               jsonObj.put("remark",ohlevel);
+
+               arrayObj.add(jsonObj);
+            }
+            con.close();
+        }catch(Exception e){
+            System.out.println(e);
+        }
+
+       return arrayObj;
+    }
+public JSONArray  getAllEnergyMeterDateTime1(int ohlevel_id,String searchDate,String did){
+    int overheadTank_id=getOverheadTankId(ohlevel_id);
+     int sump_well_id=getSumpWell_Id(overheadTank_id);
+     int junction_id=getJunction_Id(sump_well_id,overheadTank_id);
+      String status_id = getAllStatusId(did);
+     JSONObject obj = new JSONObject();
+        JSONArray arrayObj = new JSONArray();
+        String data="";
+        List list = new ArrayList();
+        
+        if(searchDate != null){
+                searchDate=searchDate.replace("2021", "21");
+       searchDate=searchDate.replace("-", "/");
+            cut_dtnew=searchDate;
+        }
+//        String query="select date_time from smart_meter_survey.ohlevel o "
+//                +"  where date_time LIKE '"+cut_dt+"%' "    
+//                +" and o.overheadtank_id="+overheadTank_id;
+
+//        String query="select timestamp from meter_survey.meter_readings mr "
+//                +" where timestamp LIKE '"+cut_dt+"%' ";
+//               // +" and o.overheadtank_id="+34;
+        String query="select date_time from energy_data "
+                      +" where date_time LIKE '"+cut_dtnew+"%' and device_status_id in("+status_id+") order by date_time ";
+                     
+               // +" and o.overheadtank_id="+34;
+
+
+//        String query="select date_time from smart_meter_survey.ohlevel o "
+//                +" where o.overheadtank_id="+overheadTank_id;
+        try{
+           Class.forName("com.mysql.jdbc.Driver");
+            Connection con=DriverManager.getConnection("jdbc:mysql://localhost:3306/mqtt_server","root","root");
+            Statement stmt = con.createStatement();
+            ResultSet rs = stmt.executeQuery(query);
+            while(rs.next()){
+               //General general = new General();
+                String dateTime=rs.getString("date_time");
+                String dateTime1[]=dateTime.split(" ");
+                String date1[]=dateTime1[0].split("/");
+                String date2=("20").concat(date1[0])+","+date1[1]+","+date1[2]+",";
+                String time1[]=dateTime1[1].split(":");
+           //     System.out.println(time1[2]);
+                String t1[]=time1[2].split("-");
+                String time2=time1[0]+","+time1[1];
+                String dateTime2=date2+time2;
+               JSONObject jsonObj = new JSONObject();
+               jsonObj.put("date_time",dateTime2);
+
+               arrayObj.add(jsonObj);
+            }
+             con.close();
+        }catch(Exception e){
+            System.out.println(e);
+        }
+
+       return arrayObj;
+    }
+
+public JSONArray  getAllEnergyMeterData1(int ohlevel_id,String searchDate,String did){
     int overheadTank_id=getOverheadTankId(ohlevel_id);
     int sump_well_id=getSumpWell_Id(overheadTank_id);
      int junction_id=getJunction_Id(sump_well_id,overheadTank_id);

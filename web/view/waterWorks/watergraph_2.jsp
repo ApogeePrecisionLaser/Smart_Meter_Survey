@@ -385,7 +385,7 @@ $.ajax({
           
         </div>
         <div id="search_div" style="margin-top:35px; margin-left:60px;">
-            <form action="CanvasJSController1" method="post">
+            <form action="CanvasJSController111" method="post">
          <table>
              <tr>
                  <td><h4> date :${date}</h4></td>

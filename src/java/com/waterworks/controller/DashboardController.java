@@ -66,6 +66,7 @@ public class DashboardController extends HttpServlet {
    String oht_idfromjsp = request.getParameter("ohid");
    String ohname = request.getParameter("ohname");
    String ohdevicenameid = request.getParameter("ohdevicename");
+   String sumpdeviceid = request.getParameter("sumpdeviceid");
     if(!device_idfromjsp.equals(newdevidcheck)){
    newdevidcheck=device_idfromjsp;
    waterlvlnext="";

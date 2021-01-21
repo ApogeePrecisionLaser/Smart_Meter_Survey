@@ -111,28 +111,29 @@ public class ViewSumpWellDashboardController extends HttpServlet {
         waterlevel = waterleveldata[0];
          String type1=vkpm.getOverheadTankType(device_id);
         int a=vkpm.getOverHeadTankHeight(device_id,type1); 
+        int b=0;
         if(Integer.parseInt(waterlevel)>a){
-          a= Integer.parseInt(waterlevel)-a;
+          b= Integer.parseInt(waterlevel)-a;
         }else{
-      a=a-Integer.parseInt(waterlevel);
+      b=a-Integer.parseInt(waterlevel);
         }
-        waterlevel=Integer.toString(a);
-                     int diff1=0;
-                        if(!"".equals(waterlvlnext)){
-                            if(Integer.parseInt(waterlvlnext) >=Integer.parseInt(waterlevel)){
-                                diff1=Integer.parseInt(waterlvlnext) -Integer.parseInt(waterlevel);
-                            }else{
-                           diff1= Integer.parseInt(waterlevel) -Integer.parseInt(waterlvlnext);
-                            }
-                        
-                        if(diff1<=500){
-                             waterlvlnext=waterlevel;
-                        }else{
-                        waterlevel=waterlvlnext;
-                        }
-                        }else{
-                        waterlvlnext=waterlevel;
-                        }
+        waterlevel=Integer.toString(b);
+//                     int diff1=0;
+//                        if(!"".equals(waterlvlnext)){
+//                            if(Integer.parseInt(waterlvlnext) >=Integer.parseInt(waterlevel)){
+//                                diff1=Integer.parseInt(waterlvlnext) -Integer.parseInt(waterlevel);
+//                            }else{
+//                           diff1= Integer.parseInt(waterlevel) -Integer.parseInt(waterlvlnext);
+//                            }
+//                        
+//                        if(diff1<=500){
+//                             waterlvlnext=waterlevel;
+//                        }else{
+//                        waterlevel=waterlvlnext;
+//                        }
+//                        }else{
+//                        waterlvlnext=waterlevel;
+//                        }
 						
 	  int a1=Integer.parseInt(waterlevel)/10;
                  waterlevel=String.valueOf(a1);

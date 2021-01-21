@@ -203,6 +203,8 @@ public class ViewDeviceOverheadMapController extends HttpServlet {
         noOfRowsTraversed = ohLevelList.size();
         List<OHLevel> overheadlist = ohLevelModel.getOverheadMapAllRecords(lowerLimit, noOfRowsToDisplay, searchWaterTreatmentPlant, searchOverHeadTank,ctx);
        // lowerLimit = lowerLimit + ohLevelList.size();
+        List<OHLevel> bothlist = ohLevelModel.getBothDeviceAllRecords(lowerLimit, noOfRowsToDisplay, searchWaterTreatmentPlant, searchOverHeadTank,ctx);
+       // lowerLimit = lowerLimit + ohLevelList.size();
       //  noOfRowsTraversed = ohLevelList.size();
 
         // Now set request scoped attributes, and then forward the request to view.
@@ -210,6 +212,7 @@ public class ViewDeviceOverheadMapController extends HttpServlet {
         request.setAttribute("noOfRowsTraversed", noOfRowsTraversed);
         request.setAttribute("ohLevelList", ohLevelList);
         request.setAttribute("overheadlist", overheadlist);
+        request.setAttribute("bothlist", bothlist);
 
         if ((lowerLimit - noOfRowsTraversed) == 0) {     // if this is the only data in the table or when viewing the data 1st time.
             request.setAttribute("showFirst", "false");

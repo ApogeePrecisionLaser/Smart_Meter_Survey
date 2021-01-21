@@ -5,6 +5,7 @@
  */
 package com.waterworks.controller;
 
+import static com.waterworks.controller.CanvasJSController11.searchDate;
 import com.waterworks.model.CanvasJSModel1;
 import java.io.IOException;
 import java.io.PrintWriter;
@@ -94,8 +95,12 @@ try{
                  JSONObject obj1 = new JSONObject();    
                  JSONArray arrayObj = new JSONArray();
                  JSONArray arrayObj1 = new JSONArray();
-               
-                arrayObj= canvasJSModel.getAllDateTime(ohlevel_id,searchDate,did);
+              if(searchDate==null || searchDate=="")
+               {
+                   arrayObj= canvasJSModel.getAllDateTime(ohlevel_id,searchDate,did);
+               } else{          
+               arrayObj= canvasJSModel.getAllDateTime1(ohlevel_id,searchDate,did);
+               }
                 obj1.put("dateTime", arrayObj);    
                PrintWriter out = response.getWriter();
                out.print(obj1);
@@ -107,8 +112,12 @@ try{
                  JSONObject obj1 = new JSONObject();
                  JSONArray arrayObj = new JSONArray();
                  JSONArray arrayObj1 = new JSONArray();         
+                if(searchDate==null || searchDate=="")
+               {
                 arrayObj1=canvasJSModel.getAllOhLevel(ohlevel_id,searchDate,did);
-
+               }else{
+                    arrayObj1=canvasJSModel.getAllOhLevel1(ohlevel_id,searchDate,did);
+                  }
                 obj1.put("ohLevel", arrayObj1);
                PrintWriter out = response.getWriter();
                out.print(obj1);
@@ -146,8 +155,13 @@ try{
                  JSONObject obj1 = new JSONObject();
                  JSONArray arrayObj = new JSONArray();
                  JSONArray arrayObj1 = new JSONArray();
-
-                arrayObj= canvasJSModel.getAllEnergyMeterDateTime(energy,searchDate,did);
+  if(searchDate==null || searchDate=="")
+               {
+               arrayObj= canvasJSModel.getAllEnergyMeterDateTime(energy,searchDate,did);
+               }else{
+                    arrayObj= canvasJSModel.getAllEnergyMeterDateTime1(energy,searchDate,did);
+                  }
+             
                 obj1.put("dateTime", arrayObj);
                PrintWriter out = response.getWriter();
                out.print(obj1);
@@ -159,8 +173,13 @@ try{
                  JSONObject obj1 = new JSONObject();
                  JSONArray arrayObj = new JSONArray();
                  JSONArray arrayObj1 = new JSONArray();
+             
+ if(searchDate==null || searchDate=="")
+               {
                 arrayObj1=canvasJSModel.getAllEnergyMeterData(energy,searchDate,did);
-
+               }else{
+                    arrayObj1=canvasJSModel.getAllEnergyMeterData1(energy,searchDate,did);
+                  }
                 obj1.put("ohLevel", arrayObj1);
                PrintWriter out = response.getWriter();
                out.print(obj1);

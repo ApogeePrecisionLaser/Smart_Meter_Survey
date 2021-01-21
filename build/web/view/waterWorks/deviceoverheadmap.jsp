@@ -217,11 +217,11 @@
             }
         }
     }
-    function viewDashBoard(ohid,did,ohname,ohdevicename){
+    function viewDashBoard(ohid,did,ohname,ohdevicename,sumpdeviceid){
        // alert(ohid);
      //  alert(ohname);
         
-        var queryString = "ohid="+ohid + " &did="+did + " &ohname="+ohname+ " &ohdevicename="+ohdevicename;
+        var queryString = "ohid="+ohid + " &did="+did + " &ohname="+ohname+ " &ohdevicename="+ohdevicename+ " &sumpdeviceid="+sumpdeviceid;
         var url = "DashboardController?" + queryString;
         window.open(url);
       //  popupwin = openPopUp(url, "Show Image", 600, 900);
@@ -357,23 +357,25 @@
                                 <form name="form1" method="POST" action="DeviceOverheadMapController">
                                     <DIV class="content_div">
                                         <table id="table1" width="800"  border="1"  align="center" class="content">
-                                            <tr >
+                                            <tr >   
                                                 <td class="heading">S.No.</td>
                                                 <td class="heading" style="white-space: normal">Device</td>
                                                 <td class="heading" style="white-space: normal">Overhead Tank Id</td>
                                                 <td class="heading" colspan="2">OverHeadTankName</td>
+                                                <td class="heading" colspan="2">Sumpwell</td>
                                                 <td class="heading" colspan="2">View DashBoard</td>
                                             </tr>
-                                            <c:forEach var="ohLevelBean" items="${requestScope['ohLevelList']}"  varStatus="loopCounter">
+                                            <c:forEach var="ohLevelBean" items="${requestScope['bothlist']}"  varStatus="loopCounter">
                                                 <tr class="${loopCounter.index % 2 == 0 ? 'even': 'odd'}">
                                                     <td id="t1c${IDGenerator.uniqueID}" style="display: none;" onclick="fillColumns(id)">${ohLevelBean.ohLevelId}</td>
                                                     <td id="t1c${IDGenerator.uniqueID}" onclick="fillColumns(id)" align="center">${lowerLimit - noOfRowsTraversed + loopCounter.count}</td>
                                                     <td id="t1c${IDGenerator.uniqueID}"  onclick="fillColumns(id)" >${ohLevelBean.waterTreatmentPlantName}</td>
                                                        <td id="t1c${IDGenerator.uniqueID}"   onclick="fillColumns(id)">${ohLevelBean.ohLevelId}</td>
                                                     <td id="t1c${IDGenerator.uniqueID}"  onclick="fillColumns(id)" >${ohLevelBean.overHeadTankName}</td>
+                                                  <td></td>     <td id="t1c${IDGenerator.uniqueID}"  onclick="fillColumns(id)" >${ohLevelBean.feedback}</td>
                                                     <td></td>
                                                     <td>    
-                                                         <input type="button" class="btn"  value ="ViewDashBoard" id="image{loopCounter.count}" onclick="viewDashBoard('${ohLevelBean.ohLevelId}','${ohLevelBean.waterTreatmentPlantName}','${ohLevelBean.overHeadTankName}','${ohLevelBean.remark}');"/>
+                                                         <input type="button" class="btn"  value ="ViewDashBoard" id="image{loopCounter.count}" onclick="viewDashBoard('${ohLevelBean.ohLevelId}','${ohLevelBean.waterTreatmentPlantName}','${ohLevelBean.overHeadTankName}','${ohLevelBean.remark}','${ohLevelBean.feedback}');"/>
                                                     </td>
                                                
                                                 </tr>

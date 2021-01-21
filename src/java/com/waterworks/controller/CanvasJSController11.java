@@ -94,9 +94,13 @@ try{
                  JSONObject obj1 = new JSONObject();    
                  JSONArray arrayObj = new JSONArray();
                  JSONArray arrayObj1 = new JSONArray();
-               
-                arrayObj= canvasJSModel.getAllDateTime(ohlevel_id,searchDate,did);
-                obj1.put("dateTime", arrayObj);    
+               if(searchDate==null || searchDate=="")
+               {
+                   arrayObj= canvasJSModel.getAllDateTime(ohlevel_id,searchDate,did);
+               } else{          
+               arrayObj= canvasJSModel.getAllDateTime1(ohlevel_id,searchDate,did);
+               }
+               obj1.put("dateTime", arrayObj);    
                PrintWriter out = response.getWriter();
                out.print(obj1);
                 return;
@@ -106,9 +110,13 @@ try{
             {
                  JSONObject obj1 = new JSONObject();
                  JSONArray arrayObj = new JSONArray();
-                 JSONArray arrayObj1 = new JSONArray();         
+                 JSONArray arrayObj1 = new JSONArray();  
+                  if(searchDate==null || searchDate=="")
+               {
                 arrayObj1=canvasJSModel.getAllOhLevel(ohlevel_id,searchDate,did);
-
+               }else{
+                    arrayObj1=canvasJSModel.getAllOhLevel1(ohlevel_id,searchDate,did);
+                  }
                 obj1.put("ohLevel", arrayObj1);
                PrintWriter out = response.getWriter();
                out.print(obj1);
