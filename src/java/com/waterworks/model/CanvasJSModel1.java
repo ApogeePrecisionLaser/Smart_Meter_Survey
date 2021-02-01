@@ -63,7 +63,7 @@ public JSONArray  getAllDateTime(int ohlevel_id,String searchDate,String did) th
          
    
         List list = new ArrayList();
-        if(searchDate != null){
+        if(searchDate != null && !"".equals(searchDate) ){
                 searchDate=searchDate.replace("2021", "21");
        searchDate=searchDate.replace("-", "/");
             cut_dtnew=searchDate;
@@ -131,7 +131,7 @@ public JSONArray  getAllDateTime1(int ohlevel_id,String searchDate,String did) t
          
    
         List list = new ArrayList();
-        if(searchDate != null){
+        if(searchDate != null && !"".equals(searchDate) ){
                 searchDate=searchDate.replace("2021", "21");
        searchDate=searchDate.replace("-", "/");
             cut_dtnew=searchDate;
@@ -304,7 +304,7 @@ public JSONArray  getAllOhLevel(int ohlevel_id,String searchDate,String did){
         String data="";
         List list = new ArrayList();
     
-        if(searchDate != null){    
+        if(searchDate != null && !"".equals(searchDate) ){
                searchDate=searchDate.replace("2021", "21");
        searchDate=searchDate.replace("-", "/");
        cut_dtnew=searchDate;
@@ -359,7 +359,7 @@ public JSONArray  getAllOhLevel(int ohlevel_id,String searchDate,String did){
              
                  JSONObject jsonObj = new JSONObject();
                jsonObj.put("remark",ohlevel);
-                System.out.println("-----------------------------"+ohlevel);
+              //  System.out.println("-----------------------------"+ohlevel);
                arrayObj.add(jsonObj);
             }
             con.close();
@@ -382,7 +382,7 @@ public JSONArray  getAllOhLevel1(int ohlevel_id,String searchDate,String did){
         String data="";
         List list = new ArrayList();
     
-        if(searchDate != null){    
+         if(searchDate != null && !"".equals(searchDate) ){
                searchDate=searchDate.replace("2021", "21");
        searchDate=searchDate.replace("-", "/");
        cut_dtnew=searchDate;
@@ -437,7 +437,7 @@ public JSONArray  getAllOhLevel1(int ohlevel_id,String searchDate,String did){
              
                  JSONObject jsonObj = new JSONObject();
                jsonObj.put("remark",ohlevel);
-                System.out.println("-----------------------------"+ohlevel);
+                
                arrayObj.add(jsonObj);
             }
             con.close();
@@ -458,7 +458,7 @@ public JSONArray  getAllSumpwellDateTime(int ohlevel_id,String searchDate,String
         String data="";
         List list = new ArrayList();
         
-        if(searchDate != null){
+       if(searchDate != null && !"".equals(searchDate) ){
             cut_dt=searchDate;
         }
         String query="select date_time from smart_meter_survey.ohlevel o "
@@ -508,7 +508,7 @@ public JSONArray  getAllSumpwellOhLevel(int ohlevel_id,String searchDate,String 
         JSONArray arrayObj = new JSONArray();
         String data="";
         List list = new ArrayList();
-        if(searchDate != null){
+        if(searchDate != null && !"".equals(searchDate) ){
             cut_dt=searchDate;
         }
         String query="select remark from smart_meter_survey.ohlevel o "
@@ -552,7 +552,7 @@ public JSONArray  getAllEnergyMeterDateTime(int ohlevel_id,String searchDate,Str
         String data="";
         List list = new ArrayList();
         
-        if(searchDate != null){
+     if(searchDate != null && !"".equals(searchDate) ){
                 searchDate=searchDate.replace("2021", "21");
        searchDate=searchDate.replace("-", "/");
             cut_dtnew=searchDate;
@@ -611,7 +611,7 @@ public JSONArray  getAllEnergyMeterData(int ohlevel_id,String searchDate,String 
         String data="";
         List list = new ArrayList();
         
-        if(searchDate != null){
+       if(searchDate != null && !"".equals(searchDate) ){
                 searchDate=searchDate.replace("2021", "21");
        searchDate=searchDate.replace("-", "/");
             cut_dtnew=searchDate;
@@ -628,7 +628,7 @@ public JSONArray  getAllEnergyMeterData(int ohlevel_id,String searchDate,String 
 //                 +" where o.overheadtank_id="+overheadTank_id;
         try{
             Class.forName("com.mysql.jdbc.Driver");
-            Connection con=DriverManager.getConnection("jdbc:mysql://localhost:3306/smart_meter_survey","root","root");
+            Connection con=DriverManager.getConnection("jdbc:mysql://localhost:3306/mqtt_server","root","root");
             Statement stmt = con.createStatement();
             ResultSet rs = stmt.executeQuery(query);
             while(rs.next()){
@@ -659,7 +659,7 @@ public JSONArray  getAllEnergyMeterDateTime1(int ohlevel_id,String searchDate,St
         String data="";
         List list = new ArrayList();
         
-        if(searchDate != null){
+       if(searchDate != null && !"".equals(searchDate) ){
                 searchDate=searchDate.replace("2021", "21");
        searchDate=searchDate.replace("-", "/");
             cut_dtnew=searchDate;
@@ -718,7 +718,7 @@ public JSONArray  getAllEnergyMeterData1(int ohlevel_id,String searchDate,String
         String data="";
         List list = new ArrayList();
         
-        if(searchDate != null){
+    if(searchDate != null && !"".equals(searchDate) ){
                 searchDate=searchDate.replace("2021", "21");
        searchDate=searchDate.replace("-", "/");
             cut_dtnew=searchDate;
@@ -766,7 +766,7 @@ public JSONArray  getNewDateTime(int ohlevel_id,String searchDate){
         JSONArray arrayObj = new JSONArray();
         String data="";
         List list = new ArrayList();
-        if(searchDate != null){
+        if(searchDate != null || !"".equals(searchDate) ){
             cut_dt=searchDate;
         }
         String query="SELECT date_time FROM smart_meter_survey.ohlevel o WHERE ohlevel_id = (SELECT MAX(ohlevel_id) FROM smart_meter_survey.ohlevel) "

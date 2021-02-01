@@ -58,7 +58,7 @@ static final long Fifteen_MINUTE_IN_MILLIS=900000;
 
     public void run() {
         try {
-            System.out.println("run method is running");      
+            System.out.println(" leakage run method is running");      
          //   List list = getOverheadtankId();
        insertDistributionData();    
         } catch (Exception ex) {
@@ -205,8 +205,8 @@ public List getOverheadtankDeviceIdById(String device) {
  
        
         LocalDateTime datetimenew = LocalDateTime.parse(cut_dt1,formatter11);
- 
-        datetimenew=datetimenew.minusMinutes(3);
+ //datetimenew=datetimenew.minusMinutes(3);
+        datetimenew=datetimenew.minusMinutes(1);
   String type1=getOverheadTankType(id);
         int a=getOverHeadTankHeight(id,type1);
         String aftersubtraction=datetimenew.format(formatter11);
@@ -214,45 +214,47 @@ public List getOverheadtankDeviceIdById(String device) {
        String status="";
        String temp = "";
        String intensity = "";      
-       String datetime="";
+       String datetime="";   
        String relay_status = "";
        int water_id = 0;
        String relay_status1 = "";
        String magnetic_sensor_value="";
         Connection con=null;
-        String query = "select wd.water_level from water_data wd,device_status dd where wd.device_status_id='" + device_status_id + "' and dd.active='Y' and wd.created_date >'2021-01-07 07:44:12' order by date_time  desc";
+        String query = "select wd.water_level from water_data wd where wd.device_status_id='" + device_status_id + "'and wd.created_date >'"+aftersubtraction+"' and water_level not in('9999') order by date_time  desc";
         try {
-            Class.forName("com.mysql.jdbc.Driver");   
-           con=DriverManager.getConnection("jdbc:mysql://localhost:3306/mqtt_server","root","root");
-            Statement stmt = con.createStatement();   
-            ResultSet rs = stmt.executeQuery(query);
+                ResultSet rs = connection.prepareStatement(query).executeQuery();
+//            Class.forName("com.mysql.jdbc.Driver");   
+//           con=DriverManager.getConnection("jdbc:mysql://localhost:3306/smart_meter_survey","root","root");
+//            Statement stmt = con.createStatement();   
+//            ResultSet rs = stmt.executeQuery(query);   
             while (rs.next()) {
                 status = rs.getString("water_level");
+                int b=0;
                    if(Integer.parseInt(status)>a){
-          a= Integer.parseInt(status)-a;
+          b= Integer.parseInt(status)-a;
         }else{
-      a=a-Integer.parseInt(status);
+      b=a-Integer.parseInt(status);
         }
     
 //      System.out.println("waterlvlnext--------"+waterlvlnext);
 //        System.out.println("a -----------"+a);
-                     status=Integer.toString(a);
-                     int diff=0;
-                        if(!"".equals(waterlvlnext)){
-                            if(Integer.parseInt(waterlvlnext) >=Integer.parseInt(status)){
-                                diff=Integer.parseInt(waterlvlnext) -Integer.parseInt(status);
-                            }else{
-                           diff= Integer.parseInt(status) -Integer.parseInt(waterlvlnext);
-                            }
-                        
-                        if(diff<=500){
-                         waterlvlnext=status;
-                        }else{
-                        status=waterlvlnext;
-                        }
-                        }else{
-                        waterlvlnext=status;
-                        }
+                     status=Integer.toString(b);
+//                     int diff=0;
+//                        if(!"".equals(waterlvlnext)){
+//                            if(Integer.parseInt(waterlvlnext) >=Integer.parseInt(status)){
+//                                diff=Integer.parseInt(waterlvlnext) -Integer.parseInt(status);
+//                            }else{
+//                           diff= Integer.parseInt(status) -Integer.parseInt(waterlvlnext);
+//                            }
+//                        
+//                        if(diff<=500){
+//                         waterlvlnext=status;
+//                        }else{
+//                        status=waterlvlnext;
+//                        }
+//                        }else{
+//                        waterlvlnext=status;
+//                        }
 						
 	  int a1=Integer.parseInt(status)/10;
                  status=String.valueOf(a1);
@@ -268,7 +270,7 @@ public List getOverheadtankDeviceIdById(String device) {
            List<String> li=new ArrayList<>();
          DateFormat df = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS");
      Date dateobj = new Date();
-        System.out.println(df.format(dateobj));
+     //   System.out.println(df.format(dateobj));
         String datetime = df.format(dateobj);
         
         
@@ -283,7 +285,7 @@ long final_date = date4+Fifteen_MINUTE_IN_MILLIS;
         
          Date revdate = new Date(final_date);
     DateFormat formatter = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-    System.out.println(formatter.format(revdate)); 
+ //   System.out.println(formatter.format(revdate)); 
      String dateTime_test = formatter.format(revdate);     
    
         int ohlevel_id = 0;
@@ -293,8 +295,12 @@ long final_date = date4+Fifteen_MINUTE_IN_MILLIS;
         
         String deviceid=deviceli.get(i).toString();
       String overid=getOverheadTankid1(deviceid);
+      
             li = getWaterLevel(deviceid);
+      if(li.size()>0){
             double sumavg=0;
+              int sum = 0;
+  
             for(int j=0; j<li.size();j++){
             sumavg=sumavg+Double.parseDouble(li.get(j));
             }
@@ -302,7 +308,7 @@ long final_date = date4+Fifteen_MINUTE_IN_MILLIS;
             if(sumavg!=0){
              avg=sumavg/li.size();
             }
-            System.out.println(avg);    
+          //  System.out.println(avg);    
             
         int junction_id=Integer.parseInt(overid);
         
@@ -341,14 +347,14 @@ long final_date = date4+Fifteen_MINUTE_IN_MILLIS;
             ps9.setInt(4, voltage1);
               ps9.setString(5, "0");
             ps9.setString(6, "0");
-               ps9.setString(7, "0");
+               ps9.setString(7, "0");    
             ps9.setString(8, "0");
              ps9.setString(9, "0");
-           //   ps9.setString(10, datetime);
+          //    ps9.setString(10, datetime);
              ps9.executeUpdate();
 
           //    ---------------------------------
-            if (voltage1 > 0 && voltage1 < 1000) {
+            if (voltage1 > 0 && voltage1 < 1000) {       
                 //context.setAttribute("overflow_" + junction_id, "0");
                 ps.executeUpdate();
                 ResultSet rs = ps.getGeneratedKeys();
@@ -622,7 +628,7 @@ long final_date = date4+Fifteen_MINUTE_IN_MILLIS;
                             last_date=rs12.getString("created_date");
                             last_waterLevel=rs12.getInt("waterLevel");
                             last_dist_level_type_id=rs12.getInt("level_type_id");
-                            System.out.println("Last distribution level_type_id= "+last_dist_level_type_id);
+                        //    System.out.println("Last distribution level_type_id= "+last_dist_level_type_id);
                         }
 
                          if (((voltage1 - temp_level) > on_off_value) && (time<time_diff) && (last_dist_level_type_id != levelType)) {
@@ -726,6 +732,7 @@ long final_date = date4+Fifteen_MINUTE_IN_MILLIS;
 
         } catch (Exception e) {
             System.out.println("insertRecord ERROR inside SmartMeterSurveyServiceModel - " + e);
+        }
         }
         }
         return;

@@ -62,6 +62,7 @@ static int ohlevel_id;
                did = request.getParameter("did");
                oid = request.getParameter("oid");
                ohname = request.getParameter("ohname");
+               searchDate="";
        //   ohlevel_id = Integer.parseInt(request.getParameter("ohlevel_id"));
        //   energy = Integer.parseInt(request.getParameter("energy_id"));
           

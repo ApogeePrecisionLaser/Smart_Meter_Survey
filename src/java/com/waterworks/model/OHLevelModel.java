@@ -203,7 +203,10 @@ public class OHLevelModel {
             messageBGColor = "red";
         }
     }
-
+ java.util.Date dt = new java.util.Date();
+    SimpleDateFormat dfa = new SimpleDateFormat("yyyy-MM-dd");
+    SimpleDateFormat df1 = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+    String cut_dt = dfa.format(dt);
     public ArrayList<OHLevel> getAllRecords(int lowerLimit, int noOfRowsToDisplay, String waterTreatmentPlantName, String overHeadTankName,ServletContext ctx) {
         ArrayList<OHLevel> list = new ArrayList<OHLevel>();
         byte[] twoByteData = new byte[2];
@@ -212,7 +215,7 @@ public class OHLevelModel {
 "AS level_datetime,step,level1,level2,level3,level4,oht.capacity_height FROM ohlevel AS le\n" +
 " LEFT JOIN overheadtank AS oht ON le.overheadtank_id = oht.overheadtank_id \n" +
 " LEFT JOIN watertreatmentplant AS wtp ON oht.watertreatmentplant_id = wtp.watertreatmentplant_id \n" +
-"WHERE IF(''='',oht.name LIKE '%%',oht.name=?) AND IF(''='',wtp.name LIKE '%%',wtp.name=?) \n" +
+"WHERE IF(''='',oht.name LIKE '%%',oht.name=?) AND IF(''='',wtp.name LIKE '%%',wtp.name=?) and le.date_time like '"+cut_dt+"%' \n" +
 " and le.ohlevel_id in(select max(ohlevel_id) from ohlevel group by overheadtank_id)group by overheadtank_id "
                 + " LIMIT " + lowerLimit + "," + noOfRowsToDisplay;
 //        String query = " select * from (SELECT wtp.name as name1,oht.name,le.ohlevel_id,le.overheadtank_id,"

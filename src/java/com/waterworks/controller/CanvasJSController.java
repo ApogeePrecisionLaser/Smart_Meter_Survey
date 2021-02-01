@@ -53,6 +53,7 @@ public class CanvasJSController extends HttpServlet {
             }
          if(task.equals("VIEW_GRAPH2")){
           ohlevel_id=Integer.parseInt(request.getParameter("ohlevel_id"));
+            searchDate="";
         }
         
         canvasJSModel.setDriverClass(ctx.getInitParameter("driverClass"));

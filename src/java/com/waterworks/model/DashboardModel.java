@@ -56,7 +56,7 @@ public class DashboardModel {
         } catch (Exception e) {
             System.out.println(e);
         }
-        System.out.println("No of Rows in Table for search is****....." + noOfRows);
+     //   System.out.println("No of Rows in Table for search is****....." + noOfRows);
         return noOfRows;
     }
 
@@ -213,7 +213,7 @@ public class DashboardModel {
 //                    PreparedStatement psmt = (PreparedStatement) connection.prepareStatement(query);
 //                     psmt.setInt(1,(bean.getDevice_vehicle_mapping_id()));
 //             psmt.setInt(2, (bean.getVehicle_no()));
-//            psmt.setString(3,(bean.getDevice_no()));
+//            psmt.setString(3,(bean.getDevice_no()));c
 //            psmt.setInt(4, (bean.getVehicle_id()));
 //             psmt.setInt(5,bean.getDevice_id());
 //             psmt.setInt(6,revision);
@@ -1384,7 +1384,7 @@ public class DashboardModel {
         LocalDateTime datetime = LocalDateTime.parse(cut_dt,formatter);
                 datetime = datetime.minusMinutes(min);
                   String aftersubtraction=datetime.format(formatter);
-        System.out.println("date and time -"+aftersubtraction); 
+      //  System.out.println("date and time -"+aftersubtraction); 
         
                   
                  String query = " select latitude,longitude from device_data  where active='Y'and (latitude!='') and created_date >= '"+aftersubtraction+"'";
@@ -1395,7 +1395,7 @@ public class DashboardModel {
         { Class.forName("com.mysql.jdbc.Driver");
             Connection con=DriverManager.getConnection("jdbc:mysql://localhost:3309/mqtt_server","root","root");
             Statement stmt = con.createStatement();
-            System.out.println("query --"+query);
+         //   System.out.println("query --"+query);
             ResultSet rset = stmt.executeQuery(query);
             while (rset.next())
             {

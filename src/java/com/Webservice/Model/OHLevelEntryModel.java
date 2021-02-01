@@ -809,14 +809,25 @@ long final_date = date4+Fifteen_MINUTE_IN_MILLIS;
        String type=getOverheadTankType1(did);
        int height=getOverHeadTankHeight(did,type);
         byte[] response = new byte[7];
-        String query = "select remark FROM smart_meter_survey.ohlevel where overheadtank_id='"+junction_id+"' order by ohlevel_id desc limit 1";
+          String query = "select distinct wd.water_level from water_data wd where wd.device_status_id='" + statusid + "'  order by date_time desc limit 1 ";
+     
+      //  String query = "select remark FROM smart_meter_survey.ohlevel where overheadtank_id='"+junction_id+"' order by ohlevel_id desc limit 1";
         try {
             Class.forName("com.mysql.jdbc.Driver");
             Connection con=DriverManager.getConnection("jdbc:mysql://localhost:3306/smart_meter_survey","root","root");
             Statement stmt = con.createStatement();
             ResultSet rset = stmt.executeQuery(query);
             if (rset.next()) {
-                int  a1 = rset.getInt("remark");
+                 
+                int  a1 = rset.getInt("water_level");
+               int b5=0;
+        if(a1>height){
+          b5= a1-height;
+        }else{
+      b5=height-a1;
+        }
+        a1=b5/10;
+                
 //               byte [] data = new byte [2]; 
 //               data[0] = (byte) (a1 & 0xFF);
 //                data[1] = (byte) ((a1 >> 8) & 0xFF);
@@ -963,7 +974,7 @@ long final_date = date4+Fifteen_MINUTE_IN_MILLIS;
         } else if (type_of_data == 9) {
             byte twoByteDisplayData[] = new byte[7];
           
-            if(junctionID ==30 || junctionID==26 ||junctionID==27){
+            if(junctionID ==30 || junctionID==26 ||junctionID==27 ||junctionID==51){
                  twoByteDisplayData = getdevicedatalevel(junctionID);
             }else{
             twoByteDisplayData = getData(junctionID);

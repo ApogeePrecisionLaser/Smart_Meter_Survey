@@ -106,13 +106,13 @@ public class OverHeadDashboardController extends HttpServlet {
         waterleveltemp = waterleveldatatemp[0];
           String type=vkpm.getOverheadTankType(ohdevicenameid);
         int atemp=vkpm.getOverHeadTankHeight(ohdevicenameid,type); 
-        
+        int b1=0;
         if(Integer.parseInt(waterleveltemp)>atemp){
-          atemp= Integer.parseInt(waterleveltemp)-atemp;
+          b1= Integer.parseInt(waterleveltemp)-atemp;
         }else{
-      atemp=atemp-Integer.parseInt(waterleveltemp);
+      b1=atemp-Integer.parseInt(waterleveltemp);
         }
-        waterleveltemp=Integer.toString(atemp);
+        waterleveltemp=Integer.toString(b1);
 //                     int diff1temp=0;
 //                        if(!"".equals(waterlvlnexttemp)){
 //                            if(Integer.parseInt(waterlvlnexttemp) >=Integer.parseInt(waterleveltemp)){
@@ -155,12 +155,13 @@ public class OverHeadDashboardController extends HttpServlet {
         waterlevel = waterleveldata[0];
        String type1=vkpm.getOverheadTankType(device_id);
         int a=vkpm.getOverHeadTankHeight(device_id,type1); 
+        int b2=0;
         if(Integer.parseInt(waterlevel)>a){
-          a= Integer.parseInt(waterlevel)-a;
+          b2= Integer.parseInt(waterlevel)-a;
         }else{
-      a=a-Integer.parseInt(waterlevel);
+      b2=a-Integer.parseInt(waterlevel);
         }
-        waterlevel=Integer.toString(a);
+        waterlevel=Integer.toString(b2);
 //                     int diff1=0;
 //                        if(!"".equals(waterlvlnext)){
 //                            if(Integer.parseInt(waterlvlnext) >=Integer.parseInt(waterlevel)){
@@ -276,10 +277,10 @@ public class OverHeadDashboardController extends HttpServlet {
                 c = 0;
             }
 
-            System.out.print(diffDays + " days, ");
-            System.out.print(diffHours + " hours, ");
-            System.out.print(diffMinutes + " minutes, ");
-            System.out.print(diffSeconds + " seconds.");
+//            System.out.print(diffDays + " days, ");
+//            System.out.print(diffHours + " hours, ");
+//            System.out.print(diffMinutes + " minutes, ");
+//            System.out.print(diffSeconds + " seconds.");
 
         } catch (Exception e) {
 
@@ -339,7 +340,7 @@ public class OverHeadDashboardController extends HttpServlet {
             obj14.put("id14", data);
             obj15.put("id15", data);
             obj16.put("id16", data);
-            System.out.println("data  ----- " + data);
+         //   System.out.println("data  ----- " + data);
             PrintWriter out = response.getWriter();
             out.println(data);
             out.flush();
@@ -350,7 +351,7 @@ public class OverHeadDashboardController extends HttpServlet {
         if (task.equals("getLatestStatusWithCoordinate")) {
             String latitude = request.getParameter("latitude");
             String longitude = request.getParameter("longitude");
-            System.out.println("lati -" + latitude + " -- nlongi--" + longitude);
+         //   System.out.println("lati -" + latitude + " -- nlongi--" + longitude);
             String from = request.getParameter("from");
             String To = request.getParameter("To");
 
@@ -409,7 +410,7 @@ public class OverHeadDashboardController extends HttpServlet {
             //JSONObject json = areaTypeModel.getLatLonJSONArrayLatest();
             String from = request.getParameter("from");
             String To = request.getParameter("To");
-            System.out.println("from -" + from);
+         //   System.out.println("from -" + from);
             JSONObject json = vkpm.showDataBean5(from, To);
             // String result[] = areaTypeModel.getLatLonArray();
             PrintWriter out = response.getWriter();

@@ -37,6 +37,7 @@ public class DashboardController extends HttpServlet {
     String oid1="";
     String ohname1="";
     String ohdevicenameidtemp="";
+    String sumpdeviceidtemp="";
     protected void processRequest(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException, ParseException {
         try{
@@ -75,6 +76,7 @@ public class DashboardController extends HttpServlet {
    oid1=oht_idfromjsp;
    ohname1=ohname;
    ohdevicenameidtemp=ohdevicenameid;
+   sumpdeviceidtemp=sumpdeviceid;
    }
    if(  device_idfromjsp == null){
        
@@ -82,17 +84,19 @@ public class DashboardController extends HttpServlet {
    oht_idfromjsp=oid1;
    ohname=ohname1;
     ohdevicenameid=ohdevicenameidtemp;
+    sumpdeviceid=sumpdeviceidtemp;
   
    }else{
    did1=device_idfromjsp;
    oid1=oht_idfromjsp;
    ohname1=ohname;
     ohdevicenameidtemp=ohdevicenameid;
+     sumpdeviceidtemp=sumpdeviceid;
    }
    
    
    //for overhead tank data from mqtt
-       int status_idtemp = vkpm.getStatusId(ohdevicenameid);
+       int status_idtemp = vkpm.getStatusId(device_idfromjsp);
         String device_idtemp = vkpm.getDeviceId(status_idtemp);   
 
         //  status = vkpm.getVehicleStatus(status_id);
@@ -108,29 +112,30 @@ public class DashboardController extends HttpServlet {
           
         String type=vkpm.getOverheadTankType(ohdevicenameid);
         int atemp=vkpm.getOverHeadTankHeight(ohdevicenameid,type);  
+        int b=0;
         if(Integer.parseInt(waterleveltemp)>atemp){
-          atemp= Integer.parseInt(waterleveltemp)-atemp;
+          b= Integer.parseInt(waterleveltemp)-atemp;
         }else{
-      atemp=atemp-Integer.parseInt(waterleveltemp);
+      b=atemp-Integer.parseInt(waterleveltemp);
         }
-        waterleveltemp=Integer.toString(atemp);
-                     int diff1temp=0;
-                        if(!"".equals(waterlvlnexttemp)){
-                            if(Integer.parseInt(waterlvlnexttemp) >=Integer.parseInt(waterleveltemp)){
-                                diff1temp=Integer.parseInt(waterlvlnexttemp) -Integer.parseInt(waterleveltemp);
-                            }else{
-                           diff1temp= Integer.parseInt(waterleveltemp) -Integer.parseInt(waterlvlnexttemp);
-                            }
-                        
-                        if(diff1temp<=500){
-                             waterlvlnexttemp=waterleveltemp;
-                        }else{
-                        waterleveltemp=waterlvlnexttemp;
-                        }
-                        }else{
-                        waterlvlnexttemp=waterleveltemp;
-                        }
-						
+        waterleveltemp=Integer.toString(b);
+//                     int diff1temp=0;
+//                        if(!"".equals(waterlvlnexttemp)){
+//                            if(Integer.parseInt(waterlvlnexttemp) >=Integer.parseInt(waterleveltemp)){
+//                                diff1temp=Integer.parseInt(waterlvlnexttemp) -Integer.parseInt(waterleveltemp);
+//                            }else{
+//                           diff1temp= Integer.parseInt(waterleveltemp) -Integer.parseInt(waterlvlnexttemp);
+//                            }
+//                        
+//                        if(diff1temp<=500){
+//                             waterlvlnexttemp=waterleveltemp;
+//                        }else{
+//                        waterleveltemp=waterlvlnexttemp;
+//                        }
+//                        }else{
+//                        waterlvlnexttemp=waterleveltemp;
+//                        }
+//						
 	  int a1temp=Integer.parseInt(waterleveltemp)/10;
                  waterleveltemp=String.valueOf(a1temp);
                     String datetimetemp = waterleveldatatemp[3];
@@ -141,7 +146,7 @@ public class DashboardController extends HttpServlet {
    
    
    //
-        int status_id = vkpm.getStatusId(device_idfromjsp);
+        int status_id = vkpm.getStatusId(sumpdeviceid);
         String device_id = vkpm.getDeviceId(status_id);   
 
         //  status = vkpm.getVehicleStatus(status_id);
@@ -156,29 +161,30 @@ public class DashboardController extends HttpServlet {
         waterlevel = waterleveldata[0];
           String type1=vkpm.getOverheadTankType(device_id);
        int a=vkpm.getOverHeadTankHeight(device_id,type1); 
+       int c2=0;
         if(Integer.parseInt(waterlevel)>a){
-          a= Integer.parseInt(waterlevel)-a;
+         c2= Integer.parseInt(waterlevel)-a;
         }else{
-      a=a-Integer.parseInt(waterlevel);
+      c2=a-Integer.parseInt(waterlevel);
         }
-        waterlevel=Integer.toString(a);
-                     int diff1=0;
-                        if(!"".equals(waterlvlnext)){
-                            if(Integer.parseInt(waterlvlnext) >=Integer.parseInt(waterlevel)){
-                                diff1=Integer.parseInt(waterlvlnext) -Integer.parseInt(waterlevel);
-                            }else{
-                           diff1= Integer.parseInt(waterlevel) -Integer.parseInt(waterlvlnext);
-                            }
-                        
-                        if(diff1<=500){
-                             waterlvlnext=waterlevel;
-                        }else{
-                        waterlevel=waterlvlnext;
-                        }
-                        }else{
-                        waterlvlnext=waterlevel;
-                        }
-						
+        waterlevel=Integer.toString(c2);
+//                     int diff1=0;
+//                        if(!"".equals(waterlvlnext)){
+//                            if(Integer.parseInt(waterlvlnext) >=Integer.parseInt(waterlevel)){
+//                                diff1=Integer.parseInt(waterlvlnext) -Integer.parseInt(waterlevel);
+//                            }else{
+//                           diff1= Integer.parseInt(waterlevel) -Integer.parseInt(waterlvlnext);
+//                            }
+//                        
+//                        if(diff1<=500){
+//                             waterlvlnext=waterlevel;
+//                        }else{
+//                        waterlevel=waterlvlnext;
+//                        }
+//                        }else{
+//                        waterlvlnext=waterlevel;
+//                        }
+//						
 	  int a1=Integer.parseInt(waterlevel)/10;
                  waterlevel=String.valueOf(a1);
         String water_temperature = waterleveldata[1];
@@ -531,6 +537,7 @@ public class DashboardController extends HttpServlet {
             request.setAttribute("device_idfromjsp", device_idfromjsp);
             request.setAttribute("oht_idfromjsp", oht_idfromjsp);
             request.setAttribute("ohname", ohname);
+            request.setAttribute("sumpdeviceid", sumpdeviceid);
 
             request.setAttribute("waterlevel", waterlevel);
             request.setAttribute("waterleveltemp", waterleveltemp);

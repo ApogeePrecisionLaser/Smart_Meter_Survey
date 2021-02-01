@@ -41,7 +41,7 @@ public class ScheduledTaskController implements ServletContextListener {
         TimerTask vodTimer = new VodTimerTask();
 
         Timer timer = new Timer();
-        System.out.println("************* before method call *********");
+       // System.out.println("************* before method call *********");
         timer.schedule(vodTimer, 10 * 1000, (70 * 2 * 1000));
 
     }
@@ -69,6 +69,8 @@ public class ScheduledTaskController implements ServletContextListener {
                 String query = "select water_level from mqtt_server.water_data where date(created_date) = curdate()";
 
                 Class.forName("com.mysql.jdbc.Driver");
+                System.out.println("driverloaded");
+                        
                 connection = DriverManager.getConnection("jdbc:mysql://localhost:3306/smart_meter_survey", "root", "root");
 
                 Statement stmt = connection.createStatement();
@@ -99,13 +101,13 @@ public class ScheduledTaskController implements ServletContextListener {
 //                    }
                 }
                 
-                                System.err.println("list value -"+li.toString());
+                        //        System.err.println("list value -"+li.toString());
                 String list=li.toString();
                 list=list.replace("[", "").replace("]", "");                
-                System.err.println("list value -"+list);
+             //   System.err.println("list value -"+list);
                 
                 
-                System.err.println("list size -"+li.size());
+             //   System.err.println("list size -"+li.size());
                 
                 
                 
@@ -146,13 +148,13 @@ public class ScheduledTaskController implements ServletContextListener {
                 while (rst.next()) {
                     new_datetime = rst.getString(1);
                 }
-                System.err.println("new date time -"+new_datetime);
+               // System.err.println("new date time -"+new_datetime);
 
                 String query5 = " delete from water_data where new_datetime < ('" + new_datetime + "' - interval 2 minute) ";
 
                 if (new_datetime != "") {
                     stmt.executeUpdate(query5);
-                    System.err.println("query 5 for date time -"+query5);
+                  //  System.err.println("query 5 for date time -"+query5);
 
                 }
 
@@ -198,13 +200,13 @@ public class ScheduledTaskController implements ServletContextListener {
                 while (rst.next()) {
                     new_datetime = rst.getString(1);
                 }
-                System.err.println("new date time -"+new_datetime);
+             //   System.err.println("new date time -"+new_datetime);
 
                 String query5 = " delete from energy_data where new_datetime < ('" + new_datetime + "' - interval 2 minute) ";
 
                 if (new_datetime != "") {
                     stmt.executeUpdate(query5);
-                    System.err.println("query 5 for date time -"+query5);
+                 //   System.err.println("query 5 for date time -"+query5);
 
                 }
 

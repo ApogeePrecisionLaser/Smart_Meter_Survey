@@ -120,6 +120,9 @@ public class OHLevelEntryWebService {
                     response = oHLevelEntryModel.junctionRefreshFunction1(receivedBytes,5,false);
                            System.out.print(" Server Side Response bytes" );           
                      for (int i = 0; i < response.length; i++) {
+                         if(response[i]== 0){
+                         response[i]=127;
+                         }
             System.out.print("   " + response[i]);
         }
                      
@@ -127,6 +130,7 @@ public class OHLevelEntryWebService {
                 //   response =  responseVal;                                             // oHLevelEntryModel.sendResponse(responseVal);
                    if(response != null && response.length > 0){
                        result = "Successful!!";
+                       
                //    }
                 }
             } catch (Exception ex) {

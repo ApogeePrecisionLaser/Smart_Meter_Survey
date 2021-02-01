@@ -54,6 +54,7 @@ public class SchedulerController extends HttpServlet { //implements Runnable {
 //            ScheduledExecutorService scheduledThreadPool1 = Executors.newScheduledThreadPool(5);
 //            scheduledThreadPool1.scheduleAtFixedRate(sm, 0, 1, TimeUnit.HOURS);
         }
-        System.out.println("---------------SchedulerController is Running--------------");
+        
+       
     }
 }

@@ -41,12 +41,12 @@ public class ScheduleModel extends TimerTask {
 
     public void run() {
         try {
-            System.out.println("run method is running");
+           
             List list = getOverheadtankId();
             checkOnOff(list);
         } catch (Exception ex) {
             System.out.println(" run() Error: " + ex);
-        }
+        } 
     }
 
     public List getOverheadtankId() {
@@ -58,6 +58,7 @@ public class ScheduleModel extends TimerTask {
                 String overheadtank_id = rs1.getString("overheadtank_id");
                 list.add(overheadtank_id);
             }
+            connection.close();
         } catch (Exception e) {
             System.out.println(e);
         }
@@ -73,6 +74,7 @@ public class ScheduleModel extends TimerTask {
             if (rs4.next()) {
                 value = rs4.getInt("value");
             }
+             connection.close();
         } catch (Exception e) {
             System.out.println(e);
         }

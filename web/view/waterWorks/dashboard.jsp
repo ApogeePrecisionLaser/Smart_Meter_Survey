@@ -25,12 +25,12 @@
   </style>
   <script>
       
-       function viewChart2(did,oid,ohname){
+       function viewChart2(did,oid,ohname,sumpdeviceid){
           
           var water = document.getElementById("waterid").value;
           var energy = document.getElementById("energyid").value;
         //  var ohnamedata = document.getElementById("ohname").value;
-        var queryString = "task=VIEW_GRAPH2&ohlevel_id="+water+"&energy_id="+energy+"&did="+did+"&oid="+oid+"&ohname="+ohname;
+        var queryString = "task=VIEW_GRAPH2&ohlevel_id="+water+"&energy_id="+energy+"&did="+did+"&oid="+oid+"&ohname="+ohname+"&sumpdeviceid="+sumpdeviceid;
         var url = "CanvasJSController1?" + queryString;
         popupwin = openPopUp(url, "Previous History Details", 1000, 700);
     }
@@ -356,7 +356,10 @@
     
     
     <tr><td><h3>
-                Device Id :${device_idfromjsp}
+                OverHead Device Id :${device_idfromjsp}
+</h3></td>
+    <tr><td><h3>
+                Sumpwell Device Id :${sumpdeviceid}
 </h3></td>
     <td><h3>
                 OverHead Tank  :${ohname}
@@ -418,7 +421,7 @@
                                           
                                           <input type=button value="OK" class="btn btn-success" onclick="goToNewPage1()" />
                                           <br>
-<input type="button" class="btn btn-primary" id="graph" value="GRAPH" name="view_pdf2" onclick="viewChart2('${device_idfromjsp}','${oht_idfromjsp}','${ohname}');">
+<input type="button" class="btn btn-primary" id="graph" value="GRAPH" name="view_pdf2" onclick="viewChart2('${device_idfromjsp}','${oht_idfromjsp}','${ohname}','${sumpdeviceid}');">
                                   
   </div>
 </div>
