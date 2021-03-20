@@ -73,7 +73,9 @@
                 var searchDateFrom=document.getElementById("searchDateFrom").value;
                 var searchDateTo=document.getElementById("searchDateTo").value;
                 var type = document.getElementById("type_name").value;
-                queryString = "task=viewPdf&searchDateFrom="+searchDateFrom+"&searchDateTo="+searchDateTo+"&type="+type;
+                var searchOverheadtankName=document.getElementById("searchOverHeadTank").value;
+
+                queryString = "task=viewPdf&searchDateFrom="+searchDateFrom+"&searchDateTo="+searchDateTo+"&type="+type+"&oht_name="+searchOverheadtankName;
                 var url = "OnOffCont.do?" + queryString;
                 popupwin = openPopUp(url, "Division List", 600, 900);
             }
@@ -83,6 +85,47 @@
                  var url = "InsertDistributionCont.do";
 
                 window.open(url,"target=_self");
+            }
+            
+            $(function () {
+                $('#sendMail').click(function () {
+                    if (ValidateEmail() == true) {
+
+
+
+                        var queryString;
+                        var searchDateFrom = document.getElementById("searchDateFrom").value;
+                        var searchDateTo = document.getElementById("searchDateTo").value;
+                        var type = document.getElementById("type_name").value;
+                        var searchOverheadtankName = document.getElementById("searchOverHeadTank").value;
+
+                        var send_to = $('#sendTo').val();
+                        //alert(send_to);
+                        if (send_to === null || send_to === '') {
+                            alert("Please enter mail id!");
+                        } else {
+                            queryString = "task=sendPdf&searchDateFrom=" + searchDateFrom + "&searchDateTo=" + searchDateTo + "&type=" + type + "&oht_name=" + searchOverheadtankName + "&send_to=" + send_to;
+                            var url = "OnOffCont.do?" + queryString;
+                            popupwin = openPopUp(url, "Division List", 600, 900);
+                        }
+                    }else{
+                        alert("You have entered an invalid email address!")
+                    }
+
+                });
+
+
+            });
+
+            function ValidateEmail()
+            {
+                if (/^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9-]+(?:\.[a-zA-Z0-9-]+)*$/.test($('#sendTo').val()))
+                //if (/^w+([.-]?w+)*@w+([.-]?w+)*(.w{2,3})+$/.test($('#sendTo').val()))
+                {
+                    return (true)
+                }
+                //alert("You have entered an invalid email address!")
+                return (false)
             }
 
 
@@ -115,16 +158,25 @@
                                                             <td colspan="6" align="center">
                                                                 <input class="button" type="submit" name="task" id="searchIn" value="Search">
                                                                 <input class="button" type="submit" name="task" id="showAllRecords" value="Show All Records">
+                                                                <!--                                                                <input type="button" class="button" id="insert_distribution" name="insert_distribution" value="InsertDistribution" onclick="insertDistribution()">-->
+                                                               
+                                                                <input type="text" class="form-control" id="sendTo" name="sendTo" value="" placeholder="Enter Mail Id" >
+                                                                
+                                                                <input type="button" class="button" id="sendMail" name="sendMail" value="sendMail" onclick="sendMail();">
                                                                 <input type="button" class="pdf_button" id="viewPdf" name="viewPdf" value="" onclick="displayMapList()">
-                                                                <input type="button" class="button" id="insert_distribution" name="insert_distribution" value="InsertDistribution" onclick="insertDistribution()">
                                                             </td>
                                                         </tr>
+
                                                         <tr>
                                                             <td>Overhead Tank Name <input class="input" type="text" id="oht_name" name="oht_name" value="${searchOverheadtankName}" size="35"  placeholder="search by overhead tank name" ></td>
+                                                            <td>Type <input class="input" type="text" id="type_name" name="type_name" value="${typeName}" size="15"  placeholder="search by type" ></td>
+                                                            <td><input type="button" class="button" id="insert_distribution" name="insert_distribution" value="InsertDistribution" onclick="insertDistribution()"></td>
+
+
                                                         </tr>
-                                                          <tr>
-                                                            <td>Type <input class="input" type="text" id="type_name" name="type_name" value="${typeName}" size="35"  placeholder="search by type" ></td>
-                                                        </tr>
+                                                        <!--                                                        <tr>
+                                                                                                                    <td>Type <input class="input" type="text" id="type_name" name="type_name" value="${typeName}" size="35"  placeholder="search by type" ></td>
+                                                                                                                </tr>-->
                                                         <input type="hidden" name="searchDateTo" value="${searchDateTo}">
                                                         <input type="hidden" name="searchDateFrom" value="${searchDateFrom}">
                                                         <input type="hidden" name="oht_name" value="${searchOverheadtankName}">

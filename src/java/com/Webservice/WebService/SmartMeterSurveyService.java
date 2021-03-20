@@ -391,7 +391,7 @@ public class SmartMeterSurveyService {
     }
 
     @POST
-    @Path("/tanklevel")
+    @Path("/tanklevel")       
     @Produces(MediaType.APPLICATION_JSON)
     @Consumes(MediaType.APPLICATION_JSON)
     public JSONObject gettanklevel() throws Exception {
@@ -403,7 +403,7 @@ public class SmartMeterSurveyService {
             jsonObj.put("sumpwell_data", webServiceModel.getOht_sumpwell());
             jsonObj.put("meter_readings", webServiceModel.getMeterReading());
 
-        } catch (Exception ex) {
+        } catch (Exception ex) { 
             System.out.println("ERROR : in Login() in SmartMeterSurveyWebservices : " + ex);
         }
         webServiceModel.closeConnection();
@@ -551,5 +551,83 @@ public class SmartMeterSurveyService {
         System.out.println("request come from jabalpur"+ test);
 
         return "success";
+    }
+    
+      @POST
+    @Path("/graph")
+    @Produces(MediaType.APPLICATION_JSON)
+    @Consumes(MediaType.APPLICATION_JSON)
+    public String graph(JSONObject json) throws Exception {
+        SmartMeterSurveyServiceModel webServiceModel = new SmartMeterSurveyServiceModel();
+        try {    
+            webServiceModel.setConnection(DBConnection.getConnectionForUtf(serveletContext));
+        } catch (Exception ex) {
+            System.out.println("ERROR : in meterReading() in SmartMeterSurveyWebservices : " + ex);
+        }
+        String tank_Id = json.get("oid").toString();
+     
+        String date_time = json.get("date_time").toString();    
+        date_time=date_time.replace("20", "");
+        String overheadtankname = json.get("overheadtank_name").toString();
+      
+       String device_id=webServiceModel.getDeviceId(tank_Id);
+      int id=0;
+        int affected = 0;
+        if (device_id!="") {
+            affected = 1;
+        }
+    
+       
+        webServiceModel.closeConnection();
+        if (affected > 0) {
+            String url="120.138.10.251:8080/Smart_Meter_survey/MobileGraph?task=VIEW_GRAPH2&did='"+device_id+"'&oid='"+tank_Id+"'&ohname='"+overheadtankname+"'&searchDate='"+date_time+"'";
+            String finalurl=url.replace("'", "");
+           // finalurl=url.replace(" ", "");
+             
+            return finalurl;
+        } else {
+            return "fail";
+        }
+    }
+    
+      @POST
+    @Path("/graph1")
+    @Produces(MediaType.APPLICATION_JSON)
+    @Consumes(MediaType.APPLICATION_JSON)
+    public String graph1(JSONObject json) throws Exception {
+        SmartMeterSurveyServiceModel webServiceModel = new SmartMeterSurveyServiceModel();
+        try {    
+            webServiceModel.setConnection(DBConnection.getConnectionForUtf(serveletContext));
+        } catch (Exception ex) {
+            System.out.println("ERROR : in meterReading() in SmartMeterSurveyWebservices : " + ex);
+        }
+        String tank_Id = json.get("oid").toString();
+        String energyid = json.get("energyid").toString();
+       // String ohlevelid = json.get("ohlevelid").toString();
+        String ohlevelid = "2846336";
+     
+        String date_time = json.get("date_time").toString();    
+        date_time=date_time.replace("20", "");
+        String overheadtankname = json.get("overheadtank_name").toString();
+      
+       String device_id=webServiceModel.getDeviceId(tank_Id);
+      int id=0;
+        int affected = 0;
+        if (device_id!="") {
+            affected = 1;
+        }
+    
+     // http://120.138.10.251:8080/Smart_Meter_survey/CanvasJSController111?task=VIEW_GRAPH2&ohlevel_id=2845900&energy_id=2845761&did=D_20%20&oid=30%20&ohname=Marghatai%20Sumpwell
+        webServiceModel.closeConnection();
+        if (affected > 0) {
+         //   String url="120.138.10.251:8080/Smart_Meter_survey/MobileGraph?task=VIEW_GRAPH2&did='"+device_id+"'&oid='"+tank_Id+"'&ohname='"+overheadtankname+"'&searchDate='"+date_time+"'";
+            String url="http://120.138.10.251:8080/Smart_Meter_survey/CanvasJSController111?task=VIEW_GRAPH2&ohlevel_id='"+ohlevelid+"'&energy_id='"+energyid+"'&did=D_20&oid='"+tank_Id+"'&ohname='"+overheadtankname+"'&searchDate='"+date_time+"'";
+            String finalurl=url.replace("'", "");
+           // finalurl=url.replace(" ", "");
+             
+            return finalurl;
+        } else {
+            return "fail";
+        }
     }
 }

@@ -109,6 +109,7 @@ public class OHLevelModel {
             if (count == 0) {
                 list.add("No such Overhead Tank exists.......");
             }
+            connection.close();
         } catch (Exception e) {
             System.out.println("Error in getOverHeadTank - OHLevelModel - " + e);
             message = "Something going wrong";
@@ -126,6 +127,7 @@ public class OHLevelModel {
             } else {
                 return 0;
             }
+            
         } catch (Exception e) {
             System.out.println("Error in getOverHeadTank - OHLevelModel - " + e);
             message = "Something going wrong";
@@ -461,7 +463,7 @@ public class OHLevelModel {
             messageBGColor = "red";
         }
 
-
+        closeConnection();
         return overheadtank_id;
     }
 

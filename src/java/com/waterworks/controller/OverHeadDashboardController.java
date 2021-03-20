@@ -39,7 +39,9 @@ public class OverHeadDashboardController extends HttpServlet {
     String ohdevicenameidtemp="";
     protected void processRequest(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException, ParseException {
+        
         try{
+           // System.err.println("overheaddashboardcontroller try^^^^^^^^^&&&&&&&&&&&&&&&");
         response.setContentType("text/html;charset=UTF-8");
         //PrintWriter out = response.getWriter();
 
@@ -60,8 +62,12 @@ public class OverHeadDashboardController extends HttpServlet {
         String indicator = "";
         String key_person = "";
         String vehicle_no = "";
+        long last_diffMinutes=0;
+        
         int lowerLimit = 0, noOfRowsTraversed = 0, noOfRowsToDisplay = 10, noOfRowsInTable = 0;
  String device_idfromjsp = request.getParameter("ohdevicename");
+ //String device_idfromjsp="D_20";
+          //  System.err.println("device_idfromjsp ---"+device_idfromjsp);
  
    String oht_idfromjsp = request.getParameter("ohid");
    String ohname = request.getParameter("ohname");
@@ -102,6 +108,7 @@ public class OverHeadDashboardController extends HttpServlet {
 
         //Water Level Data---- Start
         String waterleveltemp = vkpm.getWaterLevel(device_idtemp);
+
         String[] waterleveldatatemp = waterleveltemp.split("_");
         waterleveltemp = waterleveldatatemp[0];
           String type=vkpm.getOverheadTankType(ohdevicenameid);
@@ -134,23 +141,62 @@ public class OverHeadDashboardController extends HttpServlet {
                  waterleveltemp=String.valueOf(a1temp);
                     String datetimetemp = waterleveldatatemp[3];
       
-      // 
-   
-   
-   
-   
-   //
         int status_id = vkpm.getStatusId(device_idfromjsp);
         String device_id = vkpm.getDeviceId(status_id);   
+        
 
         //  status = vkpm.getVehicleStatus(status_id);
         // String idle_running = vkpm.getIdleRunningStatus(status_id);
         //  double voltage = vkpm.getVoltage(status_id);
         String datetime1 = vkpm.getDate();
+        String last_data = vkpm.getLastData(status_id);
+
+        
+         String[] last_data1=last_data.split("_");
+           String last_date_time=last_data1[0];
+       
+            String last_water_level=last_data1[1];
+            
+            Date last_dt = new Date();
+        SimpleDateFormat last_df = new SimpleDateFormat("yyyy-MM-dd");
+        SimpleDateFormat last_df1 = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+        String last_cut_dt = last_df1.format(last_dt);
+          //  System.out.println("last_date_time....."+last_date_time);
+            last_date_time="20"+last_date_time;
+            last_date_time=last_date_time.replace("/", "-");
+           // String reformattedStr = last_df1.format(last_date_time);
+//            System.out.println("current date....."+last_dt);
+//                        System.out.println("format last_date_time....."+last_date_time);
+//
+//                        System.out.println(" format current date....."+last_cut_dt);
+
+
+        SimpleDateFormat last_format = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+
+        Date last_d1 = null;
+        Date last_d2 = null;
+
+        try {
+            last_d1 = last_format.parse(last_cut_dt);
+            last_d2 = last_format.parse(last_date_time);
+
+            //in milliseconds
+            long last_diff = last_d1.getTime() - last_d2.getTime();
+//
+//            long last_diffSeconds = last_diff / 1000 % 60;
+              last_diffMinutes = last_diff / (60 * 1000) % 60;
+              
+              //System.out.println("last_diffMinutes----"+last_diffMinutes);
+        }catch(Exception e){
+            System.out.println("Exception----"+e);
+        }
+            
+       
         String refresh = "";
 
         //Water Level Data---- Start
         String waterlevel = vkpm.getWaterLevel(device_id);
+
         String[] waterleveldata = waterlevel.split("_");
         waterlevel = waterleveldata[0];
        String type1=vkpm.getOverheadTankType(device_id);
@@ -204,6 +250,7 @@ public class OverHeadDashboardController extends HttpServlet {
 
         //Energy Level Data -----Start
         String total_active_power = vkpm.getEnergyLevel(device_id);
+
         String[] energylevel = total_active_power.split("_");
         total_active_power = energylevel[0];
          total_active_power=String.valueOf(Integer.parseInt(total_active_power)/1000);
@@ -229,7 +276,6 @@ public class OverHeadDashboardController extends HttpServlet {
         SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd");
         SimpleDateFormat df1 = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
         String cut_dt = df1.format(dt);
-
 //               DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
 //        LocalDateTime datetime = LocalDateTime.parse(cut_dt,formatter);
 //                datetime = datetime.m;
@@ -277,8 +323,8 @@ public class OverHeadDashboardController extends HttpServlet {
                 c = 0;
             }
 
-//            System.out.print(diffDays + " days, ");
-//            System.out.print(diffHours + " hours, ");
+          //  System.out.print(diffDays + " days, ");
+           //System.out.print(diffHours + " hours, ");
 //            System.out.print(diffMinutes + " minutes, ");
 //            System.out.print(diffSeconds + " seconds.");
 
@@ -288,6 +334,7 @@ public class OverHeadDashboardController extends HttpServlet {
         }
 
         String accuracy = vkpm.getAccuracy();
+
         if (accuracy.equals("")) {
             accuracy = "0";
         }
@@ -555,6 +602,12 @@ public class OverHeadDashboardController extends HttpServlet {
             request.setAttribute("phase_current_B", phase_current_B);
             request.setAttribute("energytime", datetimeenergy);
             request.setAttribute("energyid", energy_id);
+            request.setAttribute("last_water_level", last_water_level);
+            request.setAttribute("last_date_time",last_date_time);
+                        request.setAttribute("last_diffMinutes",last_diffMinutes);
+
+            
+
 
             request.setAttribute("lowerLimit", lowerLimit);
             // request.setAttribute("vehicleType", vehicleType);
@@ -571,6 +624,8 @@ public class OverHeadDashboardController extends HttpServlet {
             //out.close();
         }
         } catch (Exception e) {
+                    //    System.err.println("overheaddashboardcontroller catch^^^^^^^^^&&&&&&&&&&&&&&&");
+
             System.out.println(e);
             RequestDispatcher rd = request.getRequestDispatcher("/view/waterWorks/error500.jsp");
               rd.forward(request, response);
@@ -678,6 +733,8 @@ public class OverHeadDashboardController extends HttpServlet {
             String model = vkpm.getModel();
             String manufacturer = vkpm.Manufacturer(model);
             String datetime1 = vkpm.getDate();
+           
+            
             String refresh = "";
 
             String accuracy = vkpm.getAccuracy();

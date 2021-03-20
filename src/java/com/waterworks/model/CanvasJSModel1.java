@@ -136,7 +136,7 @@ public JSONArray  getAllDateTime1(int ohlevel_id,String searchDate,String did) t
        searchDate=searchDate.replace("-", "/");
             cut_dtnew=searchDate;
         }
-        String query="select date_time from water_data o "
+        String query="select date_time from temp_water_data o "
                 +"  where o.date_time LIKE '"+cut_dtnew+"%' and device_status_id in("+status_id+") order by o.date_time ";
               
 //        String query="select date_time from smart_meter_survey.ohlevel o "
@@ -146,7 +146,7 @@ public JSONArray  getAllDateTime1(int ohlevel_id,String searchDate,String did) t
 //                +" where o.overheadtank_id="+overheadTank_id;
         try{
             Class.forName("com.mysql.jdbc.Driver");
-            Connection con=DriverManager.getConnection("jdbc:mysql://localhost:3306/mqtt_server","root","root");
+            Connection con=DriverManager.getConnection("jdbc:mysql://localhost:3306/smart_meter_survey","root","root");
             Statement stmt = con.createStatement();
             ResultSet rs = stmt.executeQuery(query);
             while(rs.next()){
@@ -210,8 +210,10 @@ public int getStatusId( String did) {
 public String getAllStatusId( String did) {
         int vehicle_id = 0;
          String joined ="";
+         //System.out.println("did---"+did);
           List<String> list = new ArrayList<String>();
         String query = "select device_status_id from device_status where device_id='"+did+"'";
+       // System.out.println("query------"+query);
         try {
             
            Class.forName("com.mysql.jdbc.Driver");
@@ -275,6 +277,7 @@ public String getAllStatusId( String did) {
         String overid=getOverheadTankid1(deviceid);
         String query = "select oht.height from overheadtank_height as oht,overheadtank as ot\n" +
 "where oht.overheadtank_id=ot.overheadtank_id and ot.type='"+type+"' and oht.overheadtank_id='"+overid+"'";
+        System.out.println("query++++++++++++++++++++"+query);
         try {
           Class.forName("com.mysql.jdbc.Driver");
             Connection con=DriverManager.getConnection("jdbc:mysql://localhost:3306/smart_meter_survey","root","root");
@@ -312,6 +315,7 @@ public JSONArray  getAllOhLevel(int ohlevel_id,String searchDate,String did){
         String query="select water_level from water_data o "
                 +"  where date_time LIKE '"+cut_dtnew+"%' and device_status_id in("+status_id+") order by o.date_time";
                  
+       // System.out.println("query-------"+query);
 //        String query="select remark from smart_meter_survey.ohlevel o "
 //                +"  where date_time LIKE '"+cut_dt+"%' "
 //                 +" and o.overheadtank_id="+30;
@@ -371,8 +375,8 @@ public JSONArray  getAllOhLevel(int ohlevel_id,String searchDate,String did){
     }
 
 public JSONArray  getAllOhLevel1(int ohlevel_id,String searchDate,String did){
- 
- 
+
+    System.out.println("all oh level 1");
  
       String type1=getOverheadTankType(did);
         int a=getOverHeadTankHeight(did,type1); 
@@ -387,9 +391,15 @@ public JSONArray  getAllOhLevel1(int ohlevel_id,String searchDate,String did){
        searchDate=searchDate.replace("-", "/");
        cut_dtnew=searchDate;
         }
-        String query="select water_level from water_data o "
+         
+        String query="select water_level from temp_water_data o "
                 +"  where date_time LIKE '"+cut_dtnew+"%' and device_status_id in("+status_id+") order by o.date_time";
-                 
+        
+        
+                                        System.out.println("query---"+query);
+
+   
+        
 //        String query="select remark from smart_meter_survey.ohlevel o "
 //                +"  where date_time LIKE '"+cut_dt+"%' "
 //                 +" and o.overheadtank_id="+30;
@@ -397,7 +407,7 @@ public JSONArray  getAllOhLevel1(int ohlevel_id,String searchDate,String did){
 //                 +" where o.overheadtank_id="+overheadTank_id;
         try{
              Class.forName("com.mysql.jdbc.Driver");      
-            Connection con=DriverManager.getConnection("jdbc:mysql://localhost:3306/mqtt_server","root","root");
+            Connection con=DriverManager.getConnection("jdbc:mysql://localhost:3306/smart_meter_survey","root","root");
             Statement stmt = con.createStatement();
             ResultSet rs = stmt.executeQuery(query);
             while(rs.next()){
@@ -415,22 +425,22 @@ public JSONArray  getAllOhLevel1(int ohlevel_id,String searchDate,String did){
 //      System.out.println("waterlvlnext--------"+waterlvlnext);
 //        System.out.println("a -----------"+a);
                      ohlevel=Integer.toString(b);
-                     int diff=0;
-                        if(!"".equals(waterlvlnext)){
-                            if(Integer.parseInt(waterlvlnext) >=Integer.parseInt(ohlevel)){
-                                diff=Integer.parseInt(waterlvlnext) -Integer.parseInt(ohlevel);
-                            }else{
-                           diff= Integer.parseInt(ohlevel) -Integer.parseInt(waterlvlnext);
-                            }
-                        
-                        if(diff<=500){
-                         waterlvlnext=ohlevel;
-                        }else{
-                        ohlevel=waterlvlnext;
-                        }
-                        }else{
-                        waterlvlnext=ohlevel;
-                        }
+//                     int diff=0;
+//                        if(!"".equals(waterlvlnext)){
+//                            if(Integer.parseInt(waterlvlnext) >=Integer.parseInt(ohlevel)){
+//                                diff=Integer.parseInt(waterlvlnext) -Integer.parseInt(ohlevel);
+//                            }else{
+//                           diff= Integer.parseInt(ohlevel) -Integer.parseInt(waterlvlnext);
+//                            }
+//                        
+//                        if(diff<=500){
+//                         waterlvlnext=ohlevel;
+//                        }else{
+//                        ohlevel=waterlvlnext;
+//                        }
+//                        }else{
+//                        waterlvlnext=ohlevel;
+//                        }
 						
 	  int a1=Integer.parseInt(ohlevel)/10;
                  ohlevel=String.valueOf(a1);			

@@ -20,7 +20,7 @@
         <servlet-name>CanvasJSController111</servlet-name>
         <url-pattern>/CanvasJSController111</url-pattern>
     </servlet-mapping>
-    <servlet-mapping>
+    <servlet-mapping>    
         <servlet-name>DashboardController</servlet-name>
         <url-pattern>/DashboardController</url-pattern>
     </servlet-mapping>
@@ -28,6 +28,28 @@
         <servlet-name>DashboardController2</servlet-name>
         <url-pattern>/DashboardController2</url-pattern>
     </servlet-mapping>
+    
+    
+    <servlet>
+        <servlet-name>MobileGraph</servlet-name>
+        <servlet-class>com.waterworks.controller.MobileViewGraphController</servlet-class>
+    </servlet>
+    
+    <servlet-mapping>
+        <servlet-name>MobileGraph</servlet-name>
+        <url-pattern>/MobileGraph</url-pattern>
+    </servlet-mapping>
+    <servlet>
+        <servlet-name>MobileGraph1</servlet-name>
+        <servlet-class>com.waterworks.controller.MobileViewGraphController1</servlet-class>
+    </servlet>
+    
+    <servlet-mapping>
+        <servlet-name>MobileGraph1</servlet-name>
+        <url-pattern>/MobileGraph1</url-pattern>
+    </servlet-mapping>
+    
+    
     <servlet-mapping>
         <servlet-name>DashboardController1</servlet-name>
         <url-pattern>/DashboardController1</url-pattern>
@@ -83,17 +105,21 @@
         <servlet-class>com.waterworks.controller.MsgCheckSchedularController</servlet-class>
         <load-on-startup>3</load-on-startup>
     </servlet>
-       <servlet>
+<!--     <servlet>
         <servlet-name>ScheduledTaskController</servlet-name>
         <servlet-class>com.waterworks.controller.ScheduledTaskController</servlet-class>
-        <load-on-startup>6</load-on-startup>
-    </servlet> 
+        <load-on-startup>7</load-on-startup>
+    </servlet> -->
     
-     <listener>
+<!--   <listener>
         <listener-class>
             com.waterworks.controller.ScheduledTaskController
         </listener-class>
-    </listener>
+        
+        <listener-class>
+            com.waterworks.controller.MqttScheduleController
+        </listener-class>
+    </listener>-->
     <servlet>
         <servlet-name>General TimeSchedulerCont4</servlet-name>
         <servlet-class>com.waterworks.controller.OhLevelSchedularController</servlet-class>
@@ -181,10 +207,11 @@
         <servlet-name>ServletAdaptor</servlet-name>
         <servlet-class>com.sun.jersey.spi.container.servlet.ServletContainer</servlet-class>
    
-     <init-param>
+        <init-param>
             <param-name>com.sun.jersey.config.property.packages</param-name>
             <param-value>com.Webservice.WebService</param-value>
-        </init-param> </servlet>
+        </init-param> 
+    </servlet>
     <servlet-mapping>
         <servlet-name>ServletAdaptor</servlet-name>
         <url-pattern>/resources/*</url-pattern>

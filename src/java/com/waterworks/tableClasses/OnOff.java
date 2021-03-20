@@ -10,6 +10,20 @@ package com.waterworks.tableClasses;
  */
 public class OnOff {
 
+    /**
+     * @return the water_level
+     */
+    public int getWater_level() {
+        return water_level;
+    }
+
+    /**
+     * @param water_level the water_level to set
+     */
+    public void setWater_level(int water_level) {
+        this.water_level = water_level;
+    }
+
     private int ohLevelId;
     private String waterTreatmentPlantName, overHeadTankName, dateTime, remark, type, level;
     private String value_of_34;
@@ -28,6 +42,8 @@ public class OnOff {
     private long totalstablevalue;
     private String totaldistributiontime;
     private long totaldistributionvalue;
+    private int water_level;
+    
 
     public String getTotalleakagetime() {
         return totalleakagetime;

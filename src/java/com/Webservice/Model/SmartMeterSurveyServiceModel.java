@@ -7,9 +7,11 @@ import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.security.SecureRandom;
 import java.sql.Connection;
+import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Statement;
 import java.text.DateFormat;
 import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
@@ -46,20 +48,21 @@ public class SmartMeterSurveyServiceModel {
 
     public int registerUser(JSONObject json) {
         int rowAffected = 0, key_person_id = 0;
-     try {    String mobile_no = json.get("mobile_no").toString();
-        String query = "insert into key_person (key_person_name,org_office_id,mobile_no1,emp_code,designation_id) "
-                + " values(?,?,?,?,?)";
-        String userQuery = "INSERT INTO user (user_name, password, key_person_id) VALUES(?, ?, ?)";
-        String selectQuery = "SELECT key_person_id "
-                + " FROM key_person WHERE mobile_no1='" + mobile_no + "' ";
-       
+        try {
+            String mobile_no = json.get("mobile_no").toString();
+            String query = "insert into key_person (key_person_name,org_office_id,mobile_no1,emp_code,designation_id) "
+                    + " values(?,?,?,?,?)";
+            String userQuery = "INSERT INTO user (user_name, password, key_person_id) VALUES(?, ?, ?)";
+            String selectQuery = "SELECT key_person_id "
+                    + " FROM key_person WHERE mobile_no1='" + mobile_no + "' ";
+
             connection.setAutoCommit(false);
             ResultSet rs = connection.prepareStatement(selectQuery).executeQuery();
             String is_verified = "";
             if (rs.next()) {
                 rowAffected = -1;
             } else {
-                PreparedStatement ps = connection.prepareStatement(query);
+                PreparedStatement ps = (PreparedStatement) connection.prepareStatement(query, Statement.RETURN_GENERATED_KEYS);
                 ps.setString(1, json.get("name").toString());
                 ps.setInt(2, 1);
                 ps.setString(3, mobile_no);
@@ -113,8 +116,9 @@ public class SmartMeterSurveyServiceModel {
 
     public int resetPassword(JSONObject json) {
         int affected = 0;
-      try {   String query = " UPDATE user u, key_person kp SET password='" + json.get("password") + "' WHERE kp.key_person_id=u.key_person_id AND kp.mobile_no1 = '" + json.get("mobile_no") + "' ";
-       
+        try {
+            String query = " UPDATE user u, key_person kp SET password='" + json.get("password") + "' WHERE kp.key_person_id=u.key_person_id AND kp.mobile_no1 = '" + json.get("mobile_no") + "' ";
+
             affected = connection.prepareStatement(query).executeUpdate();
         } catch (Exception ex) {
             System.out.println("ERROR: in resetPassword() in SmartMeterSurveyServiceModel : " + ex);
@@ -135,34 +139,34 @@ public class SmartMeterSurveyServiceModel {
             System.out.println("ERROR : in getKeyPersonId inside SmartMeterSurveyServiceModel : " + ex);
         }
         return id;
-    }     
+    }
 
     public JSONObject isExits(JSONObject jsonObject) {
-         JSONArray jsonArray = new JSONArray();
-       try {
-           String query = "select u.key_person_id, key_person_name, designation, address_line1, mobile_no1, "
-                + " email_id1 from user as u,key_person as kp "
-                + " where kp.key_person_id=u.key_person_id and kp.mobile_no1='" + jsonObject.get("username").toString() + "' and u.password='" + jsonObject.get("password").toString() + "'";
-       
-            PreparedStatement ps = connection.prepareStatement(query);     
+        JSONArray jsonArray = new JSONArray();
+        try {
+            String query = "select u.key_person_id, key_person_name, designation, address_line1, mobile_no1, "
+                    + " email_id1 from user as u,key_person as kp "
+                    + " where kp.key_person_id=u.key_person_id and kp.mobile_no1='" + jsonObject.get("username").toString() + "' and u.password='" + jsonObject.get("password").toString() + "'";
+
+            PreparedStatement ps = connection.prepareStatement(query);
             ResultSet rset = ps.executeQuery();
             if (rset.next()) {
                 jsonObject.put("key_person_id", rset.getInt("key_person_id"));
                 jsonObject.put("key_person_name", rset.getString("key_person_name"));
-               // jsonObject.put("designation", rset.getString("designation"));
+                // jsonObject.put("designation", rset.getString("designation"));
                 jsonObject.put("mobile_no1", rset.getString("mobile_no1"));
                 jsonObject.put("address_line1", rset.getString("address_line1"));
                 jsonObject.put("email_id1", rset.getString("email_id1"));
                 jsonObject.put("result", "success");
-               // jsonArray.put(jsonObject);
+                // jsonArray.put(jsonObject);
             } else {
                 jsonObject.put("result", "error");
             }
         } catch (Exception e) {
-           // jsonObject.put("result", "error");
+            // jsonObject.put("result", "error");
             System.out.println(e);
         }
-       return jsonObject;
+        return jsonObject;
     }
 
     public JSONArray getMeterDetilData() {
@@ -175,19 +179,19 @@ public class SmartMeterSurveyServiceModel {
             PreparedStatement ps = connection.prepareStatement(query);
             ResultSet rset = ps.executeQuery();
             while (rset.next()) {
-              try{
-                JSONObject json = new JSONObject();
-                json.put("key_person_id", rset.getInt("key_person_id"));
-                json.put("key_person_name", rset.getString("key_person_name"));
-                json.put("mobile_no", rset.getString("mobile_no1"));
-                json.put("meter_detail_id", rset.getInt("meter_detail_id"));
-                json.put("meter_no", rset.getString("meter_no"));
-                json.put("meter_reading", rset.getString("meter_reading"));
-                json.put("latitude", rset.getString("latitude"));
-                json.put("longitude", rset.getString("longitude"));
-                jsonArray.put(json);
-              }catch(JSONException j){
-              }
+                try {
+                    JSONObject json = new JSONObject();
+                    json.put("key_person_id", rset.getInt("key_person_id"));
+                    json.put("key_person_name", rset.getString("key_person_name"));
+                    json.put("mobile_no", rset.getString("mobile_no1"));
+                    json.put("meter_detail_id", rset.getInt("meter_detail_id"));
+                    json.put("meter_no", rset.getString("meter_no"));
+                    json.put("meter_reading", rset.getString("meter_reading"));
+                    json.put("latitude", rset.getString("latitude"));
+                    json.put("longitude", rset.getString("longitude"));
+                    jsonArray.put(json);
+                } catch (JSONException j) {
+                }
             }
         } catch (SQLException e) {
             //System.out.println("ERROR: in getMeterDetilData in SmartMeterSurveyServiceModel : " + e);
@@ -202,13 +206,13 @@ public class SmartMeterSurveyServiceModel {
             PreparedStatement ps = connection.prepareStatement(query);
             ResultSet rset = ps.executeQuery();
             while (rset.next()) {
-                try{
-                JSONObject json = new JSONObject();
-                json.put("reason_id", rset.getInt("reason_id"));
-                json.put("reason", rset.getString("reason"));
-                jsonArray.put(json);
-            }catch(JSONException j ){
-            }
+                try {
+                    JSONObject json = new JSONObject();
+                    json.put("reason_id", rset.getInt("reason_id"));
+                    json.put("reason", rset.getString("reason"));
+                    jsonArray.put(json);
+                } catch (JSONException j) {
+                }
             }
         } catch (SQLException e) {
             System.out.println("ERROR: in getReasons in SmartMeterSurveyServiceModel : " + e);
@@ -218,7 +222,7 @@ public class SmartMeterSurveyServiceModel {
 
     public int insertRecord(String meter_no, String meter_reading, String date_time, String latitude, String longitude, String noOccupants, String reason_id) {
         int rowsAffected = 0;
-        
+
 //        String qry="select * from meter_reading where meter_reading_id=6 ";
 //        try{
 //            PreparedStatement psmt=connection.prepareStatement(qry);
@@ -229,7 +233,6 @@ public class SmartMeterSurveyServiceModel {
 //        }catch(Exception e){
 //            System.out.println("com.Webservice.Model.SmartMeterSurveyServiceModel.insertRecord()"+e);
 //        }
-        
         String query = "INSERT INTO meter_reading (meter_detail_id, meter_no, meter_reading, date_time, latitude, longitude, number_of_occupants, reason_id) "
                 + " VALUES (?,?,?,?,?,?,?,?)";
         try {
@@ -350,6 +353,20 @@ public class SmartMeterSurveyServiceModel {
             System.out.println("Error:keypersonModel--insertRecord-- " + e);
         }
         return rowsAffected;
+    }
+
+    public String getDeviceId(String oid) {
+        String id = "";
+        String query = "SELECT remark FROM overheadtank WHERE overheadtank_id='" + oid + "'";
+        try {
+            ResultSet rs = connection.prepareStatement(query).executeQuery();
+            if (rs.next()) {
+                id = rs.getString("remark");
+            }
+        } catch (Exception ex) {
+            System.out.println("Error:keypersonModel--insertRecord-- " + ex);
+        }
+        return id;
     }
 
     public int getMeterDetailId(String meter_no) {
@@ -667,16 +684,29 @@ public class SmartMeterSurveyServiceModel {
 
         return jsonArray;
     }
+    java.util.Date dt = new java.util.Date();
+    SimpleDateFormat dfa = new SimpleDateFormat("yyyy-MM-dd");
+    SimpleDateFormat df1 = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+    String cut_dt = dfa.format(dt);
 
     public JSONArray gettanklevel() {
         JSONArray jsonArray = new JSONArray();
         byte[] twoByteData = new byte[2];
-        String query = "select * from (SELECT le.ohlevel_id,le.overheadtank_id,wtp.name as name1,"
-                + " oht.name,le.level_a,le.level_b,le.date_time,le.remark, level_datetime,step,level1,level2,level3,level4,oht.capacity_height,oht.type "
-                + "  FROM ohlevel AS le"
-                + "  LEFT JOIN overheadtank AS oht ON le.overheadtank_id = oht.overheadtank_id"
-                + "  LEFT JOIN watertreatmentplant AS wtp ON oht.watertreatmentplant_id = wtp.watertreatmentplant_id"
-                + "  ORDER BY le.ohlevel_id desc)as a group by name";
+        String query = "SELECT le.ohlevel_id,le.overheadtank_id,wtp.name as name1, oht.name,le.level_a,le.level_b,le.date_time,le.remark,\n"
+                + " level_datetime,step,level1,level2,level3,level4,oht.capacity_height,oht.type  FROM ohlevel AS le\n"
+                + " LEFT JOIN overheadtank AS oht ON le.overheadtank_id = oht.overheadtank_id \n"
+                + " LEFT JOIN watertreatmentplant AS wtp ON oht.watertreatmentplant_id = wtp.watertreatmentplant_id \n"
+               // + "WHERE  le.date_time like  '" + cut_dt + "%' and type='yes'\n"
+                + "WHERE type='yes'\n"
+
+                + " and le.ohlevel_id in(select max(ohlevel_id) from ohlevel group by overheadtank_id)group by overheadtank_id ";
+        
+//        String query = "select * from (SELECT le.ohlevel_id,le.overheadtank_id,wtp.name as name1,"
+//                + " oht.name,le.level_a,le.level_b,le.date_time,le.remark, level_datetime,step,level1,level2,level3,level4,oht.capacity_height,oht.type "
+//                + "  FROM ohlevel AS le"
+//                + "  LEFT JOIN overheadtank AS oht ON le.overheadtank_id = oht.overheadtank_id"
+//                + "  LEFT JOIN watertreatmentplant AS wtp ON oht.watertreatmentplant_id = wtp.watertreatmentplant_id"
+//                + "  ORDER BY le.ohlevel_id desc)as a group by name";
         try {
             PreparedStatement ps = connection.prepareStatement(query);
             ResultSet rset = ps.executeQuery();
@@ -699,7 +729,7 @@ public class SmartMeterSurveyServiceModel {
                 jsonObject.put("value_of_34", voltage1);
                 jsonObject.put("level_in_percent", df.format((voltage1 / (rset.getDouble("capacity_height") * 1000)) * 100));
                 jsonObject.put("overheadtank_id", rset.getInt("overheadtank_id"));
-                jsonObject.put("oht_type",rset.getString("type"));
+                jsonObject.put("oht_type", rset.getString("type"));
 
                 jsonArray.put(jsonObject);
             }
@@ -831,8 +861,8 @@ public class SmartMeterSurveyServiceModel {
                 long voltage1 = (new BigInteger(twoByteData).longValue());
                 jsonObject.put("value_of_34", ("" + voltage1).trim());
                 jsonObject.put("level_in_percentage", "" + df.format((voltage1 / (rset.getDouble("capacity_height") * 1000)) * 100));
-                jsonObject.put("overheadtank_type",rset.getString("overheadtank_type"));
-                jsonObject.put("overheadtank_id",rset.getString("overheadtank_id"));
+                jsonObject.put("overheadtank_type", rset.getString("overheadtank_type"));
+                jsonObject.put("overheadtank_id", rset.getString("overheadtank_id"));
                 jsonArray.put(jsonObject);
             }
         } catch (Exception e) {
@@ -843,12 +873,38 @@ public class SmartMeterSurveyServiceModel {
     }
 
     public JSONArray getOht_sumpwell() {
-       
+ 
         JSONArray jsonArray = new JSONArray();
         String query = " select overheadtank_id1 as sumpwell_id,overheadtank_id2 as oht_id,junction_id "
-                       +" from smart_meter_survey.sumpwell_overheadtank s "
-                       +" where s.active='Y' ";
+                + " from smart_meter_survey.sumpwell_overheadtank s "
+                + " where s.active='Y' ";
         try {
+            int dsid=getStatusId();
+            String waterlevel=getWaterLevel(String.valueOf(dsid));
+            String Energylevel=getEnergyLevel(String.valueOf(dsid));
+             String[] energylevel = Energylevel.split("_");
+             String[] Watlevel = waterlevel.split("_");
+           
+        Energylevel = energylevel[0];
+        waterlevel = Watlevel[0];
+      String   sumpwelldate_time = Watlevel[1];
+         Energylevel=String.valueOf(Integer.parseInt(Energylevel)/1000);
+        String Cons_energy_mains = energylevel[1];
+          Cons_energy_mains=String.valueOf(Integer.parseInt(Cons_energy_mains)/10);
+        String active_energy_dg = energylevel[2];
+          active_energy_dg=String.valueOf(Integer.parseInt(active_energy_dg)/100);
+        String total_active_energy = energylevel[3];
+        String phase_voltage_R = energylevel[4];
+        String phase_voltage_Y = energylevel[5];
+        String phase_voltage_B = energylevel[6];
+        String phase_current_R = energylevel[7];
+           phase_current_R=String.valueOf(Integer.parseInt(phase_current_R)/100);
+        String phase_current_Y = energylevel[8];
+           phase_current_Y=String.valueOf(Integer.parseInt(phase_current_Y)/100);
+        String phase_current_B = energylevel[9];
+           phase_current_B=String.valueOf(Integer.parseInt(phase_current_B)/100);
+        String datetimeenergy = energylevel[10];
+        String energy_id = energylevel[12];
             PreparedStatement ps = connection.prepareStatement(query);
 
             ResultSet rset = ps.executeQuery();
@@ -857,6 +913,23 @@ public class SmartMeterSurveyServiceModel {
                 jsonObject.put("sumpwell_id", rset.getString("sumpwell_id"));
                 jsonObject.put("oht_id", rset.getString("oht_id"));
                 jsonObject.put("junction_id", rset.getInt("junction_id"));
+                jsonObject.put("SumpwellTankName", "Ranjhi marghatai Sumpwell");
+                jsonObject.put("sumpwell_waterlevel", waterlevel);
+                jsonObject.put("totalactivepower",Energylevel);
+                jsonObject.put("Cons_energy_mains",Cons_energy_mains);
+                jsonObject.put("active_energy_dg",active_energy_dg);
+                jsonObject.put("total_active_energy",total_active_energy);
+                jsonObject.put("phase_voltage_R",phase_voltage_R);
+                jsonObject.put("phase_voltage_Y",phase_voltage_Y);
+                jsonObject.put("phase_voltage_B",phase_voltage_B);
+                jsonObject.put("phase_current_R",phase_current_R);
+                jsonObject.put("phase_current_Y",phase_current_Y);
+                jsonObject.put("phase_current_B",phase_current_B);
+                jsonObject.put("datetimeenergy",datetimeenergy);
+                jsonObject.put("energy_id",energy_id);
+                jsonObject.put("sumpwelldate_time",sumpwelldate_time);
+                
+              
 
                 jsonArray.put(jsonObject);
             }
@@ -866,17 +939,111 @@ public class SmartMeterSurveyServiceModel {
 
         return jsonArray;
     }
+ public String getWaterLevel(String device_status_id) throws SQLException {
+        Connection con = null;
+       
+String status="";
+String datetime="";
+        String query = "select distinct wd.water_level,wd.date_time from water_data wd where wd.device_status_id='" + device_status_id + "'  order by date_time desc limit 1";
 
+        try {
+              PreparedStatement ps = connection.prepareStatement(query);
+            ResultSet rset = ps.executeQuery();   
+            while (rset.next()) {
+                status = rset.getString("water_level");
+                datetime = rset.getString("date_time");
+              
+
+            }
+        } catch (Exception e) {
+            System.out.println(e);
+        } finally {
+           // con.close();
+        }
+        return status + "_" + datetime ;
+    }
+  public String getEnergyLevel(String device_status_id) throws SQLException {
+        Connection con = null;
+        PreparedStatement stmt;
+        ResultSet rs;
+     //   int device_status_id = getWaterStatusId(id);
+        // int device_status_id = 5449;
+        String total_active_power = "";
+        String Cons_energy_mains = "";
+        String active_energy_dg = "";
+        String total_active_energy = "";
+        String phase_voltage_R = "";
+        String phase_voltage_Y = "";
+        String phase_voltage_B = "";
+        String phase_current_R = "";
+        String phase_current_Y = "";
+        String phase_current_B = "";
+
+        String datetime = "";
+        String relay_status = "";
+        int energy_id = 0;
+        String query = "select distinct wd.total_active_power,wd.Cons_energy_mains,wd.active_energy_dg,wd.total_active_energy,wd.phase_voltage_R,wd.phase_voltage_Y,wd.phase_voltage_B,wd.phase_current_R,phase_current_Y,wd.phase_current_B,wd.date_time,wd.relay_state,wd.energy_data_id from energy_data wd where wd.device_status_id='" + device_status_id + "' order by date_time desc limit 1";
+
+        try {
+           stmt = connection.prepareStatement(query);
+          
+            rs = stmt.executeQuery();
+            while (rs.next()) {
+                total_active_power = rs.getString("total_active_power");
+                Cons_energy_mains = rs.getString("Cons_energy_mains");
+                active_energy_dg = rs.getString("active_energy_dg");
+                total_active_energy = rs.getString("total_active_energy");
+                phase_voltage_R = rs.getString("phase_voltage_R");
+                phase_voltage_Y = rs.getString("phase_voltage_Y");
+                phase_voltage_B = rs.getString("phase_voltage_B");
+                phase_current_R = rs.getString("phase_current_R");
+                phase_current_Y = rs.getString("phase_current_Y");
+                phase_current_B = rs.getString("phase_current_B");
+
+                datetime = rs.getString("date_time");
+                relay_status = rs.getString("relay_state");
+                energy_id = rs.getInt("energy_data_id");
+            }
+        } catch (Exception e) {
+            System.out.println(e);
+        } finally {
+           // con.close();
+        }
+        return total_active_power + "_" + Cons_energy_mains + "_" + active_energy_dg + "_" + total_active_energy + "_"
+                + phase_voltage_R + "_" + phase_voltage_Y + "_" + phase_voltage_B + "_" + phase_current_R + "_" + phase_current_Y + "_" + phase_current_B
+                + "_" + datetime + "_" + relay_status + "_" + energy_id;
+    }
+ public String getEnergydataLevel(String device_status_id) throws SQLException {
+        Connection con = null;
+       
+String status="";
+        String query = "select distinct wd.total_active_power from energy_data wd where wd.device_status_id='" + device_status_id + "'  order by created_date desc limit 1";
+
+        try {
+              PreparedStatement ps = connection.prepareStatement(query);
+            ResultSet rset = ps.executeQuery();   
+            while (rset.next()) {
+                status = rset.getString("total_active_power");
+              
+
+            }
+        } catch (Exception e) {
+            System.out.println(e);
+        } finally {
+          //  con.close();
+        }
+        return status ;
+    }
+ 
     public JSONArray getMeterReading() {
 
         JSONArray jsonArray = new JSONArray();
 //        String query = " Select meter_readings_id,junction_id,connected_load,timestamp "
 //                      +" from meter_survey.meter_readings m ";
 
-        String query1="Select * from(Select meter_readings_id,m.junction_id,m.connected_load,m.timestamp,j.imei_no "
-                       +" from meter_survey.meter_readings m,meter_survey.junction j "
-                       +" ORDER BY meter_readings_id desc ) as a group by a.junction_id ";
-
+        String query1 = "Select * from(Select meter_readings_id,m.junction_id,m.connected_load,m.timestamp,j.imei_no "
+                + " from meter_survey.meter_readings m,meter_survey.junction j "
+                + " ORDER BY meter_readings_id desc ) as a group by a.junction_id ";
 
         try {
             PreparedStatement ps = connection.prepareStatement(query1);
@@ -898,8 +1065,6 @@ public class SmartMeterSurveyServiceModel {
 
         return jsonArray;
     }
-
-
 
     public JSONArray getHistory(String meter_no) {
         JSONArray jsonArray = new JSONArray();
@@ -924,7 +1089,27 @@ public class SmartMeterSurveyServiceModel {
 
         return jsonArray;
     }
-
+public int getStatusId() throws SQLException {
+        int vehicle_id = 0;
+        Connection con = null;
+        String query = "select device_status_id from device_status where active='Y' and device_id='D_20'";
+        try {
+            Class.forName("com.mysql.jdbc.Driver");
+            con = DriverManager.getConnection("jdbc:mysql://localhost:3306/mqtt_server", "root", "root");
+            Statement stmt = con.createStatement();
+           
+            ResultSet rs = stmt.executeQuery(query);
+            //System.err.println("ergtrgrtbrtb");
+            while (rs.next()) {
+                vehicle_id = rs.getInt("device_status_id");
+            }
+        } catch (Exception e) {
+            System.out.println(e);
+        } finally {
+            con.close();
+        }
+        return vehicle_id;
+    }
     public JSONArray getDataNode() {
         JSONArray jsonArray = new JSONArray();
         String query = "SELECT node_id, node_name, generation_no FROM node n where active='Y' order by node_name";
@@ -1026,10 +1211,12 @@ public class SmartMeterSurveyServiceModel {
         } catch (Exception e) {
             System.out.println("Error in getAllRecrod -- OverHeadTankModel : " + e);
         }
-       try{ jsonObject.put("data", jsonArray);
-       
-       }catch(Exception e){
-       } return jsonObject.toString();
+        try {
+            jsonObject.put("data", jsonArray);
+
+        } catch (Exception e) {
+        }
+        return jsonObject.toString();
     }
 
     private static double distance(double lat1, double lon1, double lat2, double lon2, String unit) {
@@ -1048,15 +1235,15 @@ public class SmartMeterSurveyServiceModel {
     }
 
     /*:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::*/
-    /*::    This function converts decimal degrees to radians                         :*/
-    /*:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::*/
+ /*::    This function converts decimal degrees to radians                         :*/
+ /*:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::*/
     private static double deg2rad(double deg) {
         return (deg * Math.PI / 180.0);
     }
 
     /*:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::*/
-    /*::    This function converts radians to decimal degrees                         :*/
-    /*:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::*/
+ /*::    This function converts radians to decimal degrees                         :*/
+ /*:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::*/
     private static double rad2deg(double rad) {
         return (rad * 180 / Math.PI);
     }

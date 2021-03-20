@@ -34,18 +34,15 @@ public class SchedulerControllerforLeakage extends HttpServlet { //implements Ru
 
         try {
             con = dbCon.getConnection(ctx);
-        } catch (SQLException ex) {
-            Logger.getLogger(SchedulerControllerforLeakage.class.getName()).log(Level.SEVERE, null, ex);
-        }
 
-        if (con != null) {
-            ScheduleModelleakage sm = new ScheduleModelleakage();
-            sm.setConnection( (java.sql.Connection) con);
-            sm.setCtx(ctx);
-long stime=sm.getShedulartime();     
-            System.out.println("stime       "+stime);
-            ScheduledExecutorService scheduledThreadPool = Executors.newScheduledThreadPool(5);
-            scheduledThreadPool.scheduleAtFixedRate(sm, 0, stime, TimeUnit.SECONDS);
+            if (con != null) {
+                ScheduleModelleakage sm = new ScheduleModelleakage();
+                sm.setConnection((java.sql.Connection) con);
+                sm.setCtx(ctx);
+                long stime = sm.getShedulartime();
+                System.out.println("stime       " + stime);
+                ScheduledExecutorService scheduledThreadPool = Executors.newScheduledThreadPool(5);
+                scheduledThreadPool.scheduleAtFixedRate(sm, 0, stime, TimeUnit.SECONDS);
 
 //
 //
@@ -55,8 +52,19 @@ long stime=sm.getShedulartime();
 //
 //            ScheduledExecutorService scheduledThreadPool1 = Executors.newScheduledThreadPool(5);
 //            scheduledThreadPool1.scheduleAtFixedRate(sm, 0, 1, TimeUnit.HOURS);
+            }
+        } catch (SQLException ex) {
+            Logger.getLogger(SchedulerControllerforLeakage.class.getName()).log(Level.SEVERE, null, ex);
+        }finally{
+            if(con!=null){
+//                try {
+//                    System.out.println("");
+//                   // con.close();
+//                } catch (SQLException ex) {
+//                    Logger.getLogger(SchedulerControllerforLeakage.class.getName()).log(Level.SEVERE, null, ex);
+//                }
+            }
         }
-         
         System.out.println("-------------Akash--SchedulerController is Running--------------");
     }
 }

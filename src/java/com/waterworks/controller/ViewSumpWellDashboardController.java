@@ -40,6 +40,8 @@ public class ViewSumpWellDashboardController extends HttpServlet {
     protected void processRequest(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException, ParseException {
         try{
+                                   // System.err.println("sumpwell try^^^^^^^^^&&&&&&&&&&&&&&&");
+
         response.setContentType("text/html;charset=UTF-8");
         //PrintWriter out = response.getWriter();
 
@@ -61,11 +63,12 @@ public class ViewSumpWellDashboardController extends HttpServlet {
         String key_person = "";
         String vehicle_no = "";
         int lowerLimit = 0, noOfRowsTraversed = 0, noOfRowsToDisplay = 10, noOfRowsInTable = 0;
- String device_idfromjsp = request.getParameter("did");
+        String device_idfromjsp = request.getParameter("did");
  
    String oht_idfromjsp = request.getParameter("ohid");
    String ohname = request.getParameter("ohname");
    String ohdevicenameid = request.getParameter("ohdevicename");
+   
     if(!device_idfromjsp.equals(newdevidcheck)){
    newdevidcheck=device_idfromjsp;
    waterlvlnext="";
@@ -92,12 +95,13 @@ public class ViewSumpWellDashboardController extends HttpServlet {
    
     
    
-   
+
    
    
    //
         int status_id = vkpm.getStatusId(device_idfromjsp);
         String device_id = vkpm.getDeviceId(status_id);   
+
 
         //  status = vkpm.getVehicleStatus(status_id);
         // String idle_running = vkpm.getIdleRunningStatus(status_id);
@@ -107,10 +111,13 @@ public class ViewSumpWellDashboardController extends HttpServlet {
 
         //Water Level Data---- Start
         String waterlevel = vkpm.getWaterLevel(device_id);
+
         String[] waterleveldata = waterlevel.split("_");
         waterlevel = waterleveldata[0];
          String type1=vkpm.getOverheadTankType(device_id);
+
         int a=vkpm.getOverHeadTankHeight(device_id,type1); 
+
         int b=0;
         if(Integer.parseInt(waterlevel)>a){
           b= Integer.parseInt(waterlevel)-a;
@@ -160,6 +167,7 @@ public class ViewSumpWellDashboardController extends HttpServlet {
 
         //Energy Level Data -----Start
         String total_active_power = vkpm.getEnergyLevel(device_id);
+
         String[] energylevel = total_active_power.split("_");
         total_active_power = energylevel[0];
          total_active_power=String.valueOf(Integer.parseInt(total_active_power)/1000);
@@ -180,6 +188,7 @@ public class ViewSumpWellDashboardController extends HttpServlet {
         String datetimeenergy = energylevel[10];
         String energy_id = energylevel[12];
         //-------------------End
+        
 
         Date dt = new Date();
         SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd");
@@ -244,6 +253,7 @@ public class ViewSumpWellDashboardController extends HttpServlet {
         }
 
         String accuracy = vkpm.getAccuracy();
+
         if (accuracy.equals("")) {
             accuracy = "0";
         }
@@ -527,6 +537,7 @@ public class ViewSumpWellDashboardController extends HttpServlet {
             //out.close();
         }
         } catch (Exception e) {
+
             System.out.println(e);
             RequestDispatcher rd = request.getRequestDispatcher("/view/waterWorks/error500.jsp");
               rd.forward(request, response);

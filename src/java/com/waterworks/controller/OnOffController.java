@@ -13,6 +13,8 @@ import com.waterworks.tableClasses.OnOff;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.sql.SQLException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
 import java.util.logging.Level;
@@ -48,6 +50,8 @@ List listpdf = null;
         }
         request.setCharacterEncoding("UTF-8");
         String task = request.getParameter("task");
+        
+        System.err.println("task---"+task);
         if (task == null) {
             task = "";
         }
@@ -152,6 +156,7 @@ List listpdf = null;
 //                response.setCharacterEncoding("UTF-8");
 //                ServletOutputStream servletOutputStream = response.getOutputStream();
                 jrxmlFilePath = ctx.getRealPath("/report/waterWorks/OnOffLevel.jrxml");
+                  //  System.err.println("overhead tank---------"+searchOverheadtankName);
                 list = ohLevelModel.ShowPDF(-1, -1, searchDateFrom, searchDateTo,searchOverheadtankName,type);
                 byte[] reportInbytes = GeneralModel.generateRecordList(jrxmlFilePath, list);
                 response.setContentLength(reportInbytes.length);
@@ -163,6 +168,38 @@ List listpdf = null;
                  return;
 
             }
+            
+            
+            
+            if (task.equals("sendPdf")) {
+//                System.err.println("aa gaya");
+                String jrxmlFilePath;
+                List list = null;
+                Date date=new Date();
+                SimpleDateFormat sdf=new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+                String new_date=sdf.format(date);
+                System.err.println("if send pdf");
+                String mail_id=request.getParameter("send_to");
+                ohLevelModel.saveMailId(mail_id);
+                
+
+                response.setContentType("application/pdf");
+                response.setCharacterEncoding("UTF-8");
+                ServletOutputStream servletOutputStream = response.getOutputStream();
+                jrxmlFilePath = ctx.getRealPath("/report/waterWorks/OnOffAllLevel.jrxml");
+                String type = request.getParameter("type");
+                String q = "";
+                //List listlength = ohLevelModel.getTypeName(q);                
+                jrxmlFilePath = ctx.getRealPath("/report/waterWorks/OnOffLevel.jrxml");
+              //  System.err.println("overhead tank---------" + searchOverheadtankName);
+                list = ohLevelModel.ShowPDF(-1, -1, searchDateFrom, searchDateTo, searchOverheadtankName, type);
+                byte[] reportInbytes = GeneralModel.generateRecordList(jrxmlFilePath, list);
+                ohLevelModel.writeBytesToFile("C:/ssadvt_repository/SmartMeterSurvey/Report/pdf1.pdf", reportInbytes,mail_id); 
+
+                return;
+
+            }
+            
             try {
                 lowerLimit = Integer.parseInt(request.getParameter("lowerLimit"));
                 noOfRowsTraversed = Integer.parseInt(request.getParameter("noOfRowsTraversed"));

@@ -4,9 +4,14 @@
  */
 package com.waterworks.model;
 
+import com.report.sendPdfViaMail.sendMail;
+
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import com.waterworks.tableClasses.OnOff;
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
 import java.math.BigInteger;
 import java.sql.DriverManager;
 import java.sql.ResultSet;
@@ -22,6 +27,7 @@ import javax.servlet.http.HttpSession;
 import jxl.write.DateTime;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.concurrent.TimeUnit;
 
 /**
  *
@@ -40,30 +46,28 @@ public class OnOffModel {
     private final String COLOR_OK = "yellow";
     private final String COLOR_ERROR = "red";
     DecimalFormat df = new DecimalFormat("0.00");
-      ArrayList<OnOff> pdflist = new ArrayList<OnOff>();
-    String diffdatetime="";
-    int levelvalue=0;
-    long totallevel=0;
-    String finaldatetime="";
-    long leveldifference=0;
-    long diff=0;
-    String totalTime="";
-    long totalday=0;
-    long totalhour=0;
-    long totalmin=0;
-    long totalsec=0;
-    String totalleakage="";
-     String totalstable="";
- String totalsupply="";
-  String totaldistribution="";
-  long totalleakagevalue=0;
-     long totalstablevalue=0;
- long totalsupplyvalue=0;
-  long totaldistributionvalue=0;
-  
-  
-  
-  
+    ArrayList<OnOff> pdflist = new ArrayList<OnOff>();
+    String diffdatetime = "";
+    int levelvalue = 0;
+    long totallevel = 0;
+    String finaldatetime = "";
+    long leveldifference = 0;
+    long diff = 0;
+    String totalTime = "";
+    long totalday = 0;
+    long totalhour = 0;
+    long totalmin = 0;
+    long totalsec = 0;
+    String totalleakage = "";
+    String totalstable = "";
+    String totalsupply = "";
+    String totaldistribution = "";
+    long totalleakagevalue = 0;
+    long totalstablevalue = 0;
+    long totalsupplyvalue = 0;
+    long totaldistributionvalue = 0;
+    long total_seconds = 0;
+
     public void setConnection() {
         try {
             Class.forName(driver);
@@ -74,7 +78,7 @@ public class OnOffModel {
         }
     }
 
-    public int getTotalRowsInTable(String searchDateFrom, String searchDateTo,String searchOverheadtankName,String type) {
+    public int getTotalRowsInTable(String searchDateFrom, String searchDateTo, String searchOverheadtankName, String type) {
         if (searchDateFrom != null && !searchDateFrom.isEmpty()) {
             String[] sdate_array = searchDateFrom.split("-");
             searchDateFrom = sdate_array[2] + "-" + sdate_array[1] + "-" + sdate_array[0];
@@ -83,19 +87,30 @@ public class OnOffModel {
             String[] sdate_array = searchDateTo.split("-");
             searchDateTo = sdate_array[2] + "-" + sdate_array[1] + "-" + sdate_array[0];
         }
+        if (type.equals("")) {
+            type = "All";
+        }
         String query = " select count(distribution_id) from watertreatmentplant AS wtp,overheadtank AS oht,"
                 + " ohlevel as ol,distribution as d"
                 + " where oht.watertreatmentplant_id = wtp.watertreatmentplant_id"
                 + " and ol.overheadtank_id = oht.overheadtank_id and ol.ohlevel_id=d.ohlevel_id "
-            //    + " And IF('" + searchDateFrom + "'='', ol.date_time LIKE '%%',ol.date_time >='" + searchDateFrom + "') "
-             //   + " And IF('" + searchDateTo + "'='', ol.date_time LIKE '%%',date_format(ol.date_time, '%Y-%m-%d') <='" + searchDateTo + "') "
-                + " And IF('" + searchOverheadtankName + "' = '',oht.name LIKE '%%', oht.name='" + searchOverheadtankName + "')"
-                + " And IF('" + type + "' = '',d.type LIKE '%%', d.type='" + type + "')";
-         if(searchDateFrom!=""){
-        query=query+"and ol.date_time='"+searchDateFrom+"'";
+                //    + " And IF('" + searchDateFrom + "'='', ol.date_time LIKE '%%',ol.date_time >='" + searchDateFrom + "') "
+                //   + " And IF('" + searchDateTo + "'='', ol.date_time LIKE '%%',date_format(ol.date_time, '%Y-%m-%d') <='" + searchDateTo + "') "
+                + " And IF('" + searchOverheadtankName + "' = '',oht.name LIKE '%%', oht.name='" + searchOverheadtankName + "') ";
+        //    + " And IF('" + type + "' = '',d.type LIKE '%%', d.type='" + type + "') ";
+
+        if (type.equals("Leakage") || type.equals("Stable") || type.equals("Supply") || type.equals("Distribution")) {
+            query += " and d.type='" + type + "' ";
+
         }
-         if(searchDateFrom!=""){
-        query+=" and ol.date_time='"+searchDateFrom+"'";
+        if (type.equals("All")) {
+            query += "";
+        }
+        if (searchDateFrom != "") {
+            query = query + "and ol.date_time='" + searchDateFrom + "'";
+        }
+        if (searchDateFrom != "") {
+            query += " and ol.date_time='" + searchDateFrom + "'";
         }
         int noOfRows = 0;
         try {
@@ -112,13 +127,13 @@ public class OnOffModel {
         return noOfRows;
     }
 
-    public ArrayList<OnOff> getAllRecords(int lowerLimit, int noOfRowsToDisplay, String searchDateFrom, String searchDateTo,String searchOverheadtankName,String type) {
+    public ArrayList<OnOff> getAllRecords(int lowerLimit, int noOfRowsToDisplay, String searchDateFrom, String searchDateTo, String searchOverheadtankName, String type) {
         ArrayList<OnOff> list = new ArrayList<OnOff>();
-        levelvalue=0;
-        totallevel=0;
-        diff=0;
+        levelvalue = 0;
+        totallevel = 0;
+        diff = 0;
         Date d1 = null;
-		Date d2 = null;
+        Date d2 = null;
         if (searchDateFrom != null && !searchDateFrom.isEmpty()) {
             String[] sdate_array = searchDateFrom.split("-");
             searchDateFrom = sdate_array[2] + "-" + sdate_array[1] + "-" + sdate_array[0];
@@ -129,27 +144,40 @@ public class OnOffModel {
         }
         byte[] twoByteData = new byte[2];
         String addQuery = " LIMIT " + lowerLimit + ", " + noOfRowsToDisplay;
-        if (lowerLimit == -1) {     
+        if (lowerLimit == -1) {
             addQuery = "";
+        }
+        if (type.equals("")) {
+            type = "All";
         }
         //  int overheadtank_id = getOverHeadTankid(Integer.parseInt(oh_level));
         String query = " select wtp.name as name1,oht.name,ol.remark,ol.ohlevel_id,d.type,ol.date_time,level3,level4,capacity_height from watertreatmentplant AS wtp,overheadtank AS oht,"
                 + " ohlevel as ol,distribution as d"
                 + " where oht.watertreatmentplant_id = wtp.watertreatmentplant_id"
                 + " and ol.overheadtank_id = oht.overheadtank_id and ol.ohlevel_id=d.ohlevel_id "
-             //   + " And IF('" + searchDateFrom + "'='', ol.date_time LIKE '%%',ol.date_time >='" + searchDateFrom + "') "
-            //    + " And IF('" + searchDateTo + "'='', ol.date_time LIKE '%%',date_format(ol.date_time, '%Y-%m-%d') <='" + searchDateTo + "') "
-                + " And IF('" + searchOverheadtankName + "' = '',oht.name LIKE '%%', oht.name='" + searchOverheadtankName + "') "
-                   + " And IF('" + type + "' = '',d.type LIKE '%%', d.type='" + type + "') ";
-        if(!"".equals(searchDateFrom)){
-        query=query+"and ol.date_time='"+searchDateFrom+"'";
+                //   + " And IF('" + searchDateFrom + "'='', ol.date_time LIKE '%%',ol.date_time >='" + searchDateFrom + "') "
+                //    + " And IF('" + searchDateTo + "'='', ol.date_time LIKE '%%',date_format(ol.date_time, '%Y-%m-%d') <='" + searchDateTo + "') "
+                + " And IF('" + searchOverheadtankName + "' = '',oht.name LIKE '%%', oht.name='" + searchOverheadtankName + "') ";
+        //    + " And IF('" + type + "' = '',d.type LIKE '%%', d.type='" + type + "') ";
+
+        if (type.equals("Leakage") || type.equals("Stable") || type.equals("Supply") || type.equals("Distribution")) {
+            query += " and d.type='" + type + "' ";
+
         }
-         if(!"".equals(searchDateFrom)){
-        query+=" and ol.date_time='"+searchDateFrom+"'";
+        if (type.equals("All")) {
+            query += "";
         }
-              query+= "order by ol.date_time desc ";           
-                  query+=" LIMIT "+lowerLimit+", "+noOfRowsToDisplay;
-               
+
+        if (!"".equals(searchDateFrom)) {
+            query = query + "and date(ol.date_time)>='" + searchDateFrom + "'";
+        }
+        if (!"".equals(searchDateTo)) {
+            query += " and date(ol.date_time)<='" + searchDateTo + "'";
+        }
+        query += "order by ol.date_time desc ";
+        query += " LIMIT " + lowerLimit + ", " + noOfRowsToDisplay;
+
+        // System.err.println("get all record *****$$$$$$$$$4"+query);
         try {
             PreparedStatement pstmt = (PreparedStatement) connection.prepareStatement(query);
 
@@ -160,53 +188,50 @@ public class OnOffModel {
                 ohLevelBean.setOverHeadTankName(rset.getString(2));
                 ohLevelBean.setOhLevelId(rset.getInt("ohlevel_id"));
                 ohLevelBean.setType(rset.getString("type"));
+                ohLevelBean.setDateTime(rset.getString("date_time"));
+                ohLevelBean.setLevel(rset.getString("remark"));
                 String datetime1 = rset.getString("date_time");
-                
-                 DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");  
- 
-       
- 
-      //  System.out.println("Before subtraction of minutes from date: "+currentTime);
- 
-        LocalDateTime datetime = LocalDateTime.parse(datetime1,formatter);
- 
-        datetime=datetime.minusMinutes(6);
- 
-        String aftersubtraction=datetime.format(formatter);
-        
-        String values[] = aftersubtraction.split(" ");
-        
-        String value1 = values[0];
-        String values2 = values[1];
-        String values3[] = values2.split(":");
-        String values4 = values3[0];
-        String values5 = values3[1];
-        
-        String finaltime = value1+" "+values4+":"+values5;
-                
-                String remark = getRemark(finaltime);
-                ohLevelBean.setDateTime(aftersubtraction);
-                ohLevelBean.setLevel(remark);
-                
-                finaldatetime = getFinaldatetime(aftersubtraction,type);
-                ohLevelBean.setFinaldatetime(finaldatetime);
-                
-              String finallevel = getRemark(finaltime);
-                
-             
-                 leveldifference = Integer.parseInt(remark) - (levelvalue);
-               ohLevelBean.setLeveldifference(Math.abs(leveldifference));
-                
-          if(!diffdatetime.equals("")) 
-          {
-              	SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-              
-        d1 =  format.parse(diffdatetime);
-			d2 =  format.parse(aftersubtraction);
 
-			//in milliseconds
-			 diff = d1.getTime() - d2.getTime();
- 
+                DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+
+                //  System.out.println("Before subtraction of minutes from date: "+currentTime);
+                LocalDateTime datetime = LocalDateTime.parse(datetime1, formatter);
+
+                datetime = datetime.minusMinutes(6);
+
+                String aftersubtraction = datetime.format(formatter);
+
+                String values[] = aftersubtraction.split(" ");
+
+                String value1 = values[0];
+                String values2 = values[1];
+                String values3[] = values2.split(":");
+                String values4 = values3[0];
+                String values5 = values3[1];
+
+                String finaltime = value1 + " " + values4 + ":" + values5;
+
+                String remark = getRemark(finaltime);
+
+                // ohLevelBean.setDateTime(aftersubtraction);
+                //ohLevelBean.setLevel(remark);
+                finaldatetime = getFinaldatetime(aftersubtraction, type, searchOverheadtankName);
+                ohLevelBean.setFinaldatetime(finaldatetime);
+
+                String finallevel = getRemark(finaltime);
+
+                leveldifference = Integer.parseInt(remark) - (levelvalue);
+                ohLevelBean.setLeveldifference(Math.abs(leveldifference));
+
+                if (!diffdatetime.equals("")) {
+                    SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+
+                    d1 = format.parse(diffdatetime);
+                    d2 = format.parse(aftersubtraction);
+
+                    //in milliseconds
+                    diff = d1.getTime() - d2.getTime();
+
 //			long diffSeconds = diff / 1000 % 60;
 //			long diffMinutes = diff / (60 * 1000) % 60;
 //			long diffHours = diff / (60 * 60 * 1000) % 24;
@@ -241,22 +266,21 @@ public class OnOffModel {
 //                           ohLevelBean.setColname(colname);
 //                        ohLevelBean.setDtdifference(dtdifference);
 //                        }
-          }
-                
-                totallevel=totallevel+leveldifference;
-                ohLevelBean.setTotallevel(Math.abs(totallevel));
+                }
+
+                totallevel = totallevel + leveldifference;
+                ohLevelBean.setTotallevel(totallevel);
                 twoByteData[0] = rset.getByte("level3");
                 twoByteData[1] = rset.getByte("level4");
                 long voltage1 = (new BigInteger(twoByteData).longValue());
                 ohLevelBean.setValue_of_34(("" + voltage1).trim());
                 ohLevelBean.setLevel_of_34("" + df.format((voltage1 / (rset.getDouble("capacity_height") * 1000)) * 100));
                 list.add(ohLevelBean);
-                
-                   
+
                 levelvalue = Integer.parseInt(remark);
-                
+
                 diffdatetime = aftersubtraction;
-                
+
             }
         } catch (Exception e) {
             System.out.println("Error in getAllRecrod -- OnOFF Model : " + e);
@@ -265,25 +289,22 @@ public class OnOffModel {
         return list;
     }
 
-    
-    
-    
-     public ArrayList<OnOff> ShowPDF(int lowerLimit, int noOfRowsToDisplay, String searchDateFrom, String searchDateTo,String searchOverheadtankName,String type) {
+    public ArrayList<OnOff> ShowPDF(int lowerLimit, int noOfRowsToDisplay, String searchDateFrom, String searchDateTo, String searchOverheadtankName, String type) {
         ArrayList<OnOff> list = new ArrayList<OnOff>();
-       
-         String finallevel = "";
-        levelvalue=0;
-        totallevel=0;
-        diff=0;
-         leveldifference=0;
-         totalTime="";
-           totalday=0;
-     totalhour=0;
-     totalmin=0;
-       totalsec=0;
+        // System.out.println("showpdf-------"+searchOverheadtankName);
+        String finallevel = "";
+        levelvalue = 0;
+        totallevel = 0;
+        diff = 0;
+        leveldifference = 0;
+        totalTime = "";
+        totalday = 0;
+        totalhour = 0;
+        totalmin = 0;
+        totalsec = 0;
 
         Date d1 = null;
-		Date d2 = null;
+        Date d2 = null;
         if (searchDateFrom != null && !searchDateFrom.isEmpty()) {
             String[] sdate_array = searchDateFrom.split("-");
             searchDateFrom = sdate_array[2] + "-" + sdate_array[1] + "-" + sdate_array[0];
@@ -297,24 +318,36 @@ public class OnOffModel {
         if (lowerLimit == -1) {
             addQuery = "";
         }
+        if (type.equals("")) {
+            type = "All";
+        }
         //  int overheadtank_id = getOverHeadTankid(Integer.parseInt(oh_level));
         String query = " select wtp.name as name1,oht.name,ol.remark,ol.ohlevel_id,d.type,ol.date_time,level3,level4,capacity_height from watertreatmentplant AS wtp,overheadtank AS oht,"
                 + " ohlevel as ol,distribution as d"
                 + " where oht.watertreatmentplant_id = wtp.watertreatmentplant_id"
                 + " and ol.overheadtank_id = oht.overheadtank_id and ol.ohlevel_id=d.ohlevel_id "
-              //  + " And IF('" + searchDateFrom + "'='', ol.date_time LIKE '%%',ol.date_time >='" + searchDateFrom + "') "
-              //  + " And IF('" + searchDateTo + "'='', ol.date_time LIKE '%%',date_format(ol.date_time, '%Y-%m-%d') <='" + searchDateTo + "') "
-                + " And IF('" + searchOverheadtankName + "' = '',oht.name LIKE '%%', oht.name='" + searchOverheadtankName + "') "
-                   + " And IF('" + type + "' = '',d.type LIKE '%%', d.type='" + type + "') ";
-         if(!"".equals(searchDateFrom)){
-        query=query+"and ol.date_time>='"+searchDateFrom+"'";
+                //  + " And IF('" + searchDateFrom + "'='', ol.date_time LIKE '%%',ol.date_time >='" + searchDateFrom + "') "
+                //  + " And IF('" + searchDateTo + "'='', ol.date_time LIKE '%%',date_format(ol.date_time, '%Y-%m-%d') <='" + searchDateTo + "') "
+                + " And IF('" + searchOverheadtankName + "' = '',oht.name LIKE '%%', oht.name='" + searchOverheadtankName + "') ";
+        //    + " And IF('" + type + "' = '',d.type LIKE '%%', d.type='" + type + "') ";
+
+        if (type.equals("Leakage") || type.equals("Stable") || type.equals("Supply") || type.equals("Distribution")) {
+            query += " and d.type='" + type + "' ";
+
         }
-         if(!"".equals(searchDateFrom)){
-        query+=" and ol.date_time<='"+searchDateFrom+"'";
+        if (type.equals("All")) {
+            query += "";
         }
-              query+= "order by ol.date_time desc " + addQuery;  
-           //     + " order by ol.date_time asc "
-              //  + addQuery;
+        if (!"".equals(searchDateFrom)) {
+            query = query + "and date(ol.date_time)>='" + searchDateFrom + "'";
+        }
+        if (!"".equals(searchDateTo)) {
+            query += " and date(ol.date_time)<='" + searchDateTo + "'";
+        }
+        query += "order by ol.date_time desc " + addQuery;
+        //     + " order by ol.date_time asc "
+        //  + addQuery;
+        //  System.err.println("query%%%%%%%%5555  --" + query);
         try {
             PreparedStatement pstmt = (PreparedStatement) connection.prepareStatement(query);
 
@@ -326,107 +359,107 @@ public class OnOffModel {
                 ohLevelBean.setOhLevelId(rset.getInt("ohlevel_id"));
                 ohLevelBean.setType(rset.getString("type"));
                 String datetime1 = rset.getString("date_time");
-                
-                 DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
- 
-       
- 
-      //  System.out.println("Before subtraction of minutes from date: "+currentTime);
- 
-        LocalDateTime datetime = LocalDateTime.parse(datetime1,formatter);
- 
-        datetime=datetime.minusMinutes(6);
- 
-        String aftersubtraction=datetime.format(formatter);
-        
-        String values[] = aftersubtraction.split(" ");
-        
-        String value1 = values[0];
-        String values2 = values[1];
-        String values3[] = values2.split(":");
-        String values4 = values3[0];
-        String values5 = values3[1];
-        
-        String finaltime = value1+" "+values4+":"+values5;
-                
-                String remark = getRemark(finaltime);
-                ohLevelBean.setDateTime(aftersubtraction);
-                ohLevelBean.setLevel(remark);
-                
-                finaldatetime = getFinaldatetime(datetime1,type);
-                ohLevelBean.setFinaldatetime(finaldatetime);
-                
-                if (!finaldatetime.equals(""))
-                {
-                  String finalvalues[] = finaldatetime.split(" ");
-        
-        String finalvalue1 = finalvalues[0];
-        String finalvalues2 = finalvalues[1];
-        String finalvalues3[] = finalvalues2.split(":");
-        String finalvalues4 = finalvalues3[0];
-        String finalvalues5 = finalvalues3[1];
-        
-        String finaltime1 = finalvalue1+" "+finalvalues4+":"+finalvalues5;
-                
-                
-                
-               finallevel = getFinalLevel(finaltime1,type);
-                ohLevelBean.setColname(finallevel);
+                ohLevelBean.setFinaldatetime(rset.getString("date_time")); // off time
+                ohLevelBean.setColname(rset.getString("remark")); // end level
+                DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+
+                //  System.out.println("Before subtraction of minutes from date: "+currentTime);
+                LocalDateTime datetime = LocalDateTime.parse(datetime1, formatter);
+
+                //datetime = datetime.minusMinutes(6);
+                datetime = datetime.minusMinutes(0);
+
+                String aftersubtraction = datetime.format(formatter);
+
+                String values[] = aftersubtraction.split(" ");
+
+                String value1 = values[0];
+                String values2 = values[1];
+                String values3[] = values2.split(":");
+                String values4 = values3[0];
+                String values5 = values3[1];
+
+                String finaltime = value1 + " " + values4 + ":" + values5;
+
+                String remark = rset.getString("remark");
+
+                //  String remark = getRemark(finaltime);
+//                ohLevelBean.setDateTime(aftersubtraction);
+//                ohLevelBean.setLevel(remark);
+                // finaldatetime = getFinaldatetime(datetime1, type);
+                //  System.err.println("**********########## " + searchOverheadtankName);
+                finaldatetime = getFinaldatetime(datetime1, type, searchOverheadtankName);
+                //System.err.println("final date time---" + finaldatetime);
+                ohLevelBean.setDateTime(finaldatetime);  // on time
+
+                if (!finaldatetime.equals("")) {
+                    String finalvalues[] = finaldatetime.split(" ");
+
+                    String finalvalue1 = finalvalues[0];
+                    String finalvalues2 = finalvalues[1];
+                    String finalvalues3[] = finalvalues2.split(":");
+                    String finalvalues4 = finalvalues3[0];
+                    String finalvalues5 = finalvalues3[1];
+
+                    String finaltime1 = finalvalue1 + " " + finalvalues4 + ":" + finalvalues5;
+                    //   System.err.println("**********########## " + searchOverheadtankName);
+                    finallevel = getFinalLevel(finaltime1, type, searchOverheadtankName);
+                    ohLevelBean.setLevel(finallevel); // start level
                 }
-                
-                 leveldifference = Integer.parseInt(remark) - Integer.parseInt(finallevel);
-               ohLevelBean.setLeveldifference(Math.abs(leveldifference));
-                
-               
-          
-              	SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-              
-        d1 =  format.parse(aftersubtraction);
-			d2 =  format.parse(finaldatetime);
 
-			//in milliseconds
-			 diff = d2.getTime() - d1.getTime();
+                leveldifference = Integer.parseInt(remark) - Integer.parseInt(finallevel);
+                ohLevelBean.setLeveldifference(Math.abs(leveldifference));
+                leveldifference = Math.abs(leveldifference);
 
-                         
+                SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+
+                d1 = format.parse(finaldatetime);
+                d2 = format.parse(datetime1);
+
+                //in milliseconds
+                diff = d2.getTime() - d1.getTime();
+
 //                         Date result = new Date(diff); 
 //                         
 //                         String diffdt = format.format(result);
 //                         ohLevelBean.setDtdifference(diffdt);
 //                         
 //                         
-                         Calendar cal = Calendar.getInstance();
-       cal.setTimeInMillis(diff);
+                Calendar cal = Calendar.getInstance();
+                cal.setTimeInMillis(diff);
 //       System.out.println("Milliseconds to Date using Calendar:"
 //               + df.format(cal.getTime()));
 //     
 
+                long diffSeconds = diff / 1000 % 60;
+                long diffMinutes = diff / (60 * 1000) % 60;
+                long diffHours = diff / (60 * 60 * 1000) % 24;
+                long diffDays = diff / (24 * 60 * 60 * 1000);
 
+//                System.out.print(diffDays + " days, ");
+//                System.out.print(diffHours + " hours, ");
+//                System.out.print(diffMinutes + " minutes, ");
+//                System.out.print(diffSeconds + " seconds.");
+                String findatetimev = diffDays + ":" + diffHours + ":" + diffMinutes + ":" + diffSeconds;
+                ohLevelBean.setDtdifference(findatetimev);
 
-                         
-			long diffSeconds = diff / 1000 % 60;
-			long diffMinutes = diff / (60 * 1000) % 60;
-			long diffHours = diff / (60 * 60 * 1000) % 24;
-			long diffDays = diff / (24 * 60 * 60 * 1000);
+                totalday = totalday + diffDays;
+                totalhour = totalhour + diffHours;
+                totalmin = totalmin + diffMinutes;
+                totalsec = totalsec + diffSeconds;
 
-			System.out.print(diffDays + " days, ");
-			System.out.print(diffHours + " hours, ");
-			System.out.print(diffMinutes + " minutes, ");
-			System.out.print(diffSeconds + " seconds.");
-                        
-      
-                        
-                       
-                        String findatetimev = diffDays+":"+diffHours+":"+diffMinutes+":"+diffSeconds;
-                        ohLevelBean.setDtdifference(findatetimev);
-                        
-                          totalday=totalday+diffDays;
-                         totalhour=totalhour+diffHours;
-                          totalmin=totalmin+diffMinutes;
-                          totalsec=totalsec+diffSeconds;
+                long seconds = (d2.getTime() - d1.getTime()) / 1000;
+                total_seconds = total_seconds + seconds;
+                int day = (int) TimeUnit.SECONDS.toDays(total_seconds);
 
-                        
-                        totalTime = totalday+":"+totalhour+":"+totalmin+":"+totalsec;
-                        ohLevelBean.setTotalTime(totalTime);
+                long hours = TimeUnit.SECONDS.toHours(total_seconds) - (day * 24);
+                long minute = TimeUnit.SECONDS.toMinutes(total_seconds) - (TimeUnit.SECONDS.toHours(total_seconds) * 60);
+                long second = TimeUnit.SECONDS.toSeconds(total_seconds) - (TimeUnit.SECONDS.toMinutes(total_seconds) * 60);
+
+                totalTime = day + ":" + hours + ":" + minute + ":" + second;
+
+                //  totalTime = totalday + ":" + totalhour + ":" + totalmin + ":" + totalsec;
+                ohLevelBean.setTotalTime(totalTime);
 //                        
 //                        if(diffSeconds>0 && diffHours==0 || diffMinutes>0 )
 //                        {
@@ -452,47 +485,202 @@ public class OnOffModel {
 //                           ohLevelBean.setColname(colname);
 //                        ohLevelBean.setDtdifference(dtdifference);
 //                        }
-          
-                
-                totallevel=totallevel+leveldifference;
-                ohLevelBean.setTotallevel(Math.abs(totallevel));
+
+                totallevel = totallevel + leveldifference;
+                ohLevelBean.setTotallevel(totallevel);
                 twoByteData[0] = rset.getByte("level3");
                 twoByteData[1] = rset.getByte("level4");
                 long voltage1 = (new BigInteger(twoByteData).longValue());
                 ohLevelBean.setValue_of_34(("" + voltage1).trim());
                 ohLevelBean.setLevel_of_34("" + df.format((voltage1 / (rset.getDouble("capacity_height") * 1000)) * 100));
                 pdflist.add(ohLevelBean);
-                
-                   
+                //System.err.println("pdflist#######################"+pdflist);
+
                 levelvalue = Integer.parseInt(remark);
-                
+
                 diffdatetime = aftersubtraction;
-                
+
             }
         } catch (Exception e) {
-            System.out.println("Error in getAllRecrod -- OnOFF Model : " + e);
+            System.out.println("Error in ShowPDF -- OnOFF Model : " + e);
 
         }
         return pdflist;
     }
 
-    
-      public ArrayList<OnOff> ShowAllPDF(int lowerLimit, int noOfRowsToDisplay, String searchDateFrom, String searchDateTo,String searchOverheadtankName,String type) {
+    public ArrayList<OnOff> ShowAllPDF(int lowerLimit, int noOfRowsToDisplay, String searchDateFrom, String searchDateTo, String searchOverheadtankName, String type) {
+//        ArrayList<OnOff> list = new ArrayList<OnOff>();
+//
+//        String finallevel = "";
+//        levelvalue = 0;
+//        totallevel = 0;
+//        diff = 0;
+//        leveldifference = 0;
+//        totalTime = "";
+//        totalday = 0;
+//        totalhour = 0;
+//        totalmin = 0;
+//        totalsec = 0;
+//
+//        Date d1 = null;
+//        Date d2 = null;
+//        if (searchDateFrom != null && !searchDateFrom.isEmpty()) {
+//            String[] sdate_array = searchDateFrom.split("-");
+//            searchDateFrom = sdate_array[2] + "-" + sdate_array[1] + "-" + sdate_array[0];
+//        }
+//        if (searchDateTo != null && !searchDateTo.isEmpty()) {
+//            String[] sdate_array = searchDateTo.split("-");
+//            searchDateTo = sdate_array[2] + "-" + sdate_array[1] + "-" + sdate_array[0];
+//        }
+//        byte[] twoByteData = new byte[2];
+//        String addQuery = " LIMIT " + lowerLimit + ", " + noOfRowsToDisplay;
+//        if (lowerLimit == -1) {
+//            addQuery = "";
+//        }
+//        if (type.equals("")) {
+//            type = "All";
+//        }
+//        //  int overheadtank_id = getOverHeadTankid(Integer.parseInt(oh_level));
+//        String query = " select wtp.name as name1,oht.name,ol.remark,ol.ohlevel_id,d.type,ol.date_time,level3,level4,capacity_height from watertreatmentplant AS wtp,overheadtank AS oht,"
+//                + " ohlevel as ol,distribution as d"
+//                + " where oht.watertreatmentplant_id = wtp.watertreatmentplant_id"
+//                + " and ol.overheadtank_id = oht.overheadtank_id and ol.ohlevel_id=d.ohlevel_id "
+//                // + " And IF('" + searchDateFrom + "'='', ol.date_time LIKE '%%',ol.date_time >='" + searchDateFrom + "') "
+//                //  + " And IF('" + searchDateTo + "'='', ol.date_time LIKE '%%',date_format(ol.date_time, '%Y-%m-%d') <='" + searchDateTo + "') "
+//                + " And IF('" + searchOverheadtankName + "' = '',oht.name LIKE '%%', oht.name='" + searchOverheadtankName + "') ";
+//        //    + " And IF('" + type + "' = '',d.type LIKE '%%', d.type='" + type + "') ";
+//
+//        if (type.equals("Leakage") || type.equals("Stable") || type.equals("Supply") || type.equals("Distribution")) {
+//            query += " and d.type='" + type + "' ";
+//
+//        }
+//        if (type.equals("All")) {
+//            query += "";
+//        }
+//        if (!"".equals(searchDateFrom)) {
+//            query = query + "and date(ol.date_time)>='" + searchDateFrom + "'";
+//        }
+//        if (!"".equals(searchDateTo)) {
+//            query += " and date(ol.date_time)<='" + searchDateTo + "'";
+//        }
+//        query += "order by ol.date_time desc " + addQuery;
+//        //  + " order by ol.date_time asc "
+//
+//        try {
+//            PreparedStatement pstmt = (PreparedStatement) connection.prepareStatement(query);
+//
+//            ResultSet rset = pstmt.executeQuery();
+//            while (rset.next()) {
+//                OnOff ohLevelBean = new OnOff();
+//                ohLevelBean.setWaterTreatmentPlantName(rset.getString(1));
+//                ohLevelBean.setOverHeadTankName(rset.getString(2));
+//                ohLevelBean.setOhLevelId(rset.getInt("ohlevel_id"));
+//                ohLevelBean.setType(rset.getString("type"));
+//                String datetime1 = rset.getString("date_time");
+//                ohLevelBean.setFinaldatetime(rset.getString("date_time"));
+//                ohLevelBean.setColname(rset.getString("remark"));
+//                DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+//
+//                //  System.out.println("Before subtraction of minutes from date: "+currentTime);
+//                LocalDateTime datetime = LocalDateTime.parse(datetime1, formatter);
+//
+//                datetime = datetime.minusMinutes(6);
+//
+//                String aftersubtraction = datetime.format(formatter);
+//
+//                String values[] = aftersubtraction.split(" ");
+//
+//                String value1 = values[0];
+//                String values2 = values[1];
+//                String values3[] = values2.split(":");
+//                String values4 = values3[0];
+//                String values5 = values3[1];
+//
+//                String finaltime = value1 + " " + values4 + ":" + values5;
+//
+//                String remark = rset.getString("remark");
+//
+//                //  String remark = getRemark(finaltime);
+////                ohLevelBean.setDateTime(aftersubtraction);
+////                ohLevelBean.setLevel(remark);
+//                // finaldatetime = getFinaldatetime(datetime1, type);
+//                finaldatetime = getFinaldatetime(aftersubtraction, type, searchOverheadtankName);
+//                ohLevelBean.setDateTime(finaldatetime);
+//
+//                if (!finaldatetime.equals("")) {
+//                    String finalvalues[] = finaldatetime.split(" ");
+//
+//                    String finalvalue1 = finalvalues[0];
+//                    String finalvalues2 = finalvalues[1];
+//                    String finalvalues3[] = finalvalues2.split(":");
+//                    String finalvalues4 = finalvalues3[0];
+//                    String finalvalues5 = finalvalues3[1];
+//
+//                    String finaltime1 = finalvalue1 + " " + finalvalues4 + ":" + finalvalues5;
+//
+//                    finallevel = getFinalLevel(finaltime1, type, searchOverheadtankName);
+//                    ohLevelBean.setLevel(finallevel);
+//                }
+//
+//                leveldifference = Integer.parseInt(remark) - Integer.parseInt(finallevel);
+//                ohLevelBean.setLeveldifference(Math.abs(leveldifference));
+//
+//                SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+//
+//                d1 = format.parse(finaldatetime);
+//                d2 = format.parse(datetime1);
+//
+//                //in milliseconds
+//                diff = d2.getTime() - d1.getTime();
+//
+////                         Date result = new Date(diff); 
+////                         
+////                         String diffdt = format.format(result);
+////                         ohLevelBean.setDtdifference(diffdt);
+////                         
+////                         
+//                Calendar cal = Calendar.getInstance();
+//                cal.setTimeInMillis(diff);
+////       System.out.println("Milliseconds to Date using Calendar:"
+////               + df.format(cal.getTime()));
+////     
+//
+//                long diffSeconds = diff / 1000 % 60;
+//                long diffMinutes = diff / (60 * 1000) % 60;
+//                long diffHours = diff / (60 * 60 * 1000) % 24;
+//                long diffDays = diff / (24 * 60 * 60 * 1000);
+//
+////                System.out.print(diffDays + " days, ");
+////                System.out.print(diffHours + " hours, ");
+////                System.out.print(diffMinutes + " minutes, ");
+////                System.out.print(diffSeconds + " seconds.");
+//
+//                String findatetimev = diffDays + ":" + diffHours + ":" + diffMinutes + ":" + diffSeconds;
+//                ohLevelBean.setDtdifference(findatetimev);
+//
+//                totalday = totalday + diffDays;
+//                totalhour = totalhour + diffHours;
+//                totalmin = totalmin + diffMinutes;
+//                totalsec = totalsec + diffSeconds;
+//
+//                totalTime = totalday + ":" + totalhour + ":" + totalmin + ":" + totalsec;
+//                ohLevelBean.setTotalTime(totalTime);
+
         ArrayList<OnOff> list = new ArrayList<OnOff>();
-       
-         String finallevel = "";
-        levelvalue=0;
-        totallevel=0;
-        diff=0;
-         leveldifference=0;
-         totalTime="";
-           totalday=0;
-     totalhour=0;
-     totalmin=0;
-       totalsec=0;
+        // System.out.println("showpdf-------"+searchOverheadtankName);
+        String finallevel = "";
+        levelvalue = 0;
+        totallevel = 0;
+        diff = 0;
+        leveldifference = 0;
+        totalTime = "";
+        totalday = 0;
+        totalhour = 0;
+        totalmin = 0;
+        totalsec = 0;
 
         Date d1 = null;
-		Date d2 = null;
+        Date d2 = null;
         if (searchDateFrom != null && !searchDateFrom.isEmpty()) {
             String[] sdate_array = searchDateFrom.split("-");
             searchDateFrom = sdate_array[2] + "-" + sdate_array[1] + "-" + sdate_array[0];
@@ -506,24 +694,36 @@ public class OnOffModel {
         if (lowerLimit == -1) {
             addQuery = "";
         }
+        if (type.equals("")) {
+            type = "All";
+        }
         //  int overheadtank_id = getOverHeadTankid(Integer.parseInt(oh_level));
         String query = " select wtp.name as name1,oht.name,ol.remark,ol.ohlevel_id,d.type,ol.date_time,level3,level4,capacity_height from watertreatmentplant AS wtp,overheadtank AS oht,"
                 + " ohlevel as ol,distribution as d"
                 + " where oht.watertreatmentplant_id = wtp.watertreatmentplant_id"
                 + " and ol.overheadtank_id = oht.overheadtank_id and ol.ohlevel_id=d.ohlevel_id "
-               // + " And IF('" + searchDateFrom + "'='', ol.date_time LIKE '%%',ol.date_time >='" + searchDateFrom + "') "
-              //  + " And IF('" + searchDateTo + "'='', ol.date_time LIKE '%%',date_format(ol.date_time, '%Y-%m-%d') <='" + searchDateTo + "') "
-                + " And IF('" + searchOverheadtankName + "' = '',oht.name LIKE '%%', oht.name='" + searchOverheadtankName + "') "
-                   + " And IF('" + type + "' = '',d.type LIKE '%%', d.type='" + type + "') ";
-         if(!"".equals(searchDateFrom)){
-        query=query+"and ol.date_time>='"+searchDateFrom+"'";
+                //  + " And IF('" + searchDateFrom + "'='', ol.date_time LIKE '%%',ol.date_time >='" + searchDateFrom + "') "
+                //  + " And IF('" + searchDateTo + "'='', ol.date_time LIKE '%%',date_format(ol.date_time, '%Y-%m-%d') <='" + searchDateTo + "') "
+                + " And IF('" + searchOverheadtankName + "' = '',oht.name LIKE '%%', oht.name='" + searchOverheadtankName + "') ";
+        //    + " And IF('" + type + "' = '',d.type LIKE '%%', d.type='" + type + "') ";
+
+        if (type.equals("Leakage") || type.equals("Stable") || type.equals("Supply") || type.equals("Distribution")) {
+            query += " and d.type='" + type + "' ";
+
         }
-         if(!"".equals(searchDateFrom)){
-        query+=" and ol.date_time<='"+searchDateFrom+"'";
+        if (type.equals("All")) {
+            query += "";
         }
-              query+= "order by ol.date_time desc " + addQuery;  
-              //  + " order by ol.date_time asc "
-               
+        if (!"".equals(searchDateFrom)) {
+            query = query + "and date(ol.date_time)>='" + searchDateFrom + "'";
+        }
+        if (!"".equals(searchDateTo)) {
+            query += " and date(ol.date_time)<='" + searchDateTo + "'";
+        }
+        query += "order by ol.date_time desc " + addQuery;
+        //     + " order by ol.date_time asc "
+        //  + addQuery;
+        //  System.err.println("query%%%%%%%%5555  --" + query);
         try {
             PreparedStatement pstmt = (PreparedStatement) connection.prepareStatement(query);
 
@@ -535,192 +735,180 @@ public class OnOffModel {
                 ohLevelBean.setOhLevelId(rset.getInt("ohlevel_id"));
                 ohLevelBean.setType(rset.getString("type"));
                 String datetime1 = rset.getString("date_time");
-                
-                 DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
- 
-       
- 
-      //  System.out.println("Before subtraction of minutes from date: "+currentTime);
- 
-        LocalDateTime datetime = LocalDateTime.parse(datetime1,formatter);
- 
-        datetime=datetime.minusMinutes(6);
- 
-        String aftersubtraction=datetime.format(formatter);
-        
-        String values[] = aftersubtraction.split(" ");
-        
-        String value1 = values[0];
-        String values2 = values[1];
-        String values3[] = values2.split(":");
-        String values4 = values3[0];
-        String values5 = values3[1];
-        
-        String finaltime = value1+" "+values4+":"+values5;
-                
-                String remark = getRemark(finaltime);
-                ohLevelBean.setDateTime(aftersubtraction);
-                ohLevelBean.setLevel(remark);
-                
-                finaldatetime = getFinaldatetime(datetime1,type);
-                ohLevelBean.setFinaldatetime(finaldatetime);
-                
-                if (!finaldatetime.equals(""))
-                {
-                  String finalvalues[] = finaldatetime.split(" ");
-        
-        String finalvalue1 = finalvalues[0];
-        String finalvalues2 = finalvalues[1];
-        String finalvalues3[] = finalvalues2.split(":");
-        String finalvalues4 = finalvalues3[0];
-        String finalvalues5 = finalvalues3[1];
-        
-        String finaltime1 = finalvalue1+" "+finalvalues4+":"+finalvalues5;
-                
-                
-                
-               finallevel = getFinalLevel(finaltime1,type);
-                ohLevelBean.setColname(finallevel);
+                ohLevelBean.setFinaldatetime(rset.getString("date_time")); // off time
+                ohLevelBean.setColname(rset.getString("remark")); // end level
+                DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+
+                //  System.out.println("Before subtraction of minutes from date: "+currentTime);
+                LocalDateTime datetime = LocalDateTime.parse(datetime1, formatter);
+
+                //datetime = datetime.minusMinutes(6);
+                datetime = datetime.minusMinutes(0);
+
+                String aftersubtraction = datetime.format(formatter);
+
+                String values[] = aftersubtraction.split(" ");
+
+                String value1 = values[0];
+                String values2 = values[1];
+                String values3[] = values2.split(":");
+                String values4 = values3[0];
+                String values5 = values3[1];
+
+                String finaltime = value1 + " " + values4 + ":" + values5;
+
+                String remark = rset.getString("remark");
+
+                //  String remark = getRemark(finaltime);
+//                ohLevelBean.setDateTime(aftersubtraction);
+//                ohLevelBean.setLevel(remark);
+                // finaldatetime = getFinaldatetime(datetime1, type);
+                //  System.err.println("**********########## " + searchOverheadtankName);
+                finaldatetime = getFinaldatetime(datetime1, type, searchOverheadtankName);
+                //System.err.println("final date time---" + finaldatetime);
+                ohLevelBean.setDateTime(finaldatetime);  // on time
+
+                if (!finaldatetime.equals("")) {
+                    String finalvalues[] = finaldatetime.split(" ");
+
+                    String finalvalue1 = finalvalues[0];
+                    String finalvalues2 = finalvalues[1];
+                    String finalvalues3[] = finalvalues2.split(":");
+                    String finalvalues4 = finalvalues3[0];
+                    String finalvalues5 = finalvalues3[1];
+
+                    String finaltime1 = finalvalue1 + " " + finalvalues4 + ":" + finalvalues5;
+                    //   System.err.println("**********########## " + searchOverheadtankName);
+                    finallevel = getFinalLevel(finaltime1, type, searchOverheadtankName);
+                    ohLevelBean.setLevel(finallevel); // start level
                 }
-                
-                 leveldifference = Integer.parseInt(remark) - Integer.parseInt(finallevel);
-               ohLevelBean.setLeveldifference(Math.abs(leveldifference));
-                
-               
-          
-              	SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-              
-        d1 =  format.parse(aftersubtraction);
-			d2 =  format.parse(finaldatetime);
 
-			//in milliseconds
-			 diff = d2.getTime() - d1.getTime();
+                leveldifference = Integer.parseInt(remark) - Integer.parseInt(finallevel);
+                ohLevelBean.setLeveldifference(Math.abs(leveldifference));
+                leveldifference = Math.abs(leveldifference);
+                SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 
-                         
+                d1 = format.parse(finaldatetime);
+                d2 = format.parse(datetime1);
+
+                //in milliseconds
+                diff = d2.getTime() - d1.getTime();
+
 //                         Date result = new Date(diff); 
 //                         
 //                         String diffdt = format.format(result);
 //                         ohLevelBean.setDtdifference(diffdt);
 //                         
 //                         
-                         Calendar cal = Calendar.getInstance();
-       cal.setTimeInMillis(diff);
+                Calendar cal = Calendar.getInstance();
+                cal.setTimeInMillis(diff);
 //       System.out.println("Milliseconds to Date using Calendar:"
 //               + df.format(cal.getTime()));
 //     
 
+                long diffSeconds = diff / 1000 % 60;
+                long diffMinutes = diff / (60 * 1000) % 60;
+                long diffHours = diff / (60 * 60 * 1000) % 24;
+                long diffDays = diff / (24 * 60 * 60 * 1000);
 
+//                System.out.print(diffDays + " days, ");
+//                System.out.print(diffHours + " hours, ");
+//                System.out.print(diffMinutes + " minutes, ");
+//                System.out.print(diffSeconds + " seconds.");
+                String findatetimev = diffDays + ":" + diffHours + ":" + diffMinutes + ":" + diffSeconds;
+                ohLevelBean.setDtdifference(findatetimev);
 
-                         
-			long diffSeconds = diff / 1000 % 60;
-			long diffMinutes = diff / (60 * 1000) % 60;
-			long diffHours = diff / (60 * 60 * 1000) % 24;
-			long diffDays = diff / (24 * 60 * 60 * 1000);
+                totalday = totalday + diffDays;
+                totalhour = totalhour + diffHours;
+                totalmin = totalmin + diffMinutes;
+                totalsec = totalsec + diffSeconds;
 
-			System.out.print(diffDays + " days, ");
-			System.out.print(diffHours + " hours, ");
-			System.out.print(diffMinutes + " minutes, ");
-			System.out.print(diffSeconds + " seconds.");
-                        
-      
-                        
-                       
-                        String findatetimev = diffDays+":"+diffHours+":"+diffMinutes+":"+diffSeconds;
-                        ohLevelBean.setDtdifference(findatetimev);
-                        
-                          totalday=totalday+diffDays;
-                         totalhour=totalhour+diffHours;
-                          totalmin=totalmin+diffMinutes;
-                          totalsec=totalsec+diffSeconds;
+                long seconds = (d2.getTime() - d1.getTime()) / 1000;
+                total_seconds = total_seconds + seconds;
+                int day = (int) TimeUnit.SECONDS.toDays(total_seconds);
 
-                        
-                        totalTime = totalday+":"+totalhour+":"+totalmin+":"+totalsec;
-                        ohLevelBean.setTotalTime(totalTime);
+                long hours = TimeUnit.SECONDS.toHours(total_seconds) - (day * 24);
+                long minute = TimeUnit.SECONDS.toMinutes(total_seconds) - (TimeUnit.SECONDS.toHours(total_seconds) * 60);
+                long second = TimeUnit.SECONDS.toSeconds(total_seconds) - (TimeUnit.SECONDS.toMinutes(total_seconds) * 60);
 
-                        
-                        
-                        
-                
-                totallevel=totallevel+leveldifference;
-                ohLevelBean.setTotallevel(Math.abs(totallevel));
+                totalTime = day + ":" + hours + ":" + minute + ":" + second;
+
+                //   totalTime = totalday + ":" + totalhour + ":" + totalmin + ":" + totalsec;
+                ohLevelBean.setTotalTime(totalTime);
+
+                totallevel = totallevel + leveldifference;
+                ohLevelBean.setTotallevel(totallevel);
+
                 twoByteData[0] = rset.getByte("level3");
                 twoByteData[1] = rset.getByte("level4");
                 long voltage1 = (new BigInteger(twoByteData).longValue());
                 ohLevelBean.setValue_of_34(("" + voltage1).trim());
                 ohLevelBean.setLevel_of_34("" + df.format((voltage1 / (rset.getDouble("capacity_height") * 1000)) * 100));
                 pdflist.add(ohLevelBean);
-                
-                   
+
                 levelvalue = Integer.parseInt(remark);
-                
+
                 diffdatetime = aftersubtraction;
-                
-                
-                if(type.equals("Leakage"))
-                        {
-                         totalleakage = totalday+":"+totalhour+":"+totalmin+":"+totalsec;
-                        ohLevelBean.setTotalleakagetime(totalleakage);
-                       totalleakagevalue=totallevel;
-                        ohLevelBean.setTotalleakagevalue(totalleakagevalue);
-                        }
-                  if(type.equals("Stable"))
-                        {
-                         totalstable = totalday+":"+totalhour+":"+totalmin+":"+totalsec;
-                        ohLevelBean.setTotalstabletime(totalstable);
-                        totalstablevalue = totallevel;
-                       ohLevelBean.setTotalstablevalue(totalstablevalue);
-                        
-                        }
-                 if(type.equals("Supply"))
-                        {
-                         totalsupply = totalday+":"+totalhour+":"+totalmin+":"+totalsec;
-                        ohLevelBean.setTotalsupplytime(totalsupply);
-                        totalsupplyvalue = totallevel;
-                        ohLevelBean.setTotalsupplyvalue(totalsupplyvalue);
-                       
-                        }
-                  if(type.equals("Distribution"))
-                        {
-                         totaldistribution = totalday+":"+totalhour+":"+totalmin+":"+totalsec;
-                        ohLevelBean.setTotaldistributiontime(totaldistribution);
-                        totaldistributionvalue =totallevel; 
-                       ohLevelBean.setTotaldistributionvalue(Math.abs(totaldistributionvalue));
-                       
-                       ohLevelBean.setTotalleakagetime(totalleakage);
-                        ohLevelBean.setTotalleakagevalue(Math.abs(totalleakagevalue));
-                        
-                          ohLevelBean.setTotalstabletime(totalstable);
-                           ohLevelBean.setTotalstablevalue(Math.abs(totalstablevalue));
-                           
-                           ohLevelBean.setTotalsupplytime(totalsupply);
-                             ohLevelBean.setTotalsupplyvalue(Math.abs(totalsupplyvalue));
-                        }
-                
+
+                if (type.equals("Leakage")) {
+                    totalleakage = day + ":" + hours + ":" + minute + ":" + second;
+                    ohLevelBean.setTotalleakagetime(totalleakage);
+                    totalleakagevalue = totallevel;
+                    ohLevelBean.setTotalleakagevalue(totalleakagevalue);
+                }
+                if (type.equals("Stable")) {
+                    totalstable = day + ":" + hours + ":" + minute + ":" + second;
+                    ohLevelBean.setTotalstabletime(totalstable);
+                    totalstablevalue = totallevel;
+                    ohLevelBean.setTotalstablevalue(totalstablevalue);
+
+                }
+                if (type.equals("Supply")) {
+                    totalsupply =day + ":" + hours + ":" + minute + ":" + second;
+                    ohLevelBean.setTotalsupplytime(totalsupply);
+                    totalsupplyvalue = totallevel;
+                    ohLevelBean.setTotalsupplyvalue(totalsupplyvalue);
+
+                }
+                if (type.equals("Distribution")) {
+                    totaldistribution = day + ":" + hours + ":" + minute + ":" + second;
+                    ohLevelBean.setTotaldistributiontime(totaldistribution);
+                    totaldistributionvalue = totallevel;
+                    ohLevelBean.setTotaldistributionvalue(Math.abs(totaldistributionvalue));
+
+                    ohLevelBean.setTotalleakagetime(totalleakage);
+                    ohLevelBean.setTotalleakagevalue(Math.abs(totalleakagevalue));
+
+                    ohLevelBean.setTotalstabletime(totalstable);
+                    ohLevelBean.setTotalstablevalue(Math.abs(totalstablevalue));
+
+                    ohLevelBean.setTotalsupplytime(totalsupply);
+                    ohLevelBean.setTotalsupplyvalue(Math.abs(totalsupplyvalue));
+                }
+
             }
         } catch (Exception e) {
-            System.out.println("Error in getAllRecrod -- OnOFF Model : " + e);
+            System.out.println("Error in ShowAllPDF -- OnOFF Model : " + e);
 
         }
         return pdflist;
     }
 
-    
-      
-     public String getRemark(String q){
+    public String getRemark(String q) {
 
-        String name="";
-        String query =" select remark from ohlevel where date_time>'" + q +"' limit 1";
+        String name = "";
+        String query = " select remark from ohlevel where date_time>'" + q + "' limit 1";
         try {
             PreparedStatement ps = (PreparedStatement) connection.prepareStatement(query);
             ResultSet rs = ps.executeQuery();
             int count = 0;
-            
+
             while (rs.next()) {    // move cursor from BOR to valid record.
-                 name = rs.getString("remark");
-                 count++;
+                name = rs.getString("remark");
+                count++;
             }
             if (count == 0) {
-               System.out.println("No value");
+                System.out.println("No value getRemark");
             }
         } catch (Exception e) {
             System.out.println("getP_name ERROR inside PersonModel" + e);
@@ -728,45 +916,48 @@ public class OnOffModel {
         return name;
 
     }
-     
-      public String getFinaldatetime(String q,String type){
 
-        String name="";
- String query = " select wtp.name as name1,oht.name,ol.remark,ol.ohlevel_id,d.type,ol.date_time,level3,level4,capacity_height from watertreatmentplant AS wtp,overheadtank AS oht,"
+    public String getFinaldatetime(String q, String type, String searchOverheadtankName) {
+        // System.err.println("final date time&&&&&&&" + q + "------" + type);
+        String name = "";
+        String query = " select wtp.name as name1,oht.name,ol.remark,ol.ohlevel_id,d.type,ol.date_time,level3,level4,capacity_height from watertreatmentplant AS wtp,overheadtank AS oht,"
                 + " ohlevel as ol,distribution as d"
                 + " where oht.watertreatmentplant_id = wtp.watertreatmentplant_id"
-                + " and ol.overheadtank_id = oht.overheadtank_id and ol.ohlevel_id=d.ohlevel_id ";
-               // + " And IF('" + q + "'='', ol.date_time LIKE '%%',ol.date_time >'" + q + "') ";
-               if(!q.equals("")){
-                   query+=" and ol.date_time>'"+q+"'";
-               }
+                + " and ol.overheadtank_id = oht.overheadtank_id and ol.ohlevel_id=d.ohlevel_id "
+                + " And IF('" + searchOverheadtankName + "' = '',oht.name LIKE '%%', oht.name='" + searchOverheadtankName + "') ";
+        // + " And IF('" + q + "'='', ol.date_time LIKE '%%',ol.date_time >'" + q + "') ";
+        if (!q.equals("")) {
+            //query += " and ol.date_time>'" + q + "'";
+            query += " and ol.date_time<'" + q + "'";
+        }
 //                   + " And IF('" + type + "' = '',d.type LIKE '%%', d.type='" + type + "') "
-                query+= " order by ol.date_time asc limit 1";              
+        query += " order by ol.ohlevel_id desc limit 1";
+        // System.err.println("*********final date time&&&&&&& for start time " + query);
+
         try {
             PreparedStatement ps = (PreparedStatement) connection.prepareStatement(query);
             ResultSet rs = ps.executeQuery();
             int count = 0;
-            
+            //   System.err.println("query executed-------");
+
             while (rs.next()) {    // move cursor from BOR to valid record.
-                 String type_name = rs.getString("type");
-                 if(!type_name.equals(type))
-                         {
-                 name = rs.getString("date_time");
-                         }
-                   DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
-                   name = rs.getString("date_time");
-                 
-                    LocalDateTime datetime = LocalDateTime.parse(name,formatter);
- 
-        datetime=datetime.minusMinutes(6);
- 
-        String aftersubtraction=datetime.format(formatter);
-        
-        name = aftersubtraction;
-                 count++;
+                String type_name = rs.getString("type");
+                if (!type_name.equals(type)) {
+                    name = rs.getString("date_time");
+                }
+                DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+                name = rs.getString("date_time");
+
+                //  System.err.println("datetime-----" + name);
+//                LocalDateTime datetime = LocalDateTime.parse(name, formatter);
+                //datetime = datetime.minusMinutes(6);
+                //  datetime = datetime.minusMinutes(3);
+                //  String aftersubtraction = datetime.format(formatter);
+                //  name = aftersubtraction;
+                count++;
             }
             if (count == 0) {
-               System.out.println("No value");
+                System.out.println("No value getFinaldateTime");
             }
         } catch (Exception e) {
             System.out.println("getP_name ERROR inside PersonModel" + e);
@@ -774,9 +965,10 @@ public class OnOffModel {
         return name;
 
     }
-      
-        public String getFinalLevel(String q,String type){
 
+    public String getFinalLevel(String q, String type, String searchOverheadtankName) {
+
+        //  System.err.println("**** final time  searchOverheadtankName-" + searchOverheadtankName);
 //             DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss.S");
 //                 
 //                 
@@ -788,20 +980,27 @@ public class OnOffModel {
 //        
 //        q = aftersubtraction;
 //            
-        String name="";
- String query = "select remark from ohlevel where date_time>'" + q +"' limit 1 ";
+        String name = "";
+        //String query = "select remark from ohlevel where date_time>'" + q + "' limit 1 ";
+        String query = " select o.remark from ohlevel o, overheadtank ot "
+                + " where o.date_time>'" + q + "'  ";
+        if (!searchOverheadtankName.equals("")) {
+            query += " and ot.name='" + searchOverheadtankName + "' and o.overheadtank_id=ot.overheadtank_id  ";
+        }
+        query += "  limit 1  ";
         try {
+            //  System.err.println("*** query for final level start level -" + query);
             PreparedStatement ps = (PreparedStatement) connection.prepareStatement(query);
             ResultSet rs = ps.executeQuery();
             int count = 0;
-            
+
             while (rs.next()) {    // move cursor from BOR to valid record.
-                 name = rs.getString("remark");
-                 
-                 count++;
+                name = rs.getString("remark");
+
+                count++;
             }
             if (count == 0) {
-               System.out.println("No value");
+                System.out.println("No value getFinalLevel");
             }
         } catch (Exception e) {
             System.out.println("getP_name ERROR inside PersonModel" + e);
@@ -809,14 +1008,13 @@ public class OnOffModel {
         return name;
 
     }
-      
 
-      public List<String> getTypeName(String q){
+    public List<String> getTypeName(String q) {
 
         List<String> li = new ArrayList<String>();
         String query = " select d.type_name "
-                 +" from level_type as d ";
-                
+                + " from level_type as d ";
+
         try {
             PreparedStatement ps = (PreparedStatement) connection.prepareStatement(query);
             ResultSet rs = ps.executeQuery();
@@ -826,7 +1024,7 @@ public class OnOffModel {
                 String name = rs.getString("type_name");
                 if (name.toUpperCase().startsWith(q.toUpperCase())) {
                     li.add(name);
-                 
+
                     count++;
                 }
             }
@@ -841,30 +1039,24 @@ public class OnOffModel {
 
     }
 
-      
-      
-      
-         public static String getTypeNameId(int id){
-     String name="";
+    public static String getTypeNameId(int id) {
+        String name = "";
         int count = 0;
         String query = " select d.type_name "
-                 +" from level_type as d where level_type_id="+id;
-                
+                + " from level_type as d where level_type_id=" + id;
+
         try {
             PreparedStatement ps = (PreparedStatement) connection.prepareStatement(query);
             ResultSet rs = ps.executeQuery();
-           
-            
+
             while (rs.next()) {    // move cursor from BOR to valid record.
-                 name = rs.getString("type_name");
-              
-                 
-                    count++;
-                }
-            
-           
+                name = rs.getString("type_name");
+
+                count++;
+            }
+
             if (count == 0) {
-               System.out.println("No such Status exists");
+                System.out.println("No such Status exists");
             }
         } catch (Exception e) {
             System.out.println("getP_name ERROR inside PersonModel" + e);
@@ -873,19 +1065,14 @@ public class OnOffModel {
 
     }
 
-      
-    
-    
-    
-    
-     public List<String> getOverheadTankName(String q){
+    public List<String> getOverheadTankName(String q) {
 
         List<String> li = new ArrayList<String>();
         String query = " select oht.name "
-                 +" from watertreatmentplant AS wtp,overheadtank AS oht,ohlevel as ol,distribution as d "
-                 +" where oht.watertreatmentplant_id = wtp.watertreatmentplant_id "
-                 +" and ol.overheadtank_id = oht.overheadtank_id and ol.ohlevel_id=d.ohlevel_id "
-                 +" group by oht.name ";
+                + " from watertreatmentplant AS wtp,overheadtank AS oht,ohlevel as ol,distribution as d "
+                + " where oht.watertreatmentplant_id = wtp.watertreatmentplant_id "
+                + " and ol.overheadtank_id = oht.overheadtank_id and ol.ohlevel_id=d.ohlevel_id "
+                + " group by oht.name ";
         try {
             PreparedStatement ps = (PreparedStatement) connection.prepareStatement(query);
             ResultSet rs = ps.executeQuery();
@@ -908,6 +1095,54 @@ public class OnOffModel {
 
     }
 
+    public static void writeBytesToFile(String fileOutput, byte[] bytes, String mail_id)
+            throws IOException {
+        Date date = new Date();
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+        String new_date = sdf.format(date);
+
+        System.err.println("new date---" + new_date);
+        // fileOutput = fileOutput +"report_"+new_date+".pdf";
+
+        //    fileOutput="C:/ssadvt_repository/SmartMeterSurvey/Report/Report_"+new_date+".pdf";
+        // fileOutput = "C:\\ssadvt_repository\\SmartMeterSurvey\\Report\\Report_"+new_date+".pdf";
+        String current_date = new SimpleDateFormat("yyyy-MM-dd").format(Calendar.getInstance().getTime());
+        String folder_path = "C:\\ssadvt_repository\\SmartMeterSurvey\\chart\\";
+        File file = new File(folder_path);
+        if (!file.exists()) {
+            file.mkdirs();
+        }
+        fileOutput = folder_path + current_date + "_report.pdf";
+
+        // String file_name="Report_"+new_date+".pdf";
+        System.err.println("file output---" + fileOutput);
+        try (FileOutputStream fos = new FileOutputStream(fileOutput)) {
+            fos.write(bytes);
+            System.err.println("fos---" + fos);
+            sendMail mailC = new sendMail();
+            String msg = mailC.sentMail(fileOutput, mail_id);
+        }
+
+    }
+
+    public static void saveMailId(String mail_id) {
+        PreparedStatement psmt = null;
+        int count = 0;
+        try {
+            String query = " insert into mail_smart_meter(user_name) values(?) ";
+
+            psmt = connection.prepareStatement(query);
+
+            psmt.setString(1, mail_id);
+            // System.err.println("query----"+psmt);
+            count = psmt.executeUpdate();
+            //  System.err.println("count---"+count);
+
+        } catch (Exception e) {
+            System.err.println("Exception---" + e);
+        }
+
+    }
 
     public void closeConnection() {
         try {

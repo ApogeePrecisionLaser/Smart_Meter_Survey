@@ -98,13 +98,13 @@ public class OHLevelEntryWebService {
         HttpSession session  = requestContext.getSession();
         byte[] response = null;
         String result = "Sorry!! something went wrong. ";
-        System.out.println("data at " + new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(Calendar.getInstance().getTime()) + ": "+ requestContext.getRemoteAddr());
+      //  System.out.println("data at " + new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(Calendar.getInstance().getTime()) + ": "+ requestContext.getRemoteAddr());
         for (int i = 0; i < receivedBytes.length; i++) {
             System.out.print("  " + receivedBytes[i]);
         }
      //   String changeCommand = session.getAttribute("sp14") == null?"":session.getAttribute("sp14").toString();
         servletContext.getInitParameter("driverClass");
-        System.out.println("");   
+      //  System.out.println("");   
         OHLevelEntryModel oHLevelEntryModel = new OHLevelEntryModel();
         if (receivedBytes != null && receivedBytes.length!=0)  {
             try {             
@@ -117,13 +117,15 @@ public class OHLevelEntryWebService {
 //                else if (receivedBytes.length == 17)
 //                    responseVal = wsEnergyMeterModel.junctionRefreshFunctionNine(receivedBytes,5,false);
 //                else
+
+               // System.out.println("junction refresh");
                     response = oHLevelEntryModel.junctionRefreshFunction1(receivedBytes,5,false);
                            System.out.print(" Server Side Response bytes" );           
                      for (int i = 0; i < response.length; i++) {
                          if(response[i]== 0){
                          response[i]=127;
                          }
-            System.out.print("   " + response[i]);
+           // System.out.print(" respone-------------  " + response[i]);
         }
                      
                // if (responseVal != null && !responseVal.isEmpty()) {

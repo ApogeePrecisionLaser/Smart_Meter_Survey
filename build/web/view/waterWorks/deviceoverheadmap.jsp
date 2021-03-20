@@ -220,7 +220,7 @@
     function viewDashBoard(ohid,did,ohname,ohdevicename,sumpdeviceid){
        // alert(ohid);
      //  alert(ohname);
-        
+       // alert("ohdevicename ---"+ohdevicename);
         var queryString = "ohid="+ohid + " &did="+did + " &ohname="+ohname+ " &ohdevicename="+ohdevicename+ " &sumpdeviceid="+sumpdeviceid;
         var url = "DashboardController?" + queryString;
         window.open(url);
@@ -229,7 +229,7 @@
     function viewDashBoard2(ohid,did,ohname,ohdevicename){
        // alert(ohid);
      //  alert(ohname);
-        
+      //  alert("ohdevicename ---"+ohdevicename);
         var queryString = "ohid="+ohid + " &did="+did + " &ohname="+ohname+ " &ohdevicename="+ohdevicename;
         var url = "DashboardController2?" + queryString;
         window.open(url);
@@ -237,7 +237,7 @@
     }
     function viewDashBoard1(ohid,ohname,ohdevicename){
  
-        
+      //  alert("ohdevicename ---"+ohdevicename);
         var queryString = "ohid="+ohid +  " &ohname="+ohname+ " &ohdevicename="+ohdevicename;
         var url = "DashboardController1?" + queryString;
         window.open(url);

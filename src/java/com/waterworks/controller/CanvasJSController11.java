@@ -68,8 +68,11 @@ static int ohlevel_id;
           
         }
         
+        // System.out.println("task**************"+task);
        
         if(task.equals("Search")){
+                //     System.out.println("search**************"+task);
+
         String search_level_dateTime=request.getParameter("level_datetime");
 try{
         if(!(search_level_dateTime==null)){
@@ -89,6 +92,7 @@ try{
 
         }
 
+       // System.out.println("search date--"+searchDate);
         try{
         if(task.equals("getAllDateTime"))
             {
@@ -96,9 +100,12 @@ try{
                  JSONArray arrayObj = new JSONArray();
                  JSONArray arrayObj1 = new JSONArray();
                if(searchDate==null || searchDate=="")
-               {
+               {       //  System.out.println("search null**************"+searchDate);
+
                    arrayObj= canvasJSModel.getAllDateTime(ohlevel_id,searchDate,did);
-               } else{          
+               } else{      
+                                       //   System.out.println("search not null**************"+searchDate);
+
                arrayObj= canvasJSModel.getAllDateTime1(ohlevel_id,searchDate,did);
                }
                obj1.put("dateTime", arrayObj);    
@@ -114,8 +121,12 @@ try{
                  JSONArray arrayObj1 = new JSONArray();  
                   if(searchDate==null || searchDate=="")
                {
+                                         //  System.out.println("search level null**************"+searchDate);
+
                 arrayObj1=canvasJSModel.getAllOhLevel(ohlevel_id,searchDate,did);
                }else{
+                                           //   System.out.println("search level not null**************"+searchDate);
+
                     arrayObj1=canvasJSModel.getAllOhLevel1(ohlevel_id,searchDate,did);
                   }
                 obj1.put("ohLevel", arrayObj1);

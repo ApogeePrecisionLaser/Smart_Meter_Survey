@@ -53,6 +53,11 @@ public class OhLevelSchedularController extends HttpServlet{
 //            ScheduledExecutorService scheduledThreadPool1 = Executors.newScheduledThreadPool(5);
 //            scheduledThreadPool1.scheduleAtFixedRate(sm, 0, 1, TimeUnit.HOURS);
         }
+    try {
+        con.close();
+    } catch (SQLException ex) {
+        Logger.getLogger(OhLevelSchedularController.class.getName()).log(Level.SEVERE, null, ex);
+    }
         System.out.println("---------------SchedulerController is Running--------------");
     }
 }
